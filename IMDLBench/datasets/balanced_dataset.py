@@ -1,13 +1,21 @@
-from .iml_datasets import json_dataset, mani_dataset
-from ..transforms import get_albu_transforms
-from torch.utils.data import Dataset, DataLoader
 import random
+from torch.utils.data import Dataset, DataLoader
+
+from .iml_datasets import json_dataset, mani_dataset
+
+from ..transforms import get_albu_transforms
+
+from IMDLBench.registry import DATASETS
+
+
+
+
 train_transform = get_albu_transforms('train')
 
 def get_dataset(path, dataset_type):
     return dataset_type(path, 1024, train_transform, edge_width=7, if_return_shape=True)
 
-
+@DATASETS.register_module()
 class balanced_dataset(Dataset):
     def __init__(self, sample_number = 1840) -> None:
         self.sample_number = sample_number

@@ -2,7 +2,7 @@ import torch
 from matplotlib import pyplot as plt
 from torch.nn import functional as F
 
-class EdgeGenerator(torch.nn.Module):
+class EdgeMaskGenerator(torch.nn.Module):
     """generate the 'edge bar' for a 0-1 mask Groundtruth of a image
     Algorithm is based on 'Morphological Dilation and Difference Reduction'
     
@@ -71,40 +71,40 @@ class EdgeGenerator(torch.nn.Module):
         return self._find_edge(x, self.kernel_size, return_all=return_all)
     
     
-"""Codes below are for testing"""
-if __name__ == '__main__':
-    lists = ['NC2016_1504.jpg', '519_mask.jpg', '526_mask.jpg', '528_mask.jpg', '534_mask.jpg']
+# """Codes below are for testing"""
+# if __name__ == '__main__':
+#     lists = ['NC2016_1504.jpg', '519_mask.jpg', '526_mask.jpg', '528_mask.jpg', '534_mask.jpg']
 
-    for i in lists:
-        img = plt.imread(f'./components/Edge_generator/{i}')
-        img = torch.tensor(img)
-        print(img)
-        img = (img > 127).float()
-        plt.subplot(1, 4, 1)
-        plt.imshow(img, cmap='gray')
-        print(img)
-        Edge = EdgeGenerator(kernel_size=11)
+#     for i in lists:
+#         img = plt.imread(f'./components/Edge_generator/{i}')
+#         img = torch.tensor(img)
+#         print(img)
+#         img = (img > 127).float()
+#         plt.subplot(1, 4, 1)
+#         plt.imshow(img, cmap='gray')
+#         print(img)
+#         Edge = EdgeGenerator(kernel_size=11)
         
-        raw_img = img.view(1, 1, img.shape[0], img.shape[1])
+#         raw_img = img.view(1, 1, img.shape[0], img.shape[1])
 
 
-        # print(img)
-        # plt.subplot(1,4, 2)
-        # plt.imshow(diff.detach().numpy()[0, 0, :, :], cmap='gray')
+#         # print(img)
+#         # plt.subplot(1,4, 2)
+#         # plt.imshow(diff.detach().numpy()[0, 0, :, :], cmap='gray')
 
-        diff, img,erosion, = Edge(raw_img, return_all=True)
+#         diff, img,erosion, = Edge(raw_img, return_all=True)
         
-        plt.subplot(1,4, 2)
-        plt.imshow(diff[0, 0, :, :], cmap='gray')
+#         plt.subplot(1,4, 2)
+#         plt.imshow(diff[0, 0, :, :], cmap='gray')
         
-        # plt.subplot(1,4, 3)
-        # plt.imshow(img.detach().numpy()[0, 0, :, :], cmap='gray')
+#         # plt.subplot(1,4, 3)
+#         # plt.imshow(img.detach().numpy()[0, 0, :, :], cmap='gray')
         
-        # plt.subplot(1, 4, 4)
-        # plt.imshow(erosion.detach().numpy()[0, 0, :, :], cmap='gray')
+#         # plt.subplot(1, 4, 4)
+#         # plt.imshow(erosion.detach().numpy()[0, 0, :, :], cmap='gray')
         
         
-        print(diff.shape)
-        print(img.shape)
-        print(erosion.shape)
-        plt.show()
+#         print(diff.shape)
+#         print(img.shape)
+#         print(erosion.shape)
+#         plt.show()

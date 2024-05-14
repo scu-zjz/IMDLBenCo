@@ -1,7 +1,7 @@
 import logging
 import sys
 from collections.abc import Callable
-from typing import Dict, Generator, List, Optional, Tuple, Type, Union
+from typing import Dict, Generator, List, Optional, Tuple, Type, Union, Any
 
 from rich.console import Console
 from rich.table import Table
@@ -153,6 +153,7 @@ class Registry:
             >>>     pass
             >>> backbones.register_module(module=ResNet)
         """
+
         if not isinstance(force, bool):
             raise TypeError(f'force must be a boolean, but got {type(force)}')
 
@@ -173,3 +174,35 @@ class Registry:
             return module
 
         return _register
+    
+    
+    def build(self, cfg: dict, *args, **kwargs) -> Any:
+        """Build an instance.
+
+        Build an instance by calling :attr:`build_func`.
+
+        Args:
+            cfg (dict): Config dict needs to be built.
+
+        Returns:
+            Any: The constructed object.
+
+        Examples:
+            >>> from mmengine import Registry
+            >>> MODELS = Registry('models')
+            >>> @MODELS.register_module()
+            >>> class ResNet:
+            >>>     def __init__(self, depth, stages=4):
+            >>>         self.depth = depth
+            >>>         self.stages = stages
+            >>> cfg = dict(type='ResNet', depth=50)
+            >>> model = MODELS.build(cfg)
+        """
+        return self.build_func(cfg, *args, **kwargs, registry=self)
+    
+
+MODELS = Registry(name = 'models')
+
+DATASETS = Registry(name = 'datasets')
+
+PROTOCOLS = Registry(name = 'protocols')

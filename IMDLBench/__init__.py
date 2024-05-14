@@ -1,12 +1,7 @@
 from .version import __version__, version_info
-from .registry import Registry
+from .registry import Registry, MODELS,DATASETS, PROTOCOLS
 
-__all__ = ['__version__', 'version_info']
+__all__ = ['__version__', 'version_info', 'MODELS', "DATASETS", "PROTOCOLS"]
 
 
-MODELS = Registry(name = 'models')
-
-DATASETS = Registry(name = 'datasets')
-
-PROTOCOLS = Registry(name = 'protocols')
 
