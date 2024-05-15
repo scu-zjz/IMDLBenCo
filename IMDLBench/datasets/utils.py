@@ -16,6 +16,10 @@ def pil_loader(path: str) -> Image.Image:
     with open(path, 'rb') as f:
         img = Image.open(f)
         return img.convert('RGB')
+    
+    
+def jpeg_loader(path : str):
+    pass # TODO TBK
 
 def denormalize(image, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]):
     """denormalize image with mean and std
