@@ -13,7 +13,6 @@ from IMDLBench.registry import MODELS
 
 @MODELS.register_module()
 class IML_ViT(nn.Module):
-    
     def __init__(
         self, 
         # ViT backbone:
@@ -146,7 +145,7 @@ class IML_ViT(nn.Module):
         
         output_dict = {
             # loss for backward
-            "backward_loss" : predict_loss,
+            "backward_loss" : combined_loss,
             # predicted masks, will calculate for metrics automatically
             "pred_masks" : mask_pred,
             # predicted binaray labels, will calculate for metrics automatically

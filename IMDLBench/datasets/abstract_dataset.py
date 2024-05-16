@@ -118,7 +118,7 @@ class AbstractDataset(Dataset):
         data_dict['labels'] = label
         # 这里如果是（256， 384） 那么对应的图像是一个横着的 长的方块
         data_dict['shapes'] = torch.tensor(tp_shape) # (H, W) 经过data loader后会变成三维矩阵，第0维是batch_index
-        print(tp_shape)
+        # print(tp_shape)
         # data_dict['shapes'] = tuple(tp_shape)
         # 
         data_dict['names'] = basename

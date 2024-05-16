@@ -1,8 +1,8 @@
-CUDA_VISIBLE_DEVICES=0,1,2,3,4,5 \
+CUDA_VISIBLE_DEVICES=0,1,2,3 \
 torchrun  \
     --standalone    \
     --nnodes=1     \
-    --nproc_per_node=6 \
+    --nproc_per_node=4 \
 ./IMDLBench/training/train_backup.py \
     --world_size 1 \
     --batch_size 2 \
