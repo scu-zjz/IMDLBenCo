@@ -66,7 +66,7 @@ class AbstractDataset(Dataset):
         
         # if "negative" then gt is a image with all 0
         if gt_path != "Negative":
-            gt_img = pil_loader(gt_path)
+            gt_img = self.img_loader(gt_path)
             gt_shape = gt_img.size
             label = 1
         else:

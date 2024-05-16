@@ -34,13 +34,8 @@ class BalancedDataset(Dataset):
             ['/mnt/data0/public_datasets/IML/tampCOCO/bcm_COCO_list.json', JsonDataset],
             ['/mnt/data0/public_datasets/IML/tampCOCO/bcmc_COCO_list.json', JsonDataset]
         ]
-        self.dataset_list = []
-        for path, dataset_type in self.settings_list:
-            self.dataset_list.append(
-                get_dataset(path, dataset_type)
-            )
-        for i in self.dataset_list:
-            print(len(i))
+        
+        self.dataset_list = [get_dataset(path, dataset_type) for path, dataset_type in self.settings_list]
         
     def __len__(self):
         return self.sample_number * len(self.settings_list)    

@@ -4,23 +4,28 @@ sys.path.append(".")
 from torch.utils.data import Dataset, DataLoader
 import IMDLBench
 import IMDLBench.datasets
+from IMDLBench.datasets import ManiDataset
+from IMDLBench.datasets.jpeg_dataset import MetaCatnetDataset
 from IMDLBench.registry import DATASETS
+import torch
 
 
 
 
-data = IMDLBench.datasets.mani_dataset(r"G:\Datasets\IML\IML_Datasets_revised\CASIA1.0", is_padding=True, edge_width= 7)
+# data = IMDLBench.datasets.mani_dataset("/mnt/data0/public_datasets/IML/CASIA2.0", is_padding=True, edge_width= 7)
+            # ['/mnt/data0/public_datasets/IML/IMD_20_1024', MetaCatnetDataset],
+            # ['/mnt/data0/public_datasets/IML/tampCOCO/sp_COCO_list.json', MetaCatnetDataset],
+            # ['/mnt/data0/public_datasets/IML/tampCOCO/cm_COCO_list.json', MetaCatnetDataset],
+            # ['/mnt/data0/public_datasets/IML/tampCOCO/bcm_COCO_list.json', MetaCatnetDataset],
+            # ['/mnt/data0/public_datasets/IML/tampCOCO/bcmc_COCO_list.json', MetaCatnetDataset]
+data = MetaCatnetDataset("/mnt/data0/public_datasets/IML/IMD_20_1024", is_padding=True, edge_width= 7)
 
-# print(data[0:2])
 
-
-batch_size = 3
+batch_size = 1
 dataloader = DataLoader(data, batch_size=batch_size, shuffle=True)
 
-for i in dataloader:
-    pprint(i)
-    import pdb
-    pdb.set_trace()
-    exit(0)
-# print(dataloader)
-print(repr(DATASETS))
+for i in data:
+    for key in i.keys():
+        if isinstance(i[key], torch.Tensor):
+            print(key, i[key].shape)
+    exit()
