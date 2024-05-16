@@ -319,3 +319,22 @@ class MetaCatnetDataset(AbstractDataset):
 
 if __name__ == '__main__':
     pass
+
+    exit(0)
+    
+    """ backup codes
+    class JPEGDataset(JsonDataset):
+        def __init__(self, path, 
+                    is_padding=False,
+                    is_resizing=False,
+                    output_size=(1024, 1024),
+                    common_transforms=None, 
+                    edge_width=None) -> None:
+            super().__init__(path, 
+                            is_padding=is_padding,
+                            is_resizing=is_resizing,
+                            output_size=output_size,
+                            common_transforms=common_transforms, 
+                            edge_width=edge_width,
+                            img_loader=jpeg_loader)
+    """
