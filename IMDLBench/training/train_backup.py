@@ -162,7 +162,7 @@ def main(args):
             args.test_data_path,
             is_padding=True,
             output_size=(args.image_size, args.image_size),
-            common_transforms=train_transform,
+            common_transforms=test_transform,
             edge_width=args.edge_broaden
         )
 
@@ -171,7 +171,7 @@ def main(args):
             args.test_data_path,
             is_padding=True,
             output_size=(args.image_size, args.image_size),
-            common_transforms=train_transform,
+            common_transforms=test_transform,
             edge_width=args.edge_broaden
         )
     # ------------------------------------
@@ -224,7 +224,6 @@ def main(args):
         edge_lambda = args.edge_lambda
     )
     # ------------------ TODO
-    
     
     if args.distributed:
         model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
