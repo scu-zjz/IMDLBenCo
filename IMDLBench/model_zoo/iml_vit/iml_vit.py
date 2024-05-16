@@ -1,5 +1,5 @@
-from windowed_attention_vit import ViT as window_attention_vit, SimpleFeaturePyramid, LastLevelMaxPool
-from decoderhead import PredictHead
+from .windowed_attention_vit import ViT as window_attention_vit, SimpleFeaturePyramid, LastLevelMaxPool
+from .decoderhead import PredictHead
 
 import torch.nn as nn
 import torch
@@ -122,7 +122,7 @@ class IML_ViT(nn.Module):
             )
             print('load pretrained weights from \'{}\'.'.format(self.vit_pretrain_path))    
     
-    def forward(self, images:torch.Tensor, masks, edge_masks, shape= None):
+    def forward(self, images:torch.Tensor, masks, edge_masks, shapes= None, *args, **kwargs):
         x = self.encoder_net(images)
         x = self.featurePyramid_net(x)
         feature_list = []
@@ -159,8 +159,10 @@ class IML_ViT(nn.Module):
                 "edge_loss" : edge_loss,
                 "combined_loss" : combined_loss
             },
+            
             "visual_images" : {
-                "pred_masks" : mask_pred
+                "pred_masks" : mask_pred,
+                "edge_masks" : edge_masks
             }
             # -----------------------------------------
         }

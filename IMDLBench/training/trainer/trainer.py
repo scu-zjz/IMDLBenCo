@@ -10,7 +10,6 @@ from IMDLBench.training.schedular.cos_lr_schedular import adjust_learning_rate #
 
 from IMDLBench.datasets import denormalize
 
-
 # class Trainer(object):
 #     def __init__(
 #         self,
@@ -26,10 +25,12 @@ from IMDLBench.datasets import denormalize
 #         self.data_loader = data_loader,
 #         self.optii
 
-
 def train_one_epoch(model: torch.nn.Module,
-                    data_loader: Iterable, optimizer: torch.optim.Optimizer,
-                    device: torch.device, epoch: int, loss_scaler,
+                    data_loader: Iterable, 
+                    optimizer: torch.optim.Optimizer,
+                    device: torch.device, 
+                    epoch: int, 
+                    loss_scaler,
                     log_writer=None,
                     args=None):
     model.train(True)
@@ -47,6 +48,7 @@ def train_one_epoch(model: torch.nn.Module,
             
     for data_iter_step, data_dict in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
         
+        # move to device
         for key in data_dict.keys():
             if isinstance(data_dict[key], torch.Tensor):
                 data_dict[key] = data_dict[key].to(device)
@@ -58,11 +60,18 @@ def train_one_epoch(model: torch.nn.Module,
         torch.cuda.synchronize()
         
         with torch.cuda.amp.autocast():
-            predict_loss, predict, edge_loss = model(**data_dict)
-            predict_loss_value = predict_loss.item()
-            edge_loss_value = edge_loss.item()
+            output_dict = model(**data_dict)
+            loss = output_dict['backward_loss']
+            mask_pred = output_dict['pred_masks']
             
-        predict_loss = predict_loss / accum_iter
+            visual_losses = output_dict['visual_losses']
+            visual_losses_item = {}
+            for k, v in visual_losses.items():
+                visual_losses_item[k] = v.item()
+                
+            visual_images = output_dict['visual_images']
+        
+        predict_loss = loss / accum_iter
         loss_scaler(predict_loss,optimizer, parameters=model.parameters(),
                     update_grad=(data_iter_step + 1) % accum_iter == 0)
                 
@@ -74,10 +83,16 @@ def train_one_epoch(model: torch.nn.Module,
         lr = optimizer.param_groups[0]["lr"]
         # save to log.txt
         metric_logger.update(lr=lr)
-        metric_logger.update(predict_loss= predict_loss_value)
-        metric_logger.update(edge_loss= edge_loss_value)
-        loss_predict_reduce = misc.all_reduce_mean(predict_loss_value)
-        edge_loss_reduce = misc.all_reduce_mean(edge_loss_value)
+        
+        for k, v in visual_losses_item.items():
+            metric_logger.update(k=v)
+        # metric_logger.update(predict_loss= predict_loss_value)
+        # metric_logger.update(edge_loss= edge_loss_value)
+        
+        visual_loss_reduced = {}
+        for k, v in visual_losses_item.items():
+            visual_loss_reduced[k] = misc.all_reduce_mean(v)
+
 
         if log_writer is not None and (data_iter_step + 1) % 50 == 0:
             """ We use epoch_1000x as the x-axis in tensorboard.
@@ -85,19 +100,24 @@ def train_one_epoch(model: torch.nn.Module,
             """
             epoch_1000x = int((data_iter_step / len(data_loader) + epoch) * 1000)
             # Tensorboard logging
-            log_writer.add_scalar('train_loss/predict_loss', loss_predict_reduce, epoch_1000x)
-            log_writer.add_scalar('train_loss/edge_loss', edge_loss_reduce, epoch_1000x)
             log_writer.add_scalar('lr', lr, epoch_1000x)
+            
+            for k, v in visual_loss_reduced.items():
+                log_writer.add_scalar(f"train_loss/{k}", v, epoch_1000x)
+            # log_writer.add_scalar('train_loss/predict_loss', loss_predict_reduce, epoch_1000x)
+            # log_writer.add_scalar('train_loss/edge_loss', edge_loss_reduce, epoch_1000x)
 
-    samples = data_dict['image']
-    masks = data_dict['mask']
-    edge_mask = data_dict['edge_mask']
+    samples = data_dict['images']
+    masks = data_dict['masks']
+    
     if log_writer is not None:
         log_writer.add_images('train/image',  denormalize(samples), epoch)
-        log_writer.add_images('train/predict', predict, epoch)
-        log_writer.add_images('train/predict_t', (predict > 0.5) * 1.0, epoch)
-        log_writer.add_images('train/masks', masks, epoch)
-        log_writer.add_images('train/edge_mask', edge_mask, epoch)
+        log_writer.add_images('train/predict', mask_pred, epoch)
+        log_writer.add_images('train/predict_thresh0.5', (mask_pred > 0.5) * 1.0, epoch)
+        log_writer.add_images('train/gt_masks', masks, epoch)
+        
+        for k, v in visual_images.items():
+            log_writer.add_images(f'train/{k}', v, epoch)
 
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()

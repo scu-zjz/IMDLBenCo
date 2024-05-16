@@ -18,7 +18,8 @@ import torch.utils.data
 from torch.utils.tensorboard import SummaryWriter
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
-
+import sys
+sys.path.append(".")
 # assert timm.__version__ == "0.3.2"  # version check
 import timm.optim.optim_factory as optim_factory
 
@@ -35,16 +36,37 @@ from IMDLBench.transforms import get_albu_transforms
 from trainer import train_one_epoch
 from tester import test_one_epoch
 
-from IMDLBench.model_zoo import IML_ViT
+from IMDLBench.model_zoo import IML_ViT 
 
 def get_args_parser():
     parser = argparse.ArgumentParser('IML-ViT training', add_help=True)
+    # ++++++++++++TODO++++++++++++++++
+    # 这里是每个模型定制化的input区域，包括load与训练模型，模型的magic number等等
+    # 需要根据你们的模型定制化修改这里 
+    # 目前这里的内容都是仅仅给IML-ViT用的
+    parser.add_argument('--vit_pretrain_path', default = '/root/workspace/IML-ViT/pretrained-weights/mae_pretrain_vit_base.pth', type=str, help='path to vit pretrain model by MAE')
+    parser.add_argument('--edge_broaden', default=7, type=int,
+                        help='Edge broaden size (in pixels) for edge_generator.')
+    parser.add_argument('--edge_lambda', default=20, type=float,
+                        help='hyper-parameter of the weight for proposed edge loss.')
+    parser.add_argument('--predict_head_norm', default="BN", type=str,
+                        help="norm for predict head, can be one of 'BN', 'LN' and 'IN' (batch norm, layer norm and instance norm). It may influnce the result  on different machine or datasets!")
+    # -------------------------------
+    
+    # ----Dataset parameters 数据集相关的参数----
+    parser.add_argument('--image_size', default=1024, type=int,
+                        help='image size of the images in datasets')
+    parser.add_argument('--data_path', default='/root/Dataset/CASIA2.0/', type=str,
+                        help='dataset path, should be our json_dataset or mani_dataset format. Details are in readme.md')
+    parser.add_argument('--test_data_path', default='/root/Dataset/CASIA1.0', type=str,
+                        help='test dataset path, should be our json_dataset or mani_dataset format. Details are in readme.md')
+    # ------------------------------------
+    
+    
     parser.add_argument('--batch_size', default=1, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * accum_iter * # gpus')
     parser.add_argument('--test_batch_size', default=2, type=int,
                         help="batch size for testing")
-    #
-    parser.add_argument('--vit_pretrain_path', default = '/root/workspace/IML-ViT/pretrained-weights/mae_pretrain_vit_base.pth', type=str, help='path to vit pretrain model by MAE')
     
     parser.add_argument('--epochs', default=200, type=int)
     parser.add_argument('--test_period', default=4, type=int,
@@ -52,12 +74,7 @@ def get_args_parser():
     parser.add_argument('--accum_iter', default=16, type=int,
                         help='Accumulate gradient iterations (for increasing the effective batch size under memory constraints)')
 
-    parser.add_argument('--edge_broaden', default=7, type=int,
-                        help='Edge broaden size (in pixels) for edge_generator.')
-    parser.add_argument('--edge_lambda', default=20, type=float,
-                        help='hyper-parameter of the weight for proposed edge loss.')
-    parser.add_argument('--predict_head_norm', default="BN", type=str,
-                        help="norm for predict head, can be one of 'BN', 'LN' and 'IN' (batch norm, layer norm and instance norm). It may influnce the result  on different machine or datasets!")
+
     # Optimizer parameters
     parser.add_argument('--weight_decay', type=float, default=0.05,
                         help='weight decay (default: 0.05)')
@@ -70,16 +87,14 @@ def get_args_parser():
     parser.add_argument('--warmup_epochs', type=int, default=4, metavar='N',
                         help='epochs to warmup LR')
 
-    # Dataset parameters
-    parser.add_argument('--data_path', default='/root/Dataset/CASIA2.0/', type=str,
-                        help='dataset path, should be our json_dataset or mani_dataset format. Details are in readme.md')
-    parser.add_argument('--test_data_path', default='/root/Dataset/CASIA1.0', type=str,
-                        help='test dataset path, should be our json_dataset or mani_dataset format. Details are in readme.md')
 
+    # ----输出的日志相关的参数-----------
     parser.add_argument('--output_dir', default='./output_dir',
                         help='path where to save, empty for no saving')
     parser.add_argument('--log_dir', default='./output_dir',
                         help='path where to tensorboard log')
+    # -----------------------
+    
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
     parser.add_argument('--seed', default=0, type=int)
@@ -122,17 +137,45 @@ def main(args):
     train_transform = get_albu_transforms('train')
     test_transform = get_albu_transforms('test')
 
+
+    # TODO -------TBK的代码需要修改这里，其他人不用-------
     # ---- dataset with crop augmentation ----
     if os.path.isdir(args.data_path):
-        dataset_train = ManiDataset(args.data_path, transform=train_transform, edge_width=args.edge_broaden, if_return_shape=True)
+        dataset_train = ManiDataset(
+            args.data_path, 
+            is_padding=True,
+            output_size=(args.image_size, args.image_size),
+            common_transforms=train_transform,
+            edge_width=args.edge_broaden
+        )
     else:
-        dataset_train = JsonDataset(args.data_path,transform=train_transform, edge_width = args.edge_broaden, if_return_shape = True)
+        dataset_train = JsonDataset(
+            args.data_path, 
+            is_padding=True,
+            output_size=(args.image_size, args.image_size),
+            common_transforms=train_transform,
+            edge_width=args.edge_broaden
+        )
     
     if os.path.isdir(args.test_data_path):
-        dataset_test = ManiDataset(args.test_data_path, transform=test_transform, edge_width=args.edge_broaden, if_return_shape=True)
-    else:
-        dataset_test = JsonDataset(args.test_data_path,transform=test_transform, edge_width = args.edge_broaden, if_return_shape = True)
+        dataset_test = ManiDataset(
+            args.test_data_path,
+            is_padding=True,
+            output_size=(args.image_size, args.image_size),
+            common_transforms=train_transform,
+            edge_width=args.edge_broaden
+        )
 
+    else:
+        dataset_test = JsonDataset(
+            args.test_data_path,
+            is_padding=True,
+            output_size=(args.image_size, args.image_size),
+            common_transforms=train_transform,
+            edge_width=args.edge_broaden
+        )
+    # ------------------------------------
+    
     print(dataset_train)
     print(dataset_test)
 
@@ -222,12 +265,15 @@ def main(args):
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             data_loader_train.sampler.set_epoch(epoch)
+            
+        
         train_stats = train_one_epoch(
             model, data_loader_train,
             optimizer, device, epoch, loss_scaler,
             log_writer=log_writer,
             args=args
         )
+        
         # saving checkpoint
         if args.output_dir and (epoch % 50 == 0 and epoch != 0 or epoch + 1 == args.epochs):
             misc.save_model(
@@ -235,7 +281,7 @@ def main(args):
                 loss_scaler=loss_scaler, epoch=epoch)
             
         optimizer.zero_grad()
-        if epoch  % args.test_period == 0 or epoch + 1 == args.epochs:
+        if epoch % args.test_period == 0 or epoch + 1 == args.epochs:
             test_stats = test_one_epoch(
                 model, 
                 data_loader = data_loader_test, 

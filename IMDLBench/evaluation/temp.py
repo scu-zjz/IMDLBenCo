@@ -5,15 +5,16 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score,roc_curve
 import numpy as np
 from torch.utils.data import DataLoader
-def genertate_region_mask(masks ,batch_shape):
+def genertate_region_mask(masks ,batch_shape:torch.Tensor):
     """generate B 1 H W meaningful-region-mask for a batch of masks
 
     Args:
-        batch_shape (_type_): _description_
+        batch_shape (_type_): list of tensor, e.g. [ tensor(384, 256), tensor(256, 384), ....]
     """
     meaningful_mask = torch.zeros_like(masks)
     for idx, shape in enumerate(batch_shape):
-        meaningful_mask[idx, :, :shape[0], :shape[1]] = 1
+        # shape = shape.tolist()
+        meaningful_mask[idx, :, :shape[0], :shape[1]] = 1 # TODO 可能会出傻逼问题（长宽翻转）的地方 一定要做测试
     return meaningful_mask
 
 def cal_confusion_matrix(predict, target, region_mask, threshold=0.5):
@@ -51,3 +52,5 @@ def cal_F1(TP, TN, FP, FN):
     # F1 = torch.mean(F1) # fuse the Batch dimension
     return F1
     
+if __name__ == "__main__":
+    pass
