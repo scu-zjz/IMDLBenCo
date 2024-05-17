@@ -19,6 +19,7 @@ def train_one_epoch(model: torch.nn.Module,
                     epoch: int, 
                     loss_scaler,
                     log_writer=None,
+                    log_per_epoch_count=20,
                     args=None):
     model.train(True)
     metric_logger = misc.MetricLogger(delimiter="  ")
@@ -32,7 +33,8 @@ def train_one_epoch(model: torch.nn.Module,
 
     if log_writer is not None:
         print('log_dir: {}'.format(log_writer.log_dir))
-            
+    total_step = len(data_loader)
+    log_period = total_step / log_per_epoch_count
     for data_iter_step, data_dict in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
         
         # move to device
@@ -80,7 +82,7 @@ def train_one_epoch(model: torch.nn.Module,
         for k, v in visual_loss_item.items():
             visual_loss_reduced[k] = misc.all_reduce_mean(v)
 
-        if log_writer is not None and (data_iter_step + 1) % 50 == 0:
+        if log_writer is not None and (data_iter_step + 1) % max(int(log_period), 1) == 0:
             """ We use epoch_1000x as the x-axis in tensorboard.
             This calibrates different curves when batch size changes.
             """
