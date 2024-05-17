@@ -61,7 +61,7 @@ class AbstractDataset(Dataset):
         
         # pil_loader or jpeg_loader
         tp_img = self.img_loader(tp_path)
-        
+        # shape, here is PIL Image
         tp_shape = tp_img.size
         
         # if "negative" then gt is a image with all 0
@@ -85,6 +85,9 @@ class AbstractDataset(Dataset):
             res_dict = self.common_transforms(image = tp_img, mask = gt_img)
             tp_img = res_dict['image']
             gt_img = res_dict['mask']
+            
+        # redefine the shape, here is np.array
+        tp_shape = tp_img.shape[0:2]  # H, W, 3 去掉最后一个3
         
         gt_img =  (np.mean(gt_img, axis = 2, keepdims = True)  > 127.5 ) * 1.0 # fuse the 3 channels to 1 channel, and make it binary(0 or 1)
         gt_img =  gt_img.transpose(2,0,1)[0] # H W C -> C H W -> H W
@@ -105,16 +108,20 @@ class AbstractDataset(Dataset):
             
         if self.edge_mask_generator != None:
             gt_img_edge = res_dict['masks'][1].unsqueeze(0) # H W -> 1 H W  
-            data_dict['edge_mask'] = gt_img_edge
+            data_dict['edge_masks'] = gt_img_edge
 
         # name of the image (mainly for testing)
         basename = os.path.basename(tp_path)
         
-        data_dict['image'] = tp_img
-        data_dict['mask'] = gt_img
-        data_dict['label'] = label
-        data_dict['shape'] = tp_shape
-        data_dict['name'] = basename
+        data_dict['images'] = tp_img
+        data_dict['masks'] = gt_img
+        data_dict['labels'] = label
+        # 这里如果是（256， 384） 那么对应的图像是一个横着的 长的方块
+        data_dict['shapes'] = torch.tensor(tp_shape) # (H, W) 经过data loader后会变成三维矩阵，第0维是batch_index
+        # print(tp_shape)
+        # data_dict['shapes'] = tuple(tp_shape)
+        # 
+        data_dict['names'] = basename
         
         return data_dict
         

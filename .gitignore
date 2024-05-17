@@ -1,3 +1,6 @@
 test
 __pycache__
 .*
+output_dir*
+*.log
+*.png
