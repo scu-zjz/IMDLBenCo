@@ -62,14 +62,14 @@ def train_one_epoch(model: torch.nn.Module,
         with torch.cuda.amp.autocast():
             output_dict = model(**data_dict)
             loss = output_dict['backward_loss']
-            mask_pred = output_dict['pred_masks']
+            mask_pred = output_dict['pred_mask']
             
-            visual_losses = output_dict['visual_losses']
-            visual_losses_item = {}
-            for k, v in visual_losses.items():
-                visual_losses_item[k] = v.item()
+            visual_loss = output_dict['visual_loss']
+            visual_loss_item = {}
+            for k, v in visual_loss.items():
+                visual_loss_item[k] = v.item()
                 
-            visual_images = output_dict['visual_images']
+            visual_image = output_dict['visual_image']
         
         predict_loss = loss / accum_iter
         loss_scaler(predict_loss,optimizer, parameters=model.parameters(),
@@ -84,13 +84,13 @@ def train_one_epoch(model: torch.nn.Module,
         # save to log.txt
         metric_logger.update(lr=lr)
         
-        for k, v in visual_losses_item.items():
+        for k, v in visual_loss_item.items():
             metric_logger.update(k=v)
         # metric_logger.update(predict_loss= predict_loss_value)
         # metric_logger.update(edge_loss= edge_loss_value)
         
         visual_loss_reduced = {}
-        for k, v in visual_losses_item.items():
+        for k, v in visual_loss_item.items():
             visual_loss_reduced[k] = misc.all_reduce_mean(v)
 
 
@@ -107,14 +107,14 @@ def train_one_epoch(model: torch.nn.Module,
             # log_writer.add_scalar('train_loss/predict_loss', loss_predict_reduce, epoch_1000x)
             # log_writer.add_scalar('train_loss/edge_loss', edge_loss_reduce, epoch_1000x)
 
-    samples = data_dict['images']
-    masks = data_dict['masks']
+    samples = data_dict['image']
+    mask = data_dict['mask']
     
     if log_writer is not None:
         log_writer.add_images('train/image',  denormalize(samples), epoch)
         log_writer.add_images('train/predict', mask_pred, epoch)
         log_writer.add_images('train/predict_thresh0.5', (mask_pred > 0.5) * 1.0, epoch)
-        log_writer.add_images('train/gt_masks', masks, epoch)
+        log_writer.add_images('train/gt_mask', mask, epoch)
         
         for k, v in visual_images.items():
             log_writer.add_images(f'train/{k}', v, epoch)

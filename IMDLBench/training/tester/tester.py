@@ -36,13 +36,13 @@ def test_one_epoch(model: torch.nn.Module,
 
             output_dict = model(**data_dict)
             loss = output_dict['backward_loss']
-            mask_pred = output_dict['pred_masks']
+            mask_pred = output_dict['pred_mask']
             
             mask_pred = mask_pred.detach()
             #---- Training evaluation ----
             # region_mask is for cutting of the zero-padding area.
-            region_mask = genertate_region_mask(mask_pred, data_dict['shapes']) 
-            TP, TN, FP, FN = cal_confusion_matrix(mask_pred, data_dict['masks'], region_mask)
+            region_mask = genertate_region_mask(mask_pred, data_dict['shape'])
+            TP, TN, FP, FN = cal_confusion_matrix(mask_pred, data_dict['mask'], region_mask)
         
             local_f1 = cal_F1(TP, TN, FP, FN)
             # print(local_f1)
@@ -59,9 +59,9 @@ def test_one_epoch(model: torch.nn.Module,
         # print('---syncronized done ---')
         if log_writer is not None:
             log_writer.add_scalar('F1/test_average', metric_logger.meters['average_f1'].global_avg, epoch)
-            log_writer.add_images('test/image',  denormalize(data_dict['images']), epoch)
+            log_writer.add_images('test/image',  denormalize(data_dict['image']), epoch)
             log_writer.add_images('test/predict', (mask_pred > 0.5)* 1.0, epoch)
-            log_writer.add_images('test/masks', data_dict['masks'], epoch)
+            log_writer.add_images('test/mask', data_dict['mask'], epoch)
             # log_writer.add_images('test/edge_mask', edge_mask, epoch)
             
         print("Averaged stats:", metric_logger)
