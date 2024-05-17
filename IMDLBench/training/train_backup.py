@@ -36,7 +36,7 @@ from IMDLBench.transforms import get_albu_transforms
 from trainer import train_one_epoch
 from tester import test_one_epoch
 
-from IMDLBench.model_zoo import IML_ViT 
+from IMDLBench.model_zoo import IML_ViT
 
 def get_args_parser():
     parser = argparse.ArgumentParser('IML-ViT training', add_help=True)
@@ -54,8 +54,12 @@ def get_args_parser():
     # -------------------------------
     
     # ----Dataset parameters 数据集相关的参数----
-    parser.add_argument('--image_size', default=1024, type=int,
+    parser.add_argument('--image_size', default=512, type=int,
                         help='image size of the images in datasets')
+    parser.add_argument('--if_padding', default=False, type=bool,
+                        help='padding all images to same resolution.')
+    parser.add_argument('--if_resizing', default=False, type=bool,
+                        help='resize all images to same resolution.')
     parser.add_argument('--data_path', default='/root/Dataset/CASIA2.0/', type=str,
                         help='dataset path, should be our json_dataset or mani_dataset format. Details are in readme.md')
     parser.add_argument('--test_data_path', default='/root/Dataset/CASIA1.0', type=str,
@@ -143,7 +147,8 @@ def main(args):
     if os.path.isdir(args.data_path):
         dataset_train = ManiDataset(
             args.data_path, 
-            is_padding=True,
+            is_padding=args.if_padding,
+            is_resizing=args.if_resizing,
             output_size=(args.image_size, args.image_size),
             common_transforms=train_transform,
             edge_width=args.edge_broaden
@@ -151,7 +156,8 @@ def main(args):
     else:
         dataset_train = JsonDataset(
             args.data_path, 
-            is_padding=True,
+            is_padding=args.if_padding,
+            is_resizing=args.if_resizing,
             output_size=(args.image_size, args.image_size),
             common_transforms=train_transform,
             edge_width=args.edge_broaden
@@ -160,7 +166,8 @@ def main(args):
     if os.path.isdir(args.test_data_path):
         dataset_test = ManiDataset(
             args.test_data_path,
-            is_padding=True,
+            is_padding=args.if_padding,
+            is_resizing=args.if_resizing,
             output_size=(args.image_size, args.image_size),
             common_transforms=test_transform,
             edge_width=args.edge_broaden
@@ -169,7 +176,8 @@ def main(args):
     else:
         dataset_test = JsonDataset(
             args.test_data_path,
-            is_padding=True,
+            is_padding=args.if_padding,
+            is_resizing=args.if_resizing,
             output_size=(args.image_size, args.image_size),
             common_transforms=test_transform,
             edge_width=args.edge_broaden

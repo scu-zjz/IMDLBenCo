@@ -244,7 +244,7 @@ def get_albu_transforms(type_ = 'train', output_size = (1024, 1024)):
         ])
     if type_ == 'resize':
         trans = albu.Compose([
-            albu.Resize(output_size, output_size),
+            albu.Resize(output_size[0], output_size[1]),
             albu.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
             albu.Crop(0, 0, output_size[0], output_size[1]),
             ToTensorV2(transpose_mask=True)
