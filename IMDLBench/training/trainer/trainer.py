@@ -10,20 +10,7 @@ from IMDLBench.training.schedular.cos_lr_schedular import adjust_learning_rate #
 
 from IMDLBench.datasets import denormalize
 
-# class Trainer(object):
-#     def __init__(
-#         self,
-#         model: torch.nn.Module,
-#         data_loader: Iterable,
-#         optimizer: torch.optim.Optimizer,
-#         device: torch.device,
-#         loss_scalar,
-#         log_writer=None,
-#         args=None ):
-        
-#         self.model = model,
-#         self.data_loader = data_loader,
-#         self.optii
+
 
 def train_one_epoch(model: torch.nn.Module,
                     data_loader: Iterable, 
@@ -84,15 +71,14 @@ def train_one_epoch(model: torch.nn.Module,
         # save to log.txt
         metric_logger.update(lr=lr)
         
-        for k, v in visual_loss_item.items():
-            metric_logger.update(k=v)
+
+        metric_logger.update(**visual_loss_item)
         # metric_logger.update(predict_loss= predict_loss_value)
         # metric_logger.update(edge_loss= edge_loss_value)
         
         visual_loss_reduced = {}
         for k, v in visual_loss_item.items():
             visual_loss_reduced[k] = misc.all_reduce_mean(v)
-
 
         if log_writer is not None and (data_iter_step + 1) % 50 == 0:
             """ We use epoch_1000x as the x-axis in tensorboard.
@@ -116,7 +102,7 @@ def train_one_epoch(model: torch.nn.Module,
         log_writer.add_images('train/predict_thresh0.5', (mask_pred > 0.5) * 1.0, epoch)
         log_writer.add_images('train/gt_mask', mask, epoch)
         
-        for k, v in visual_images.items():
+        for k, v in visual_image.items():
             log_writer.add_images(f'train/{k}', v, epoch)
 
     # gather the stats from all processes

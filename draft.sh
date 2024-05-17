@@ -5,12 +5,12 @@ torchrun  \
     --nproc_per_node=1 \
 ./IMDLBench/training/train_backup.py \
     --world_size 1 \
-    --batch_size 2 \
+    --batch_size 1 \
     --data_path /mnt/data0/public_datasets/IML/CASIA2.0_corrected \
     --epochs 200 \
     --lr 1e-4 \
-    --if_resizing = Ture \
-    --if_padding = False \
+    --image_size 1024 \
+    --if_resizing \
     --min_lr 5e-7 \
     --weight_decay 0.05 \
     --edge_lambda 20 \

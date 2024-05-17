@@ -56,10 +56,13 @@ def get_args_parser():
     # ----Dataset parameters 数据集相关的参数----
     parser.add_argument('--image_size', default=512, type=int,
                         help='image size of the images in datasets')
-    parser.add_argument('--if_padding', default=False, type=bool,
+    
+    parser.add_argument('--if_padding', action='store_true',
                         help='padding all images to same resolution.')
-    parser.add_argument('--if_resizing', default=False, type=bool,
+    
+    parser.add_argument('--if_resizing', action='store_true', 
                         help='resize all images to same resolution.')
+    
     parser.add_argument('--data_path', default='/root/Dataset/CASIA2.0/', type=str,
                         help='dataset path, should be our json_dataset or mani_dataset format. Details are in readme.md')
     parser.add_argument('--test_data_path', default='/root/Dataset/CASIA1.0', type=str,
@@ -131,7 +134,8 @@ def main(args):
     print("{}".format(args).replace(', ', ',\n'))
 
     device = torch.device(args.device)
-
+    print(args.if_resizing)
+    print(args.if_padding)
     # fix the seed for reproducibility
     seed = args.seed + misc.get_rank()
     misc.seed_torch(seed)

@@ -108,21 +108,20 @@ class AbstractDataset(Dataset):
             
         if self.edge_mask_generator != None:
             gt_img_edge = res_dict['masks'][1].unsqueeze(0) # H W -> 1 H W  
-            data_dict['edge_masks'] = gt_img_edge
 
+            # =========output=====================
+            data_dict['edge_mask'] = gt_img_edge
+            # ====================================
         # name of the image (mainly for testing)
         basename = os.path.basename(tp_path)
-        
-        data_dict['images'] = tp_img
-        data_dict['masks'] = gt_img
-        data_dict['labels'] = label
+        # =========output=====================
+        data_dict['image'] = tp_img
+        data_dict['mask'] = gt_img
+        data_dict['label'] = label
         # 这里如果是（256， 384） 那么对应的图像是一个横着的 长的方块
-        data_dict['shapes'] = torch.tensor(tp_shape) # (H, W) 经过data loader后会变成三维矩阵，第0维是batch_index
-        # print(tp_shape)
-        # data_dict['shapes'] = tuple(tp_shape)
-        # 
-        data_dict['names'] = basename
-        
+        data_dict['shape'] = torch.tensor(tp_shape) # (H, W) 经过data loader后会变成三维矩阵，第0维是batch_index
+        data_dict['name'] = basename
+        # ====================================
         return data_dict
         
     def __len__(self):
