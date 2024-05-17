@@ -7,29 +7,31 @@ import torch.nn.functional as F
 from functools import partial
 
 import sys
+
 sys.path.append('./modules')
 
 from IMDLBench.registry import MODELS
 
+
 @MODELS.register_module()
 class IML_ViT(nn.Module):
     def __init__(
-        self, 
-        # ViT backbone:
-        input_size = 1024,
-        patch_size = 16,
-        embed_dim = 768,
-        vit_pretrain_path = None, # wether to load pretrained weights
-        # Simple_feature_pyramid_network:
-        fpn_channels = 256,
-        fpn_scale_factors = (4.0, 2.0, 1.0, 0.5),
+            self,
+            # ViT backbone:
+            input_size=1024,
+            patch_size=16,
+            embed_dim=768,
+            vit_pretrain_path=None,  # wether to load pretrained weights
+            # Simple_feature_pyramid_network:
+            fpn_channels=256,
+            fpn_scale_factors=(4.0, 2.0, 1.0, 0.5),
 
-        # MLP embedding:
-        mlp_embeding_dim = 256,
-        # Decoder head norm
-        predict_head_norm = "BN",
-        # Edge loss:
-        edge_lambda = 20,
+            # MLP embedding:
+            mlp_embeding_dim=256,
+            # Decoder head norm
+            predict_head_norm="BN",
+            # Edge loss:
+            edge_lambda=20,
     ):
         """init iml_vit_model
         # TODO : add more args
@@ -45,7 +47,7 @@ class IML_ViT(nn.Module):
                                 We tested three different types of normalization in the decoder head, and they may yield different results due to dataset configurations and other factors.
                             Some intuitive conclusions are as follows:
                                 - "LN" -> Layer norm : The fastest convergence, but poor generalization performance.
-                                - "BN" Batch norm : When include authentic images during training, set batchsize = 2 may have poor performance. But if you can train with larger batchsize (e.g. A40 with 48GB memory can train with batchsize = 4) It may performs better.
+                                - "BN" Batch norm : When include authentic image during training, set batchsize = 2 may have poor performance. But if you can train with larger batchsize (e.g. A40 with 48GB memory can train with batchsize = 4) It may performs better.
                                 - "IN" Instance norm : A form that can definitely converge, equivalent to a batchnorm with batchsize=1. When abnormal behavior is observed with BatchNorm, one can consider trying Instance Normalization. It's important to note that in this case, the settings should include setting track_running_stats and affine to True, rather than the default settings in PyTorch.
             edge_lambda(float) : the hyper-parameter for edge loss (lambda in our paper)
         """
@@ -53,8 +55,8 @@ class IML_ViT(nn.Module):
         self.input_size = input_size
         self.patch_size = patch_size
         # window attention vit
-        self.encoder_net = window_attention_vit(  
-            img_size = input_size,
+        self.encoder_net = window_attention_vit(
+            img_size=input_size,
             patch_size=16,
             embed_dim=embed_dim,
             depth=12,
@@ -78,30 +80,30 @@ class IML_ViT(nn.Module):
             residual_block_indexes=[],
             use_rel_pos=True,
             out_feature="last_feat",
-            )
+        )
         self.vit_pretrain_path = vit_pretrain_path
-        
+
         # simple feature pyramid network
         self.featurePyramid_net = SimpleFeaturePyramid(
-            in_feature_shape= (1, embed_dim, 256, 256),
-            out_channels= fpn_channels,
+            in_feature_shape=(1, embed_dim, 256, 256),
+            out_channels=fpn_channels,
             scale_factors=fpn_scale_factors,
             top_block=LastLevelMaxPool(),
-            norm="LN",    
+            norm="LN",
         )
         # MLP predict head
         self.predict_head = PredictHead(
-            feature_channels=[fpn_channels for i in range(5)], 
+            feature_channels=[fpn_channels for i in range(5)],
             embed_dim=mlp_embeding_dim,
             norm=predict_head_norm  # important! may influence the results
         )
         # Edge loss hyper-parameters    
         self.BCE_loss = nn.BCEWithLogitsLoss()
         self.edge_lambda = edge_lambda
-        
+
         self.apply(self._init_weights)
         self._mae_init_weights()
-        
+
     def _init_weights(self, m):
         if isinstance(m, nn.Linear):
             # we use xavier_uniform following official JAX ViT:
@@ -111,62 +113,59 @@ class IML_ViT(nn.Module):
         elif isinstance(m, nn.LayerNorm):
             nn.init.constant_(m.bias, 0)
             nn.init.constant_(m.weight, 1.0)
-            
+
     def _mae_init_weights(self):
         # Load MAE pretrained weights for Window Attention ViT encoder
         if self.vit_pretrain_path != None:
             self.encoder_net.load_state_dict(
-                torch.load(self.vit_pretrain_path, map_location='cpu')['model'], # BEIT MAE
+                torch.load(self.vit_pretrain_path, map_location='cpu')['model'],  # BEIT MAE
                 strict=False
             )
-            print('load pretrained weights from \'{}\'.'.format(self.vit_pretrain_path))    
-    
-    def forward(self, images:torch.Tensor, masks, edge_masks, shapes= None, *args, **kwargs):
-        x = self.encoder_net(images)
+            print('load pretrained weights from \'{}\'.'.format(self.vit_pretrain_path))
+
+    def forward(self, image: torch.Tensor, mask, edge_mask, shape=None, *args, **kwargs):
+        x = self.encoder_net(image)
         x = self.featurePyramid_net(x)
         feature_list = []
         for k, v in x.items():
             feature_list.append(v)
         x = self.predict_head(feature_list)
-        
+
         # up-sample to 1024x1024
-        mask_pred = F.interpolate(x, size = (self.input_size, self.input_size), mode='bilinear', align_corners=False)
-        
+        mask_pred = F.interpolate(x, size=(self.input_size, self.input_size), mode='bilinear', align_corners=False)
+
         # compute the loss
-        predict_loss = self.BCE_loss(mask_pred, masks)
+        predict_loss = self.BCE_loss(mask_pred, mask)
         edge_loss = F.binary_cross_entropy_with_logits(
-            input = mask_pred,
-            target= masks, 
-            weight = edge_masks
-            ) * self.edge_lambda 
+            input=mask_pred,
+            target=mask,
+            weight=edge_mask
+        ) * self.edge_lambda
         combined_loss = edge_loss + predict_loss
 
         mask_pred = torch.sigmoid(mask_pred)
-        
+
         output_dict = {
             # loss for backward
-            "backward_loss" : combined_loss,
-            # predicted masks, will calculate for metrics automatically
-            "pred_masks" : mask_pred,
-            # predicted binaray labels, will calculate for metrics automatically
-            "pred_labels" : None,
-            
+            "backward_loss": combined_loss,
+            # predicted mask, will calculate for metrics automatically
+            "pred_mask": mask_pred,
+            # predicted binaray label, will calculate for metrics automatically
+            "pred_label": None,
+
             # ----values below is for visualization----
             # automatically visualize with the key-value pairs
-            "visual_losses" : {
+            "visual_loss": {
                 "predict_loss": predict_loss,
-                "edge_loss" : edge_loss,
-                "combined_loss" : combined_loss
+                "edge_loss": edge_loss,
+                "combined_loss": combined_loss
             },
-            
-            "visual_images" : {
-                "pred_masks" : mask_pred,
-                "edge_masks" : edge_masks
+
+            "visual_image": {
+                "pred_mask": mask_pred,
+                "edge_mask": edge_mask
             }
             # -----------------------------------------
         }
-        
+
         return output_dict
-
-
-
