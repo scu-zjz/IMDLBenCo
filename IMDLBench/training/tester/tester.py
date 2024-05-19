@@ -19,7 +19,6 @@ def test_one_epoch(model: torch.nn.Module,
     
     with torch.no_grad():
         model.zero_grad()
-        model.eval()
         metric_logger = misc.MetricLogger(delimiter="  ")
         # F1 evaluation for an Epoch during training
         print_freq = 20

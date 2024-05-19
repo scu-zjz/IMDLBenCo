@@ -44,6 +44,10 @@ class AbstractDataset(Dataset):
             self.post_transform = get_albu_transforms(type_ = "pad", output_size = output_size)
         if is_resizing == True:
             self.post_transform = get_albu_transforms(type_ = "resize", output_size = output_size)
+        self.is_padding = is_padding
+        self.is_resizing = is_resizing
+        
+        self.output_size = output_size
         
         # Common augmentations for augumentation
         self.common_transforms = common_transforms
@@ -118,6 +122,11 @@ class AbstractDataset(Dataset):
         data_dict['image'] = tp_img
         data_dict['mask'] = gt_img
         data_dict['label'] = label
+       
+        # 如果经过resize
+        if self.is_resizing:
+            tp_shape = self.output_size
+            
         # 这里如果是（256， 384） 那么对应的图像是一个横着的 长的方块
         data_dict['shape'] = torch.tensor(tp_shape) # (H, W) 经过data loader后会变成三维矩阵，第0维是batch_index
         data_dict['name'] = basename
