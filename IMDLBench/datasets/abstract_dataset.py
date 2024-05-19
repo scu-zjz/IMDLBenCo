@@ -114,6 +114,7 @@ class AbstractDataset(Dataset):
             # ====================================
         # name of the image (mainly for testing)
         basename = os.path.basename(tp_path)
+
         # =========output=====================
         data_dict['image'] = tp_img
         data_dict['mask'] = gt_img
@@ -122,6 +123,7 @@ class AbstractDataset(Dataset):
         data_dict['shape'] = torch.tensor(tp_shape) # (H, W) 经过data loader后会变成三维矩阵，第0维是batch_index
         data_dict['name'] = basename
         # ====================================
+
         return data_dict
         
     def __len__(self):

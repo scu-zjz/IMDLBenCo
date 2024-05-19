@@ -134,8 +134,7 @@ def main(args):
     print("{}".format(args).replace(', ', ',\n'))
 
     device = torch.device(args.device)
-    print(args.if_resizing)
-    print(args.if_padding)
+    
     # fix the seed for reproducibility
     seed = args.seed + misc.get_rank()
     misc.seed_torch(seed)
