@@ -11,7 +11,6 @@ from IMDLBench.training.schedular.cos_lr_schedular import adjust_learning_rate #
 from IMDLBench.datasets import denormalize
 
 
-
 def train_one_epoch(model: torch.nn.Module,
                     data_loader: Iterable, 
                     optimizer: torch.optim.Optimizer,
@@ -73,7 +72,6 @@ def train_one_epoch(model: torch.nn.Module,
         # save to log.txt
         metric_logger.update(lr=lr)
         
-
         metric_logger.update(**visual_loss_item)
         # metric_logger.update(predict_loss= predict_loss_value)
         # metric_logger.update(edge_loss= edge_loss_value)
@@ -103,8 +101,9 @@ def train_one_epoch(model: torch.nn.Module,
         log_writer.add_images('train/predict', mask_pred, epoch)
         log_writer.add_images('train/predict_thresh0.5', (mask_pred > 0.5) * 1.0, epoch)
         log_writer.add_images('train/gt_mask', mask, epoch)
-        
+     
         for k, v in visual_image.items():
+
             log_writer.add_images(f'train/{k}', v, epoch)
 
     # gather the stats from all processes
