@@ -4,13 +4,10 @@ from torch.utils.data import Dataset, DataLoader
 from .iml_datasets import JsonDataset, ManiDataset
 
 from ..transforms import get_albu_transforms
+from .utils import pil_loader, denormalize
 
 from IMDLBench.registry import DATASETS
 
-train_transform = get_albu_transforms('train')
-
-def get_dataset(path, dataset_type):
-    return dataset_type(path, 1024, train_transform, edge_width=7, if_return_shape=True)
 
 @DATASETS.register_module()
 class BalancedDataset(Dataset):
@@ -23,19 +20,38 @@ class BalancedDataset(Dataset):
         _type_: _description_
     """
 
-    def __init__(self, sample_number = 1840) -> None:
+    def __init__(self, 
+                sample_number = 1840,
+                path_list = None, 
+                # is_padding = False,
+                # is_resizing = False,
+                # output_size = (1024, 1024),
+                # common_transforms = None, 
+                # edge_width = None,
+                # img_loader = pil_loader
+                *args, 
+                **kwargs
+                ) -> None:
         self.sample_number = sample_number
-        self.settings_list = [
-            ['/mnt/data0/public_datasets/IML/CASIA2.0', ManiDataset],
-            # ['/mnt/data0/public_datasets/IML/Fantastic_Reality_1024', mani_dataset], # TODO
-            ['/mnt/data0/public_datasets/IML/IMD_20_1024', ManiDataset],
-            ['/mnt/data0/public_datasets/IML/tampCOCO/sp_COCO_list.json', JsonDataset],
-            ['/mnt/data0/public_datasets/IML/tampCOCO/cm_COCO_list.json', JsonDataset],
-            ['/mnt/data0/public_datasets/IML/tampCOCO/bcm_COCO_list.json', JsonDataset],
-            ['/mnt/data0/public_datasets/IML/tampCOCO/bcmc_COCO_list.json', JsonDataset]
-        ]
+        if path_list == None:
+            self.settings_list = [
+                ['/mnt/data0/public_datasets/IML/CASIA2.0', ManiDataset],
+                ['/mnt/data0/public_datasets/IML/FantasticReality_v1/FantasticReality.json', JsonDataset],
+                ['/mnt/data0/public_datasets/IML/IMD_20_1024', ManiDataset],
+                ['/mnt/data0/public_datasets/IML/tampCOCO/sp_COCO_list.json', JsonDataset],
+                ['/mnt/data0/public_datasets/IML/tampCOCO/cm_COCO_list.json', JsonDataset],
+                ['/mnt/data0/public_datasets/IML/tampCOCO/bcm_COCO_list.json', JsonDataset],
+                ['/mnt/data0/public_datasets/IML/tampCOCO/bcmc_COCO_list.json', JsonDataset]
+            ]
+        else:
+            self.settings_list = path_list
         
-        self.dataset_list = [get_dataset(path, dataset_type) for path, dataset_type in self.settings_list]
+        self.dataset_list = [self._get_dataset(path, dataset_type, *args, **kwargs) for path, dataset_type in self.settings_list]
+        
+        
+    def _get_dataset(self, path, dataset_type, *args, **kwargs):
+        return dataset_type(path, *args, **kwargs)
+        
         
     def __len__(self):
         return self.sample_number * len(self.settings_list)    
