@@ -39,7 +39,7 @@ from tester import test_one_epoch
 from IMDLBench.model_zoo import IML_ViT
 
 def get_args_parser():
-    parser = argparse.ArgumentParser('IML-ViT training', add_help=True)
+    parser = argparse.ArgumentParser('IMDLBench training', add_help=True)
     # ++++++++++++TODO++++++++++++++++
     # 这里是每个模型定制化的input区域，包括load与训练模型，模型的magic number等等
     # 需要根据你们的模型定制化修改这里 
@@ -51,6 +51,10 @@ def get_args_parser():
                         help='hyper-parameter of the weight for proposed edge loss.')
     parser.add_argument('--predict_head_norm', default="BN", type=str,
                         help="norm for predict head, can be one of 'BN', 'LN' and 'IN' (batch norm, layer norm and instance norm). It may influnce the result  on different machine or datasets!")
+    
+    # 可以接受label的模型是否接受label输入，并启用相关的loss。
+    parser.add_argument('--if_predict_label', action='store_true',
+                        help='Does the model that can accept labels actually take label input and enable the corresponding loss function?')
     # -------------------------------
     
     # ----Dataset parameters 数据集相关的参数----
@@ -68,8 +72,7 @@ def get_args_parser():
     parser.add_argument('--test_data_path', default='/root/Dataset/CASIA1.0', type=str,
                         help='test dataset path, should be our json_dataset or mani_dataset format. Details are in readme.md')
     # ------------------------------------
-    
-    
+    # training related
     parser.add_argument('--batch_size', default=1, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * accum_iter * # gpus')
     parser.add_argument('--test_batch_size', default=2, type=int,
@@ -78,9 +81,16 @@ def get_args_parser():
     parser.add_argument('--epochs', default=200, type=int)
     parser.add_argument('--test_period', default=4, type=int,
                         help="how many epoch per testing one time")
+    
+    # 一个epoch在tensorboard中打几个loss的data point
+    parser.add_argument('--log_per_epoch_count', default=20, type=int,
+                        help="how many loggings (data points for loss) per testing epoch in Tensorboard")
+    
+    # 不启用AMP（自动精度）进行训练
+    parser.add_argument('--if_not_amp', action='store_false',
+                        help='Do not use automatic precision.')
     parser.add_argument('--accum_iter', default=16, type=int,
                         help='Accumulate gradient iterations (for increasing the effective batch size under memory constraints)')
-
 
     # Optimizer parameters
     parser.add_argument('--weight_decay', type=float, default=0.05,
@@ -101,6 +111,7 @@ def get_args_parser():
     parser.add_argument('--log_dir', default='./output_dir',
                         help='path where to tensorboard log')
     # -----------------------
+
     
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
@@ -281,6 +292,7 @@ def main(args):
             model, data_loader_train,
             optimizer, device, epoch, loss_scaler,
             log_writer=log_writer,
+            log_per_epoch_count=args.log_per_epoch_count,
             args=args
         )
         

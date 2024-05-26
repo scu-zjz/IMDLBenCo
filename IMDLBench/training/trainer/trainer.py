@@ -9,7 +9,7 @@ import utils.misc as misc
 from IMDLBench.training.schedular.cos_lr_schedular import adjust_learning_rate # TODO
 
 from IMDLBench.datasets import denormalize
-
+from contextlib import nullcontext
 
 def train_one_epoch(model: torch.nn.Module,
                     data_loader: Iterable, 
@@ -26,14 +26,18 @@ def train_one_epoch(model: torch.nn.Module,
     header = 'Epoch: [{}]'.format(epoch)
     print_freq = 20
 
+    amp_placeholder = torch.cuda.amp.autocast() if args.if_not_amp else nullcontext()
+
     accum_iter = args.accum_iter
 
     optimizer.zero_grad()
 
     if log_writer is not None:
         print('log_dir: {}'.format(log_writer.log_dir))
+        
     total_step = len(data_loader)
     log_period = total_step / log_per_epoch_count
+    # Start training
     for data_iter_step, data_dict in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
         
         # move to device
@@ -47,8 +51,11 @@ def train_one_epoch(model: torch.nn.Module,
 
         torch.cuda.synchronize()
         
-        with torch.cuda.amp.autocast():
-            output_dict = model(**data_dict)
+        with amp_placeholder:
+            output_dict = model(**data_dict, 
+                                if_predcit_label = args.if_predict_label
+                                )
+            
             loss = output_dict['backward_loss']
             mask_pred = output_dict['pred_mask']
             
@@ -59,7 +66,7 @@ def train_one_epoch(model: torch.nn.Module,
                 
             visual_image = output_dict['visual_image']
         
-        predict_loss = loss / accum_iter
+            predict_loss = loss / accum_iter
         loss_scaler(predict_loss,optimizer, parameters=model.parameters(),
                     update_grad=(data_iter_step + 1) % accum_iter == 0)
                 
@@ -103,7 +110,6 @@ def train_one_epoch(model: torch.nn.Module,
         log_writer.add_images('train/gt_mask', mask, epoch)
      
         for k, v in visual_image.items():
-
             log_writer.add_images(f'train/{k}', v, epoch)
 
     # gather the stats from all processes
