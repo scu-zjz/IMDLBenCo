@@ -39,7 +39,8 @@ class SmoothedValue(object):
     def update(self, value, n=1):
         self.deque.append(value)
         self.count += n
-        self.total += value * n
+        # self.total += value * n
+        self.total += value # No n
 
     def synchronize_between_processes(self):
         """
@@ -90,14 +91,16 @@ class MetricLogger(object):
         self.meters = defaultdict(SmoothedValue)
         self.delimiter = delimiter
 
-    def update(self, **kwargs):
+    def update(self, _n=1, **kwargs):
+        if len(kwargs) == 0:
+            raise "MetricLogger error, no keyword passed"
         for k, v in kwargs.items():
             if v is None:
                 continue
             if isinstance(v, torch.Tensor):
                 v = v.item()
             assert isinstance(v, (float, int))
-            self.meters[k].update(v)
+            self.meters[k].update(v, n=_n)
 
     def __getattr__(self, attr):
         if attr in self.meters:

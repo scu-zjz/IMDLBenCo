@@ -109,7 +109,8 @@ class AbstractDataset(Dataset):
         
         tp_img = res_dict['image']
         gt_img = res_dict['masks'][0].unsqueeze(0) # H W -> 1 H W \
-            
+        
+        
         if self.edge_mask_generator != None:
             gt_img_edge = res_dict['masks'][1].unsqueeze(0) # H W -> 1 H W  
 
@@ -131,6 +132,12 @@ class AbstractDataset(Dataset):
         # 这里如果是（256， 384） 那么对应的图像是一个横着的 长的方块
         data_dict['shape'] = torch.tensor(tp_shape) # (H, W) 经过data loader后会变成三维矩阵，第0维是batch_index
         data_dict['name'] = basename
+        
+        # 如果padding则需要单独return一个shape_mask
+        if self.is_padding:
+            shape_mask = torch.zeros_like(gt_img)
+            shape_mask[:, :tp_shape[0], :tp_shape[1]] = 1
+            data_dict['shape_mask'] = shape_mask
         # ====================================
 
         return data_dict
