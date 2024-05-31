@@ -29,9 +29,9 @@ from utils.misc import NativeScalerWithGradNormCount as NativeScaler
 
 
 from IMDLBench.registry import MODELS
-from IMDLBench.datasets import ManiDataset, JsonDataset
+from IMDLBench.datasets import ManiDataset, JsonDataset, BalancedDataset
 from IMDLBench.transforms import get_albu_transforms
-
+from IMDLBench.evaluation import PixelF1, ImageF1
 
 from trainer import train_one_epoch
 from tester import test_one_epoch
@@ -51,12 +51,12 @@ def get_args_parser():
                         help='hyper-parameter of the weight for proposed edge loss.')
     parser.add_argument('--predict_head_norm', default="BN", type=str,
                         help="norm for predict head, can be one of 'BN', 'LN' and 'IN' (batch norm, layer norm and instance norm). It may influnce the result  on different machine or datasets!")
+    # -------------------------------
     
     # 可以接受label的模型是否接受label输入，并启用相关的loss。
     parser.add_argument('--if_predict_label', action='store_true',
                         help='Does the model that can accept labels actually take label input and enable the corresponding loss function?')
-    # -------------------------------
-    
+
     # ----Dataset parameters 数据集相关的参数----
     parser.add_argument('--image_size', default=512, type=int,
                         help='image size of the images in datasets')
@@ -155,7 +155,6 @@ def main(args):
     train_transform = get_albu_transforms('train')
     test_transform = get_albu_transforms('test')
 
-
     # TODO -------TBK的代码需要修改这里，其他人不用-------
     # ---- dataset with crop augmentation ----
     if os.path.isdir(args.data_path):
@@ -168,14 +167,24 @@ def main(args):
             edge_width=args.edge_broaden
         )
     else:
-        dataset_train = JsonDataset(
-            args.data_path, 
-            is_padding=args.if_padding,
-            is_resizing=args.if_resizing,
-            output_size=(args.image_size, args.image_size),
-            common_transforms=train_transform,
-            edge_width=args.edge_broaden
-        )
+        try:
+            dataset_train = JsonDataset(
+                args.data_path, 
+                is_padding=args.if_padding,
+                is_resizing=args.if_resizing,
+                output_size=(args.image_size, args.image_size),
+                common_transforms=train_transform,
+                edge_width=args.edge_broaden
+            )
+        except:
+            dataset_train = BalancedDataset(
+                args.data_path,    
+                is_padding=args.if_padding,
+                is_resizing=args.if_resizing,
+                output_size=(args.image_size, args.image_size),
+                common_transforms=train_transform,
+                edge_width=args.edge_broaden
+            )
     
     if os.path.isdir(args.test_data_path):
         dataset_test = ManiDataset(
@@ -245,6 +254,11 @@ def main(args):
         predict_head_norm= args.predict_head_norm,
         edge_lambda = args.edge_lambda
     )
+    
+    evaluator_list = [
+        PixelF1(threshold=0.5, mode="origin"),
+        # ImageF1(threshold=0.5)
+    ]
     # ------------------ TODO
     
     if args.distributed:
@@ -282,12 +296,11 @@ def main(args):
 
     print(f"Start training for {args.epochs} epochs")
     start_time = time.time()
-    best_f1 = 0
+    best_evaluate_metric_value = 0
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             data_loader_train.sampler.set_epoch(epoch)
             
-        
         train_stats = train_one_epoch(
             model, data_loader_train,
             optimizer, device, epoch, loss_scaler,
@@ -307,15 +320,17 @@ def main(args):
             test_stats = test_one_epoch(
                 model, 
                 data_loader = data_loader_test, 
+                evaluator_list=evaluator_list,
                 device = device, 
                 epoch = epoch, 
                 log_writer=log_writer,
                 args = args
             )
-            local_f1 = test_stats['average_f1']
-            if local_f1 > best_f1 :
-                best_f1 = local_f1
-                print("Best F1 = %f" % best_f1)
+            evaluate_metric_for_ckpt = evaluator_list[0].name
+            evaluate_metric_value = test_stats[evaluate_metric_for_ckpt]
+            if evaluate_metric_value > best_evaluate_metric_value :
+                best_evaluate_metric_value = evaluate_metric_value
+                print(f"Best {evaluate_metric_for_ckpt} = {best_evaluate_metric_value}")
                 if epoch > 35:
                     misc.save_model(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,

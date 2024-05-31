@@ -17,10 +17,10 @@ class Registry:
     """
     def __init__(self,
                 name: str,
-                build_func: Optional[Callable] = None,
+                # build_func: Optional[Callable] = None,
                 # parent: Optional['Registry'] = None,   # Using strings to address circular import issues                
                 ):
-        from .build_functions import build_from_cfg
+        # from .build_functions import build_from_cfg
         self._name = name
         self._module_dict: Dict[str, Type] = dict()
         # self._children: Dict[str, 'Registry'] = dict()
@@ -38,11 +38,11 @@ class Registry:
         # self.build_func will be set with the following priority:
         # 1. build_func
         # 3. build_from_cfg
-        self.build_func: Callable
-        if build_func is None:
-            self.build_func = build_from_cfg
-        else:
-            self.build_func = build_func
+        # self.build_func: Callable
+        # if build_func is None:
+            # self.build_func = build_from_cfg
+        # else:
+            # self.build_func = build_func
             
     def __len__(self):
         return len(self._module_dict)
@@ -72,6 +72,10 @@ class Registry:
     @property
     def module_dict(self):
         return self._module_dict
+    
+
+    def get(self, name):
+        return self._module_dict[name]
 
     # @property
     # def children(self):
@@ -176,7 +180,7 @@ class Registry:
         return _register
     
     
-    def build(self, cfg: dict, *args, **kwargs) -> Any:
+    def build(self, name: dict, *args, **kwargs) -> Any:
         """Build an instance.
 
         Build an instance by calling :attr:`build_func`.
@@ -198,7 +202,8 @@ class Registry:
             >>> cfg = dict(type='ResNet', depth=50)
             >>> model = MODELS.build(cfg)
         """
-        return self.build_func(cfg, *args, **kwargs, registry=self)
+        return self._module_dict[name](*args, **kwargs)
+        # return self.build_func(cfg, *args, **kwargs, registry=self)
     
 
 MODELS = Registry(name = 'models')

@@ -7,8 +7,6 @@ from ..transforms import get_albu_transforms
 from .utils import pil_loader, denormalize
 
 from IMDLBench.registry import DATASETS
-
-
 @DATASETS.register_module()
 class BalancedDataset(Dataset):
     """The BalancedDataset manages multiple iml_datasets, so it does not inherit from AbstractDataset.
@@ -21,19 +19,14 @@ class BalancedDataset(Dataset):
     """
 
     def __init__(self, 
-                sample_number = 1840,
-                path_list = None, 
-                # is_padding = False,
-                # is_resizing = False,
-                # output_size = (1024, 1024),
-                # common_transforms = None, 
-                # edge_width = None,
-                # img_loader = pil_loader
-                *args, 
-                **kwargs
+                 path = None, 
+                 sample_number = 1840,
+                 *args, 
+                 **kwargs
                 ) -> None:
         self.sample_number = sample_number
-        if path_list == None:
+        if path == None:
+            # Defalut
             self.settings_list = [
                 ['/mnt/data0/public_datasets/IML/CASIA2.0', ManiDataset],
                 ['/mnt/data0/public_datasets/IML/FantasticReality_v1/FantasticReality.json', JsonDataset],
@@ -44,8 +37,20 @@ class BalancedDataset(Dataset):
                 ['/mnt/data0/public_datasets/IML/tampCOCO/bcmc_COCO_list.json', JsonDataset]
             ]
         else:
-            self.settings_list = path_list
-        
+            import json
+            with open(path, "r") as f:
+                setting_json = json.load(f)
+            # self.settings_list = path_list
+            self.settings_list = []
+            for dataset_str,  dataset_path in setting_json:
+                self.settings_list.append(
+                    [
+                        dataset_path,
+                        DATASETS.get(dataset_str)
+                    ]
+                )
+            
+
         self.dataset_list = [self._get_dataset(path, dataset_type, *args, **kwargs) for path, dataset_type in self.settings_list]
         
         

@@ -43,7 +43,10 @@ class JsonDataset(AbstractDataset):
         tp_list = []
         gt_list = []
         for record in images:
-            tp_list.append(record[0])
-            gt_list.append(record[1])
+            if os.path.isfile(record[0]):
+                tp_list.append(record[0])
+                gt_list.append(record[1])
+            else: 
+                raise TypeError("Not a file in Json Dataset Error. Try other dataset")
         return tp_list, gt_list
 
