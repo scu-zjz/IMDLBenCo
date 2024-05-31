@@ -22,10 +22,7 @@ sys.path.append(".")
 # assert timm.__version__ == "0.3.2"  # version check
 import timm.optim.optim_factory as optim_factory
 
-
 import utils.misc as misc
-
-
 
 from IMDLBench.registry import MODELS
 from IMDLBench.datasets import ManiDataset, JsonDataset
