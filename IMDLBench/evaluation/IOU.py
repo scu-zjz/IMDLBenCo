@@ -24,10 +24,10 @@ class PixelIOU(AbstractEvaluator):
         mask = mask.flatten(1)
 
         # Exclude parts masked by shape_mask
-        if shape_mask is not None:
-            valid_mask = shape_mask.flatten(1) > 0
-            predict = predict[valid_mask]
-            mask = mask[valid_mask]
+        # if shape_mask is not None:
+        #     valid_mask = shape_mask.flatten(1) > 0
+        #     predict = predict[valid_mask]
+        #     mask = mask[valid_mask]
 
         # Compute intersection and union
         intersection = torch.sum(predict * mask, dim=1)
@@ -63,20 +63,20 @@ class PixelIOU(AbstractEvaluator):
     def batch_update(self, predict, mask, shape_mask=None, *args, **kwargs):
         if self.mode == "origin":
             IOU = self.Cal_IOU(predict, mask, shape_mask)
-            IOU2 = self.Cal_IOU_2(predict, mask, shape_mask)
+            # IOU2 = self.Cal_IOU_2(predict, mask, shape_mask)
         elif self.mode == "reverse":
             IOU = self.Cal_IOU(1 - predict, mask, shape_mask)
-            IOU2 = self.Cal_IOU_2(1 - predict, mask, shape_mask)
+            # IOU2 = self.Cal_IOU_2(1 - predict, mask, shape_mask)
         elif self.mode == "double":
             normal_iou = self.Cal_IOU(predict, mask, shape_mask)
             reverse_iou = self.Cal_IOU(1 - predict, mask, shape_mask)
             IOU = torch.max(normal_iou, reverse_iou)
-            normal_iou2 = self.Cal_IOU_2(predict, mask, shape_mask)
-            reverse_iou2 = self.Cal_IOU_2(1 - predict, mask, shape_mask)
-            IOU2 = torch.max(normal_iou2, reverse_iou2)
+            # normal_iou2 = self.Cal_IOU_2(predict, mask, shape_mask)
+            # reverse_iou2 = self.Cal_IOU_2(1 - predict, mask, shape_mask)
+            # IOU2 = torch.max(normal_iou2, reverse_iou2)
         else:
             raise RuntimeError(f"Cal_AUC no mode name {self.mode}")
-        return IOU, IOU2
+        return IOU
     def epoch_update(self):
 
         return None
@@ -89,13 +89,13 @@ class PixelIOU(AbstractEvaluator):
 # # 示例用法和对比
 if __name__ == "__main__":
     # 生成一些示例数据
-    batch_size, channels, height, width = 4, 1, 10, 10
+    batch_size, channels, height, width = 1, 1, 10, 10
     predict = torch.rand(batch_size, channels, height, width)
     mask = torch.randint(0, 2, (batch_size, channels, height, width)).float()
     
     # 生成一个 shape_mask
-    shape_mask = torch.randint(0, 2, (batch_size, channels, height, width)).float()
-    # shape_mask = None
+    # shape_mask = torch.randint(0, 2, (batch_size, channels, height, width)).float()
+    shape_mask = None
     iou = PixelIOU(mode="origin")
     reverse_iou = PixelIOU(mode="reverse")
     double_iou = PixelIOU(mode="double")

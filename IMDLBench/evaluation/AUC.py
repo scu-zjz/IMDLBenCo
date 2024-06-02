@@ -97,33 +97,35 @@ class PixelAUC(AbstractEvaluator):
         self.mode = mode
 
     def Cal_AUC(self, y_true, y_scores, shape_mask=None):
-        
         if shape_mask is not None:
             y_true = y_true * shape_mask
             y_scores = y_scores * shape_mask
-            zero_num = shape_mask.numel() - torch.sum(shape_mask)
+        
         y_true = y_true.flatten()
         y_scores = y_scores.flatten()
-        print(zero_num)
-        
+
         # 排除被 shape_mask 掩盖的部分
-        # if shape_mask is not None:
-        #     valid_mask = shape_mask.flatten() > 0
-        #     print(valid_mask.shape)
-        #     y_true = y_true[valid_mask]
-        #     y_scores = y_scores[valid_mask]
+        if shape_mask is not None:
+            valid_mask = shape_mask.flatten() > 0
+            y_true = y_true[valid_mask]
+            y_scores = y_scores[valid_mask]
+
         # 排序索引
         desc_score_indices = torch.argsort(y_scores, descending=True)
         y_true_sorted = y_true[desc_score_indices]
+
         # 计算正负样本的数量
         n_pos = torch.sum(y_true_sorted).item()
         n_neg = len(y_true_sorted) - n_pos
+
         # 累积正样本和负样本的数量
         tps = torch.cumsum(y_true_sorted, dim=0)
         fps = torch.cumsum(1 - y_true_sorted, dim=0)
+
         # 计算 TPR 和 FPR
         tpr = tps / n_pos
         fpr = fps / n_neg
+
         # 计算 AUC
         auc = torch.trapz(tpr, fpr)
 
@@ -131,16 +133,23 @@ class PixelAUC(AbstractEvaluator):
         
     def batch_update(self, predict, mask, shape_mask=None, *args, **kwargs):
         # TODO
+        AUC_list = []
         if self.mode == "origin":
-            AUC = self.Cal_AUC(mask, predict, shape_mask)
+            for idx in range(predict.shape[0]):
+                single_shape_mask = None if shape_mask == None else shape_mask[idx]
+                AUC_list.append(self.Cal_AUC(mask[idx], predict[idx], single_shape_mask))
         elif self.mode == "reverse":
-            AUC = self.Cal_AUC(mask, 1 - predict, shape_mask)
+            for idx in range(predict.shape[0]):
+                single_shape_mask = None if shape_mask == None else shape_mask[idx]
+                AUC_list.append(self.Cal_AUC(mask[idx], 1 - predict[idx], single_shape_mask))
         elif self.mode == "double":
-            AUC = max(self.Cal_AUC(mask, predict, shape_mask), self.Cal_AUC(mask, 1 - predict, shape_mask))
+            for idx in range(predict.shape[0]):
+                single_shape_mask = None if shape_mask == None else shape_mask[idx]
+                AUC_list.append(max(self.Cal_AUC(mask[idx], predict[idx], single_shape_mask), self.Cal_AUC(mask[idx], 1 - predict[idx], single_shape_mask)))
         else:
             raise RuntimeError(f"Cal_AUC no mode name {self.mode}")
         
-        return AUC
+        return torch.tensor(AUC_list)
 
     def epoch_update(self):
 
@@ -148,7 +157,6 @@ class PixelAUC(AbstractEvaluator):
     
     def recovery(self):
         return None
-
 
 
 def test_origin_image_f1():
