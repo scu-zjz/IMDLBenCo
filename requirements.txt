@@ -8,3 +8,4 @@ scikit_learn
 timm
 fvcore
 tensorboard
+pytorch_grad_cam

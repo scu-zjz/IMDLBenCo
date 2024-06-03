@@ -5,6 +5,8 @@ output_dir*
 eval_dir*
 *.log
 *.png
+*.jpg
 test.py
 dist_test.py
 test2.py
+ckpt/

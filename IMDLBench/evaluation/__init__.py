@@ -3,6 +3,7 @@ from .abstract_class import AbstractEvaluator
 from .F1 import ImageF1, PixelF1
 from .IOU import PixelIOU
 from .Accuracy import Image_Accuracy, Pixel_Accuracy
+from .grad_camera_visualize import grad_camera_visualize
 
 __all__ = [
     # Below for develop
@@ -15,5 +16,6 @@ __all__ = [
     'PixelF1',
     'PixelIOU',
     'Image_Accuracy', 
-    'Pixel_Accuracy'
+    'Pixel_Accuracy', 
+    'grad_camera_visualize'
     ]
