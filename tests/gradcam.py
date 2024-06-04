@@ -1,7 +1,7 @@
 import torch
 import sys
 sys.path.append(".")
-from IMDLBench.datasets import JsonDataset
+from IMDLBench.datasets import ManiDataset
 from IMDLBench.transforms import get_albu_transforms
 from IMDLBench.model_zoo import cat_net
 from IMDLBench.model_zoo.cat_net.cat_net_post_function import cat_net_post_func
@@ -18,13 +18,13 @@ if __name__ == '__main__':
     model.load_state_dict(ckpt['model'])
     model.cuda()
 
-    dataset = JsonDataset(path='/mnt/data0/public_datasets/IML/CASIAv2_full.json',
+    dataset = ManiDataset(path='/mnt/data0/public_datasets/IML/CASIAv1',
                 is_padding=False,
                 is_resizing=True,
                 output_size=(512, 512),
                 common_transforms=get_albu_transforms('test'),
-                edge_width=7,
-                post_funcs=cat_net_post_func)
+                edge_width=7)
+                #post_funcs=cat_net_post_func -> this argument is only for Cat-Net
     
     target_layers = [model.model.last_layer[-1]]
     grad_camera_visualize(model=model,
