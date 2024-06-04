@@ -18,7 +18,7 @@ if __name__ == '__main__':
     model.load_state_dict(ckpt['model'])
     model.cuda()
 
-    dataset = ManiDataset(path='/mnt/data0/public_datasets/IML/CASIAv1',
+    dataset = ManiDataset(path='/mnt/data0/public_datasets/IML/CASIA1.0',
                 is_padding=False,
                 is_resizing=True,
                 output_size=(512, 512),
