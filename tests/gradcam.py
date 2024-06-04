@@ -30,4 +30,4 @@ if __name__ == '__main__':
     grad_camera_visualize(model=model,
                           image=dataset,
                           target_layers=target_layers, # TODO 这里放你的模型结构中最后一个计算单元，用list装起来 
-                          output_path='/home/bingkui/IMDLBenCo/images') # TODO 这里放图片输出的文件夹地址
+                          output_path='/home/bingkui/IMDLBenCo/images/CASIA1.0') # TODO 这里放图片输出的文件夹地址
