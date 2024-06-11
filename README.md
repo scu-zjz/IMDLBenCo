@@ -26,12 +26,9 @@
 10. 完成后，请找到你之前CASIAv2和CAT-Net数据集上最好的两个checkpoint，用如下脚本剥离优化器参数和scaler参数（减少大小）
     ```python
     import torch
-    import os
-    ckpt_path='/mnt/data0/XXXXX/workspace/IML-VIT-shuffle/output_dir_baseline_no_neg/checkpoint-150.pth'
-    output_path = "./striped/"
-    model = torch.load(ckpt_path)['model']
-    output_dict = {"model":model}
-    torch.save(output_dict, os.path.join(output_path, "checkpoint-150.pth"))
+    model = torch.load("/mnt/data0/XXXXX/workspace/IML-VIT-rebuttal/rebuttal_TruFor/checkpoint-188.pth") # load那个checkpoint
+    output = {"model":model['model']}
+    torch.save(output, "checkpoint-188_striped.pth")
     ```
 11. 将得到的checkpoint分别命名为`XXXX_casiav2.pth`和`XXXX_cat_net.py`，然后scp到A40(192.168.0.139)的这个路径下：`/mnt/data0/public_datasets/IML/IMDLBenCo_ckpt`
 12. 完成任务，基本收工！辛苦各位这一个月来的付出！
