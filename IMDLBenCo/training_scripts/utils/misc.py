@@ -52,7 +52,7 @@ class SmoothedValue(object):
         dist.barrier()
         dist.all_reduce(t)
         t = t.tolist()
-        self.count = int(t[0])
+        self.count = int(t[0] + 0.5) # round(), otherwise may return a number minus 1
         self.total = t[1]
 
     @property

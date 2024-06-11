@@ -2,15 +2,15 @@ import sys
 from pprint import pprint
 sys.path.append(".")
 from torch.utils.data import Dataset, DataLoader
-import IMDLBench
-import IMDLBench.datasets
-from IMDLBench.datasets import ManiDataset
-from IMDLBench.datasets.jpeg_dataset import MetaCatnetDataset
-from IMDLBench.registry import DATASETS
+import IMDLBenCo
+import IMDLBenCo.datasets
+from IMDLBenCo.datasets import ManiDataset
+from IMDLBenCo.datasets.jpeg_dataset import MetaCatnetDataset
+from IMDLBenCo.registry import DATASETS
 import torch
 
-from IMDLBench.evaluation import genertate_region_mask, cal_confusion_matrix, cal_F1
-from IMDLBench.datasets import denormalize
+from IMDLBenCo.evaluation import genertate_region_mask, cal_confusion_matrix, cal_F1
+from IMDLBenCo.datasets import denormalize
 
 
 IS_PADDING = True
@@ -18,7 +18,7 @@ IS_RESIZING = False
 batch_size = 3
 
 # 主要测试这个样例数据集的指标：
-data = IMDLBench.datasets.ManiDataset("/mnt/data0/public_datasets/IML/basic_eval_dataset", 
+data = IMDLBenCo.datasets.ManiDataset("/mnt/data0/public_datasets/IML/basic_eval_dataset", 
                                       is_padding=IS_PADDING,
                                       is_resizing=IS_RESIZING,
                                       edge_width=None)

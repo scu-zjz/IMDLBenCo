@@ -1,12 +1,12 @@
 import torch
 import sys
 sys.path.append(".")
-from IMDLBench.datasets import ManiDataset
-from IMDLBench.transforms import get_albu_transforms
-from IMDLBench.model_zoo import cat_net
+from IMDLBenCo.datasets import ManiDataset
+from IMDLBenCo.transforms import get_albu_transforms
+from IMDLBenCo.model_zoo import cat_net
 from IMDLBench.model_zoo.cat_net.cat_net_post_function import cat_net_post_func
 import torch
-from IMDLBench.evaluation import grad_camera_visualize
+from IMDLBenCo.evaluation import grad_camera_visualize
     
 
 

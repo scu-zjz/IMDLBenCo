@@ -28,18 +28,18 @@ import utils.misc as misc
 from utils.misc import NativeScalerWithGradNormCount as NativeScaler
 
 
-from IMDLBench.registry import MODELS
-from IMDLBench.datasets import ManiDataset, JsonDataset, BalancedDataset
-from IMDLBench.transforms import get_albu_transforms
-from IMDLBench.evaluation import PixelF1, ImageF1
+from IMDLBenCo.registry import MODELS
+from IMDLBenCo.datasets import ManiDataset, JsonDataset, BalancedDataset
+from IMDLBenCo.transforms import get_albu_transforms
+from IMDLBenCo.evaluation import PixelF1, ImageF1
 
 from trainer import train_one_epoch
 from tester import test_one_epoch
 
-from IMDLBench.model_zoo import IML_ViT
+from IMDLBenCo.model_zoo import IML_ViT
 
 def get_args_parser():
-    parser = argparse.ArgumentParser('IMDLBench training', add_help=True)
+    parser = argparse.ArgumentParser('IMDLBenCo training launch!', add_help=True)
     # ++++++++++++TODO++++++++++++++++
     # 这里是每个模型定制化的input区域，包括load与训练模型，模型的magic number等等
     # 需要根据你们的模型定制化修改这里 

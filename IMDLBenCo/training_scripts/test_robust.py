@@ -24,14 +24,14 @@ import timm.optim.optim_factory as optim_factory
 
 import utils.misc as misc
 
-from IMDLBench.registry import MODELS
-from IMDLBench.datasets import ManiDataset, JsonDataset
-from IMDLBench.transforms import get_albu_transforms
-from IMDLBench.evaluation import PixelF1, ImageF1
+from IMDLBenCo.registry import MODELS
+from IMDLBenCo.datasets import ManiDataset, JsonDataset
+from IMDLBenCo.transforms import get_albu_transforms
+from IMDLBenCo.evaluation import PixelF1, ImageF1
 
 from tester import test_one_epoch
 
-from IMDLBench.model_zoo import IML_ViT
+from IMDLBenCo.model_zoo import IML_ViT
 
 def get_args_parser():
     parser = argparse.ArgumentParser('IMDLBench testing', add_help=True)
@@ -57,7 +57,7 @@ def get_args_parser():
     
     parser.add_argument('--if_resizing', action='store_true', 
                         help='resize all images to same resolution.')
-    parser.add_argument('--test_data_json', default='/root/Dataset/CASIA1.0', type=str,
+    parser.add_argument('--test_data_path', default='/root/Dataset/CASIA1.0', type=str,
                         help='test dataset path, should be our json_dataset or mani_dataset format. Details are in readme.md')
     # ------------------------------------
     # Testing 相关的参数
@@ -100,12 +100,7 @@ def main(args):
 
     device = torch.device(args.device)
     
-    test_transform = get_albu_transforms('test')
 
-    with open(args.test_data_json, "r") as f:
-        test_dataset_json = json.load(f)
-    
-    
     if args.distributed:
         num_tasks = misc.get_world_size()
         global_rank = misc.get_rank()
@@ -119,6 +114,16 @@ def main(args):
         predict_head_norm= args.predict_head_norm,
         edge_lambda = args.edge_lambda
     )
+    from IMDLBenCo.transforms.robustness_wrapper import (
+        GaussianBlurWrapper,
+        GaussianNoiseWrapper,
+        JpegCompressionWrapper
+    )
+    robustness_list = [
+            GaussianBlurWrapper([0, 3, 7, 11, 15, 19, 23]),
+            GaussianNoiseWrapper([3, 7, 11, 15, 19, 23]), 
+            JpegCompressionWrapper([50, 60, 70, 80, 90, 100])
+    ]
     
     evaluator_list = [
         PixelF1(threshold=0.5, mode="origin"),
@@ -141,70 +146,68 @@ def main(args):
     
     start_time = time.time()
     
-    # Start go through each datasets:
-    for dataset_name, dataset_path in test_dataset_json.items():
-        args.full_log_dir = os.path.join(args.log_dir, dataset_name)
 
-        if global_rank == 0 and args.full_log_dir is not None:
-            os.makedirs(args.full_log_dir, exist_ok=True)
-            log_writer = SummaryWriter(log_dir=args.full_log_dir)
-        else:
-            log_writer = None
+    for attack_wrapper in robustness_list:
+        for attack_param, attack_transform in attack_wrapper:
+            args.full_log_dir = os.path.join(args.log_dir, str(attack_transform))
+            
+            
+            if global_rank == 0 and args.full_log_dir is not None:
+                os.makedirs(args.full_log_dir, exist_ok=True)
+                log_writer = SummaryWriter(log_dir=args.full_log_dir)
+            else:
+                log_writer = None
         
-        
-        # TODO -------TBK的代码需要修改这里，其他人不用-------
-        # ---- dataset with crop augmentation ----
-        if os.path.isdir(dataset_path):
-            dataset_test = ManiDataset(
-                dataset_path,
-                is_padding=args.if_padding,
-                is_resizing=args.if_resizing,
-                output_size=(args.image_size, args.image_size),
-                common_transforms=test_transform,
-                edge_width=args.edge_broaden
-            )
-        else:
-            dataset_test = JsonDataset(
-                dataset_path,
-                is_padding=args.if_padding,
-                is_resizing=args.if_resizing,
-                output_size=(args.image_size, args.image_size),
-                common_transforms=test_transform,
-                edge_width=args.edge_broaden
-            )
-        # ------------------------------------
-        print(dataset_test)
-        print("len(dataset_test)", len(dataset_test))
-        
-        # Sampler
-        if args.distributed:
-            sampler_test = torch.utils.data.DistributedSampler(
+            # TODO -------TBK的代码需要修改这里，其他人不用-------
+            # ---- dataset with crop augmentation ----
+            if os.path.isdir(args.test_data_path):
+                dataset_test = ManiDataset(
+                    args.test_data_path,
+                    is_padding=args.if_padding,
+                    is_resizing=args.if_resizing,
+                    output_size=(args.image_size, args.image_size),
+                    common_transforms=attack_transform,
+                    edge_width=args.edge_broaden
+                )
+            else:
+                dataset_test = JsonDataset(
+                    args.test_data_path,
+                    is_padding=args.if_padding,
+                    is_resizing=args.if_resizing,
+                    output_size=(args.image_size, args.image_size),
+                    common_transforms=attack_transform,
+                    edge_width=args.edge_broaden
+                )
+            # ------------------------------------
+            print(dataset_test)
+            print("len(dataset_test)", len(dataset_test))
+            
+            # Sampler
+            if args.distributed:
+                sampler_test = torch.utils.data.DistributedSampler(
+                    dataset_test, 
+                    num_replicas=num_tasks, 
+                    rank=global_rank, 
+                    shuffle=False
+                )
+                print("Sampler_test = %s" % str(sampler_test))
+            else:
+                sampler_test = torch.utils.data.RandomSampler(dataset_test)
+
+            data_loader_test = torch.utils.data.DataLoader(
                 dataset_test, 
-                num_replicas=num_tasks, 
-                rank=global_rank, 
-                shuffle=False
+                sampler=sampler_test,
+                batch_size=args.test_batch_size,
+                num_workers=args.num_workers,
+                pin_memory=args.pin_mem,
+                drop_last=True,
             )
-            print("Sampler_test = %s" % str(sampler_test))
-        else:
-            sampler_test = torch.utils.data.RandomSampler(dataset_test)
 
-        data_loader_test = torch.utils.data.DataLoader(
-            dataset_test, 
-            sampler=sampler_test,
-            batch_size=args.test_batch_size,
-            num_workers=args.num_workers,
-            pin_memory=args.pin_mem,
-            drop_last=True,
-        )
+            print(f"Start testing on {attack_wrapper}! ")
 
-        print(f"Start testing on {dataset_name}! ")
+            chkpt_dir = args.checkpoint_path
+            print(chkpt_dir)
 
-        chkpt_list = os.listdir(args.checkpoint_path)
-        print(chkpt_list)
-        chkpt_pair = [(int(chkpt.split('-')[1].split('.')[0]) , chkpt) for chkpt in chkpt_list if chkpt.endswith(".pth")]
-        chkpt_pair.sort(key=lambda x: x[0])
-        print( "sorted checkpoint pairs in the ckpt dir: ",chkpt_pair)
-        for epoch , chkpt_dir in chkpt_pair:
             if chkpt_dir.endswith(".pth"):
                 print("Loading checkpoint: %s" % chkpt_dir)
                 ckpt = os.path.join(args.checkpoint_path, chkpt_dir)
@@ -215,13 +218,13 @@ def main(args):
                     data_loader=data_loader_test,
                     evaluator_list=evaluator_list,
                     device=device,
-                    epoch=epoch,
+                    epoch=attack_param,
                     log_writer=log_writer,
                     args=args
                 )
                 log_stats = {
                     **{f'test_{k}': v for k, v in test_stats.items()},
-                        'epoch': epoch}
+                        'epoch': attack_param}
             
                 if args.full_log_dir and misc.is_main_process():
                     if log_writer is not None:
@@ -230,7 +233,7 @@ def main(args):
                         f.write(json.dumps(log_stats) + "\n")
         local_time = time.time() - start_time
         local_time_str = str(datetime.timedelta(seconds=int(local_time)))
-        print(f'Testing on dataset {dataset_name} takes {local_time_str}')
+        print(f'Testing on transforme {attack_transform} takes {local_time_str}')
         
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))

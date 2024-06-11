@@ -7,9 +7,9 @@ from torch.utils.data import Subset, DataLoader
 
 import utils.misc as misc
 
-from IMDLBench.evaluation import genertate_region_mask, cal_confusion_matrix, cal_F1 # TODO remove this line
-from IMDLBench.evaluation import AbstractEvaluator
-from IMDLBench.datasets import denormalize
+from IMDLBenCo.evaluation import genertate_region_mask, cal_confusion_matrix, cal_F1 # TODO remove this line
+from IMDLBenCo.evaluation import AbstractEvaluator
+from IMDLBenCo.datasets import denormalize
 
 
 def test_one_loader(model: torch.nn.Module,

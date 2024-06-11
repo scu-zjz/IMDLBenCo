@@ -10,7 +10,7 @@ import sys
 
 sys.path.append('./modules')
 
-from IMDLBench.registry import MODELS
+from IMDLBenCo.registry import MODELS
 
 
 @MODELS.register_module()

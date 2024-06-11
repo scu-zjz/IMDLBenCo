@@ -2,11 +2,11 @@ import sys
 from pprint import pprint
 sys.path.append(".")
 from torch.utils.data import Dataset, DataLoader
-import IMDLBench
-import IMDLBench.datasets
-from IMDLBench.datasets import ManiDataset
-from IMDLBench.datasets.jpeg_dataset import MetaCatnetDataset
-from IMDLBench.registry import DATASETS
+import IMDLBenCo
+import IMDLBenCo.datasets
+from IMDLBenCo.datasets import ManiDataset
+from IMDLBenCo.datasets.jpeg_dataset import MetaCatnetDataset
+from IMDLBenCo.registry import DATASETS
 import torch
 
 

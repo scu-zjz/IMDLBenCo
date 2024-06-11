@@ -2,8 +2,8 @@ import sys
 from pprint import pprint
 sys.path.append(".")
 
-import IMDLBench
-from IMDLBench.evaluation import PixelF1, ImageF1
+import IMDLBenCo
+from IMDLBenCo.evaluation import PixelF1, ImageF1
 
 list_e = [
     PixelF1(),

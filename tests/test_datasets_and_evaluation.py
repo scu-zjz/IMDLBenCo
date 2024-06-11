@@ -2,18 +2,18 @@ import sys
 from pprint import pprint
 sys.path.append(".")
 from torch.utils.data import Dataset, DataLoader
-import IMDLBench
-import IMDLBench.datasets
-from IMDLBench.datasets import ManiDataset
-from IMDLBench.datasets.jpeg_dataset import MetaCatnetDataset
-from IMDLBench.registry import DATASETS
+import IMDLBenCo
+import IMDLBenCo.datasets
+from IMDLBenCo.datasets import ManiDataset
+from IMDLBenCo.datasets.jpeg_dataset import MetaCatnetDataset
+from IMDLBenCo.registry import DATASETS
 import torch
 
-from IMDLBench.evaluation import genertate_region_mask, cal_confusion_matrix, cal_F1
-from IMDLBench.datasets import denormalize
+from IMDLBenCo.evaluation import genertate_region_mask, cal_confusion_matrix, cal_F1
+from IMDLBenCo.datasets import denormalize
 
 
-data = IMDLBench.datasets.ManiDataset("/mnt/data0/public_datasets/IML/basic_eval_dataset", is_padding=True, edge_width= 7)
+data = IMDLBenCo.datasets.ManiDataset("/mnt/data0/public_datasets/IML/basic_eval_dataset", is_padding=True, edge_width= 7)
             # ['/mnt/data0/public_datasets/IML/IMD_20_1024', MetaCatnetDataset],
             # ['/mnt/data0/public_datasets/IML/tampCOCO/sp_COCO_list.json', MetaCatnetDataset],
             # ['/mnt/data0/public_datasets/IML/tampCOCO/cm_COCO_list.json', MetaCatnetDataset],

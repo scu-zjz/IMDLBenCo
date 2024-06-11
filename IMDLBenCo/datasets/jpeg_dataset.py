@@ -10,7 +10,7 @@ import random
 import numpy as np
 from PIL import Image
 import torch
-from IMDLBench.datasets.utils import read_jpeg_from_memory
+from IMDLBenCo.datasets.utils import read_jpeg_from_memory
 
 train_transform = get_albu_transforms('train')
 

@@ -10,7 +10,7 @@ from .utils import pil_loader, denormalize
 
 from ..transforms import get_albu_transforms, EdgeMaskGenerator
 
-from IMDLBench.registry import DATASETS
+from IMDLBenCo.registry import DATASETS
 
 @DATASETS.register_module()
 class AbstractDataset(Dataset):

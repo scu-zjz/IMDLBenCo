@@ -8,7 +8,7 @@ import torch
 import utils.misc as misc
 from IMDLBench.training.schedular.cos_lr_schedular import adjust_learning_rate # TODO
 
-from IMDLBench.datasets import denormalize
+from IMDLBenCo.datasets import denormalize
 from contextlib import nullcontext
 
 def train_one_epoch(model: torch.nn.Module,

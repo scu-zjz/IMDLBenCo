@@ -6,7 +6,7 @@ from .iml_datasets import JsonDataset, ManiDataset
 from ..transforms import get_albu_transforms
 from .utils import pil_loader, denormalize
 
-from IMDLBench.registry import DATASETS
+from IMDLBenCo.registry import DATASETS
 @DATASETS.register_module()
 class BalancedDataset(Dataset):
     """The BalancedDataset manages multiple iml_datasets, so it does not inherit from AbstractDataset.
