@@ -6,7 +6,7 @@ from typing import Iterable
 import torch
 
 import utils.misc as misc
-from IMDLBench.training.schedular.cos_lr_schedular import adjust_learning_rate # TODO
+from IMDLBenCo.training_scripts.schedular.cos_lr_schedular import adjust_learning_rate # TODO
 
 from IMDLBenCo.datasets import denormalize
 from contextlib import nullcontext
@@ -106,7 +106,7 @@ def train_one_epoch(model: torch.nn.Module,
     if log_writer is not None:
         log_writer.add_images('train/image',  denormalize(samples), epoch)
         log_writer.add_images('train/predict', mask_pred, epoch)
-        log_writer.add_images('train/predict_thresh0.5', (mask_pred > 0.5) * 1.0, epoch)
+        log_writer.add_images('train/predict_thresh_0.5', (mask_pred > 0.5) * 1.0, epoch)
         log_writer.add_images('train/gt_mask', mask, epoch)
      
         for k, v in visual_image.items():

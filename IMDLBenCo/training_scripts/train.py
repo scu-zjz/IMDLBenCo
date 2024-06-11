@@ -5,6 +5,7 @@
 # BEiT: https://github.com/microsoft/unilm/tree/master/beit
 # --------------------------------------------------------
 import argparse
+import inspect
 import datetime
 import json
 import numpy as np
@@ -44,14 +45,16 @@ def get_args_parser():
     # 这里是每个模型定制化的input区域，包括load与训练模型，模型的magic number等等
     # 需要根据你们的模型定制化修改这里 
     # 目前这里的内容都是仅仅给IML-ViT用的
-    parser.add_argument('--vit_pretrain_path', default = '/root/workspace/IML-ViT/pretrained-weights/mae_pretrain_vit_base.pth', type=str, help='path to vit pretrain model by MAE')
-    parser.add_argument('--edge_broaden', default=7, type=int,
-                        help='Edge broaden size (in pixels) for edge_generator.')
-    parser.add_argument('--edge_lambda', default=20, type=float,
-                        help='hyper-parameter of the weight for proposed edge loss.')
-    parser.add_argument('--predict_head_norm', default="BN", type=str,
-                        help="norm for predict head, can be one of 'BN', 'LN' and 'IN' (batch norm, layer norm and instance norm). It may influnce the result  on different machine or datasets!")
+    # parser.add_argument('--vit_pretrain_path', default = '/root/workspace/IML-ViT/pretrained-weights/mae_pretrain_vit_base.pth', type=str, help='path to vit pretrain model by MAE')
+
+    # parser.add_argument('--edge_lambda', default=20, type=float,
+    #                     help='hyper-parameter of the weight for proposed edge loss.')
+    # parser.add_argument('--predict_head_norm', default="BN", type=str,
+    #                     help="norm for predict head, can be one of 'BN', 'LN' and 'IN' (batch norm, layer norm and instance norm). It may influnce the result  on different machine or datasets!")
     # -------------------------------
+    # Model name
+    parser.add_argument('--model', default=None, type=str,
+                        help='The name of applied model', required=True)
     
     # 可以接受label的模型是否接受label输入，并启用相关的loss。
     parser.add_argument('--if_predict_label', action='store_true',
@@ -66,7 +69,9 @@ def get_args_parser():
     
     parser.add_argument('--if_resizing', action='store_true', 
                         help='resize all images to same resolution.')
-    
+    # If edge mask activated
+    parser.add_argument('--edge_mask_width', default=None, type=int,
+                        help='Edge broaden size (in pixels) for edge maks generator.')
     parser.add_argument('--data_path', default='/root/Dataset/CASIA2.0/', type=str,
                         help='dataset path, should be our json_dataset or mani_dataset format. Details are in readme.md')
     parser.add_argument('--test_data_path', default='/root/Dataset/CASIA1.0', type=str,
@@ -104,7 +109,6 @@ def get_args_parser():
     parser.add_argument('--warmup_epochs', type=int, default=4, metavar='N',
                         help='epochs to warmup LR')
 
-
     # ----输出的日志相关的参数-----------
     parser.add_argument('--output_dir', default='./output_dir',
                         help='path where to save, empty for no saving')
@@ -134,16 +138,29 @@ def get_args_parser():
     parser.add_argument('--dist_on_itp', action='store_true')
     parser.add_argument('--dist_url', default='env://',
                         help='url used to set up distributed training')
-    return parser
 
-def main(args):
+    args, remaining_args = parser.parse_known_args()
+     # 获取对应的模型类
+    model_class = MODELS.get(args.model)
+
+    # 根据模型类动态创建参数解析器
+    model_parser = misc.create_argparser(model_class)
+    model_args = model_parser.parse_args(remaining_args)
+
+    return args, model_args
+
+
+
+def main(args, model_args):
     # init parameters for distributed training
     misc.init_distributed_mode(args)
     import torch.multiprocessing
     torch.multiprocessing.set_sharing_strategy('file_system')
     print('job dir: {}'.format(os.path.dirname(os.path.realpath(__file__))))
+    print("=====args:=====")
     print("{}".format(args).replace(', ', ',\n'))
-
+    print("=====Model args:=====")
+    print("{}".format(model_args).replace(', ', ',\n'))
     device = torch.device(args.device)
     
     # fix the seed for reproducibility
@@ -155,7 +172,6 @@ def main(args):
     train_transform = get_albu_transforms('train')
     test_transform = get_albu_transforms('test')
 
-    # TODO -------TBK的代码需要修改这里，其他人不用-------
     # ---- dataset with crop augmentation ----
     if os.path.isdir(args.data_path):
         dataset_train = ManiDataset(
@@ -164,7 +180,7 @@ def main(args):
             is_resizing=args.if_resizing,
             output_size=(args.image_size, args.image_size),
             common_transforms=train_transform,
-            edge_width=args.edge_broaden
+            edge_width=args.edge_mask_width
         )
     else:
         try:
@@ -174,7 +190,7 @@ def main(args):
                 is_resizing=args.if_resizing,
                 output_size=(args.image_size, args.image_size),
                 common_transforms=train_transform,
-                edge_width=args.edge_broaden
+                edge_width=args.edge_mask_width
             )
         except:
             dataset_train = BalancedDataset(
@@ -183,7 +199,7 @@ def main(args):
                 is_resizing=args.if_resizing,
                 output_size=(args.image_size, args.image_size),
                 common_transforms=train_transform,
-                edge_width=args.edge_broaden
+                edge_width=args.edge_mask_width
             )
     
     if os.path.isdir(args.test_data_path):
@@ -193,7 +209,7 @@ def main(args):
             is_resizing=args.if_resizing,
             output_size=(args.image_size, args.image_size),
             common_transforms=test_transform,
-            edge_width=args.edge_broaden
+            edge_width=args.edge_mask_width
         )
 
     else:
@@ -203,7 +219,7 @@ def main(args):
             is_resizing=args.if_resizing,
             output_size=(args.image_size, args.image_size),
             common_transforms=test_transform,
-            edge_width=args.edge_broaden
+            edge_width=args.edge_mask_width
         )
     # ------------------------------------
     
@@ -247,19 +263,28 @@ def main(args):
         drop_last=False,
     )
     
-    # ------------------
-    # define the model
-    model = IML_ViT(
-        vit_pretrain_path = args.vit_pretrain_path,
-        predict_head_norm= args.predict_head_norm,
-        edge_lambda = args.edge_lambda
-    )
+    # ========define the model directly==========
+    # model = IML_ViT(
+    #     vit_pretrain_path = model_args.vit_pretrain_path,
+    #     predict_head_norm= model_args.predict_head_norm,
+    #     edge_lambda = model_args.edge_lambda
+    # )
+    
+    # --------------- or -------------------------
+    # Init model with registry
+    model = MODELS.get(args.model)
+    # Filt usefull args
+    model_init_params = inspect.signature(model.__init__).parameters
+    combined_args = {k: v for k, v in vars(args).items() if k in model_init_params}
+    combined_args.update({k: v for k, v in vars(model_args).items() if k in model_init_params})
+    
+    model = model(**combined_args)
+    # ============================================
     
     evaluator_list = [
         PixelF1(threshold=0.5, mode="origin"),
         # ImageF1(threshold=0.5)
     ]
-    # ------------------ TODO
     
     if args.distributed:
         model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
@@ -354,8 +379,8 @@ def main(args):
 
 
 if __name__ == '__main__':
-    args = get_args_parser()
-    args = args.parse_args()
+    args, model_args = get_args_parser()
+
     if args.output_dir:
         Path(args.output_dir).mkdir(parents=True, exist_ok=True)
-    main(args)
+    main(args, model_args)

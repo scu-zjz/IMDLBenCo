@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch
 import torch.nn.functional as F
 from functools import partial
-
+from typing import List
 import sys
 
 sys.path.append('./modules')
@@ -18,20 +18,19 @@ class IML_ViT(nn.Module):
     def __init__(
             self,
             # ViT backbone:
-            input_size=1024,
-            patch_size=16,
-            embed_dim=768,
-            vit_pretrain_path=None,  # wether to load pretrained weights
+            input_size:int=1024,
+            patch_size:int=16,
+            embed_dim:int=768,
+            vit_pretrain_path:str=None,  # wether to load pretrained weights
             # Simple_feature_pyramid_network:
-            fpn_channels=256,
-            fpn_scale_factors=(4.0, 2.0, 1.0, 0.5),
-
+            fpn_channels:int=256,
+            fpn_scale_factors:List[int,]=(4.0, 2.0, 1.0, 0.5),
             # MLP embedding:
-            mlp_embeding_dim=256,
+            mlp_embeding_dim:int=256,
             # Decoder head norm
-            predict_head_norm="BN",
+            predict_head_norm:str="BN",
             # Edge loss:
-            edge_lambda=20,
+            edge_lambda:int=20,
     ):
         """init iml_vit_model
         # TODO : add more args
@@ -136,6 +135,7 @@ class IML_ViT(nn.Module):
 
         # compute the loss
         predict_loss = self.BCE_loss(mask_pred, mask)
+
         edge_loss = F.binary_cross_entropy_with_logits(
             input=mask_pred,
             target=mask,

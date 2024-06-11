@@ -3,6 +3,7 @@ import sys
 from collections.abc import Callable
 from typing import Dict, Generator, List, Optional, Tuple, Type, Union, Any
 
+import difflib
 from rich.console import Console
 from rich.table import Table
 
@@ -73,9 +74,21 @@ class Registry:
     def module_dict(self):
         return self._module_dict
     
-
+    def _suggest_correction(self, input_string: str) -> Optional[str]:
+        """Suggest the most similar string from the registered modules."""
+        suggestions = difflib.get_close_matches(input_string, self._module_dict.keys(), n=1, cutoff=0.6)
+        if suggestions:
+            return suggestions[0]
+        return None
+    
     def get(self, name):
-        return self._module_dict[name]
+        if name in self._module_dict:
+            return self._module_dict[name]
+        suggestion = self._suggest_correction(name)
+        if suggestion:
+            raise KeyError(f'"{name}" is not registered in {self.name}. Did you mean "{suggestion}"?')
+        else:
+            raise KeyError(f'"{name}" is not registered in {self.name} and no similar names were found.')
 
     # @property
     # def children(self):
@@ -91,7 +104,7 @@ class Registry:
     #     while root.parent is not None:
     #         root = root.parent
     #     return root
-    
+
     
     def _register_module(self,
                         module: Type,
@@ -202,12 +215,12 @@ class Registry:
             >>> cfg = dict(type='ResNet', depth=50)
             >>> model = MODELS.build(cfg)
         """
-        return self._module_dict[name](*args, **kwargs)
+        return self.get(name)(*args, **kwargs)
         # return self.build_func(cfg, *args, **kwargs, registry=self)
     
 
-MODELS = Registry(name = 'models')
+MODELS = Registry(name = 'MODELS')
 
-DATASETS = Registry(name = 'datasets')
+DATASETS = Registry(name = 'DATASETS')
 
-PROTOCOLS = Registry(name = 'protocols')
+PROTOCOLS = Registry(name = 'PROTOCOLS')
