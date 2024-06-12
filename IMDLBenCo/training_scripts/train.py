@@ -12,7 +12,7 @@ import numpy as np
 import os
 import time
 from pathlib import Path
-
+import types
 import torch
 import torch.backends.cudnn as cudnn
 import torch.utils.data
@@ -288,10 +288,12 @@ def main(args, model_args):
     # Init model with registry
     model = MODELS.get(args.model)
     # Filt usefull args
-    model_init_params = inspect.signature(model.__init__).parameters
+    if isinstance(model,(types.FunctionType, types.MethodType)):
+        model_init_params = inspect.signature(model).parameters
+    else:
+        model_init_params = inspect.signature(model.__init__).parameters
     combined_args = {k: v for k, v in vars(args).items() if k in model_init_params}
     combined_args.update({k: v for k, v in vars(model_args).items() if k in model_init_params})
-    
     model = model(**combined_args)
     # ============================================
     
