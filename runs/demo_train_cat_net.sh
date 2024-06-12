@@ -5,11 +5,11 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 \
 torchrun  \
     --standalone    \
     --nnodes=1     \
-    --nproc_per_node=1 \
+    --nproc_per_node=4 \
 ./IMDLBenCo/training_scripts/train.py \
     --model Cat_Net \
     --world_size 1 \
-    --batch_size 1 \
+    --batch_size 32 \
     --data_path "/mnt/data0/public_datasets/IML/CASIA2.0" \
     --epochs 200 \
     --lr 1e-4 \
@@ -25,5 +25,5 @@ torchrun  \
     --accum_iter 8 \
     --seed 42 \
     --test_period 4 \
-    --cfg_file "/home/bingkui/IMDLBenCo/configs/CAT_full.yaml" \
+    --cfg_file "./configs/CAT_full.yaml" \
 2> ${base_dir}/error.log 1>${base_dir}/logs.log

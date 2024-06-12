@@ -142,8 +142,9 @@ class AbstractDataset(Dataset):
             data_dict['shape_mask'] = shape_mask
         # ====================================
         # Post processing with callback functions on data_dict
-        
-        if isinstance(self.post_funcs, list):
+        if self.post_funcs == None:
+            pass    # Do nothing
+        elif isinstance(self.post_funcs, list):
             # 如果是列表，循环调用列表中的每个回调函数
             for func in self.post_funcs:
                 if callable(func):

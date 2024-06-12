@@ -1,6 +1,8 @@
 import numpy as np
 from IMDLBenCo.datasets.utils import read_jpeg_from_memory
+from IMDLBenCo.registry import POSTFUNCS
 
+@POSTFUNCS.register_module()
 def cat_net_post_func(data_dict):
     tp_img = data_dict['image']
     DCT_coef, qtables = __get_jpeg_info(tp_img)
