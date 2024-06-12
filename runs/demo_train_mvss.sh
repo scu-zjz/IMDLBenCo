@@ -1,4 +1,4 @@
-base_dir="./output_dir"
+base_dir="./output_dir_mvss"
 mkdir -p ${base_dir}
 
 CUDA_VISIBLE_DEVICES=4 \
@@ -15,6 +15,8 @@ torchrun  \
     --lr 1e-4 \
     --image_size 512 \
     --if_not_amp \
+    --find_unused_parameters \
+    --no_model_eval \
     --if_resizing \
     --min_lr 5e-7 \
     --weight_decay 0.05 \

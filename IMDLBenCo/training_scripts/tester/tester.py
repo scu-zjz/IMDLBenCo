@@ -61,7 +61,7 @@ def test_one_loader(model: torch.nn.Module,
 
                 assert evaluator.name != "_n", f"name in evaluator {evaluator.name} can't set to '_n' to avoid conflicts in metric logger."
                 
-                world_szie = misc.get_world_size()
+                world_size = misc.get_world_size()
                 if if_remain != True:   # remain_dataset on the taile
                     kwargs_evaluator = {evaluator.name : results}
                     metric_logger.update(
@@ -69,12 +69,12 @@ def test_one_loader(model: torch.nn.Module,
                         _n= BATCHSIZE 
                     )
                 else:                   # Common batch update
-                    print("???????", {"_n":BATCHSIZE / world_szie})
-                    kwargs_evaluator = {evaluator.name : results / world_szie}
+                    print("Actual Batchsize/ world_size", {"_n":BATCHSIZE / world_size})
+                    kwargs_evaluator = {evaluator.name : results / world_size}
                     print(kwargs_evaluator)
                     metric_logger.update(
                         **kwargs_evaluator,
-                        _n= BATCHSIZE / world_szie
+                        _n= BATCHSIZE / world_size
                     )
 
         # print(evaluator.name, metric_logger.meters[evaluator.name].count)
@@ -94,7 +94,10 @@ def test_one_epoch(model: torch.nn.Module,
     
     with torch.no_grad():
         model.zero_grad()
-        model.eval()
+        if args.no_model_eval == True:
+            print("model.eval() IS NOT APPLIED")
+        else:
+            model.eval()
         metric_logger = misc.MetricLogger(delimiter="  ")
         # F1 evaluation for an Epoch during training
         print_freq = 20
@@ -168,8 +171,8 @@ def test_one_epoch(model: torch.nn.Module,
         metric_logger.synchronize_between_processes()    
         print("---syncronized---")
         for evaluator in evaluator_list:
-            print(evaluator.name, metric_logger.meters[evaluator.name].count)
-            print(evaluator.name, metric_logger.meters[evaluator.name].total)
+            print(evaluator.name, "reduced_count", metric_logger.meters[evaluator.name].count)
+            print(evaluator.name, "reduced_sum", metric_logger.meters[evaluator.name].total)
         print('---syncronized done ---')
         if log_writer is not None:
             for evaluator in evaluator_list:

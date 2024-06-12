@@ -390,6 +390,6 @@ def create_argparser(model_class):
         if default_value is not None:
             parser.add_argument(f'--{name}', type=arg_type, default=default_value, help=f'{name} (default: {default_value})')
         else:
-            parser.add_argument(f'--{name}', type=arg_type, required=True, help=f'{name} (required)')
+            parser.add_argument(f'--{name}', type=arg_type, help=f'{name}')
 
     return parser

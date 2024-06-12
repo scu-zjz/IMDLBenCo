@@ -8,8 +8,6 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-#pytorch-lightning
-import pytorch_lightning as pl
 
 from IMDLBenCo.registry import MODELS
 
