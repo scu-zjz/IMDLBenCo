@@ -13,9 +13,9 @@ torchrun  \
     --data_path /mnt/data0/public_datasets/IML/CASIA2.0 \
     --np_pretrain_weights "/mnt/data0/dubo/workspace/IMDLBenCo/IMDLBenCo/model_zoo/trufor/noiseprint.pth" \
     --mit_b2_pretrain_weights "/mnt/data0/dubo/workspace/IMDLBenCo/IMDLBenCo/model_zoo/trufor/mit_b2.pth" \
-    --config_path "/mnt/data0/dubo/workspace/IMDLBenCo/IMDLBenCo/model_zoo/trufor/trufor.yaml" \
+    --config_path "/mnt/data0/dubo/workspace/IMDLBenCo/configs/trufor.yaml" \
     --phase 2 \
-    --ckpt "" \
+    --det_resume_ckpt "" \
     --epochs 150 \
     --lr 4e-6 \
     --if_predict_label \

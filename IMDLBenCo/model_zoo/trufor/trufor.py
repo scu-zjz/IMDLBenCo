@@ -16,7 +16,7 @@ class Trufor(nn.Module):
                  np_pretrain_weights: str = None,
                  mit_b2_pretrain_weights: str = None,
                  config_path: str = None,
-                 ckpt: str = None
+                 det_resume_ckpt: str = None
                  ):
         super(Trufor, self).__init__()
         update_config(config, None, config_path)
@@ -37,7 +37,7 @@ class Trufor(nn.Module):
             # freeze noiseprint and anomaly decoder
             self.model.requires_grad_(False)
             self.model.detection.requires_grad_(True)
-            self.load_state_dict(torch.load(ckpt))
+            self.load_state_dict(torch.load(det_resume_ckpt))
             print("load pretrain weight success.")
         else:
             raise NotImplementedError('Trufor training phase not implement!')
