@@ -29,10 +29,11 @@ import utils.misc as misc
 from utils.misc import NativeScalerWithGradNormCount as NativeScaler
 
 
-from IMDLBenCo.registry import MODELS
+from IMDLBenCo.registry import MODELS, POSTFUNCS
 from IMDLBenCo.datasets import ManiDataset, JsonDataset, BalancedDataset
 from IMDLBenCo.transforms import get_albu_transforms
 from IMDLBenCo.evaluation import PixelF1, ImageF1
+# from IMDLBenCo.model_zoo import cat_net_post_func
 
 from trainer import train_one_epoch
 from tester import test_one_epoch
@@ -172,6 +173,14 @@ def main(args, model_args):
     train_transform = get_albu_transforms('train')
     test_transform = get_albu_transforms('test')
 
+    # get post function (if have)
+    post_function_name = f"{args.model}_post_func".lower()
+    print(f"Post function check: {post_function_name}")
+    print(POSTFUNCS)
+    if POSTFUNCS.has(post_function_name):
+        post_function = POSTFUNCS.get(post_function_name)
+    else:
+        post_function = None
     # ---- dataset with crop augmentation ----
     if os.path.isdir(args.data_path):
         dataset_train = ManiDataset(
@@ -180,7 +189,8 @@ def main(args, model_args):
             is_resizing=args.if_resizing,
             output_size=(args.image_size, args.image_size),
             common_transforms=train_transform,
-            edge_width=args.edge_mask_width
+            edge_width=args.edge_mask_width,
+            post_funcs=post_function
         )
     else:
         try:
@@ -190,7 +200,8 @@ def main(args, model_args):
                 is_resizing=args.if_resizing,
                 output_size=(args.image_size, args.image_size),
                 common_transforms=train_transform,
-                edge_width=args.edge_mask_width
+                edge_width=args.edge_mask_width,
+                post_funcs=post_function
             )
         except:
             dataset_train = BalancedDataset(
@@ -199,7 +210,8 @@ def main(args, model_args):
                 is_resizing=args.if_resizing,
                 output_size=(args.image_size, args.image_size),
                 common_transforms=train_transform,
-                edge_width=args.edge_mask_width
+                edge_width=args.edge_mask_width,
+                post_funcs=post_function
             )
     
     if os.path.isdir(args.test_data_path):
@@ -209,7 +221,8 @@ def main(args, model_args):
             is_resizing=args.if_resizing,
             output_size=(args.image_size, args.image_size),
             common_transforms=test_transform,
-            edge_width=args.edge_mask_width
+            edge_width=args.edge_mask_width,
+            post_funcs=post_function
         )
 
     else:
@@ -219,7 +232,8 @@ def main(args, model_args):
             is_resizing=args.if_resizing,
             output_size=(args.image_size, args.image_size),
             common_transforms=test_transform,
-            edge_width=args.edge_mask_width
+            edge_width=args.edge_mask_width,
+            post_funcs=post_function
         )
     # ------------------------------------
     
