@@ -1,34 +1,107 @@
+<p align="center" width="100%">
+<img src="images/IMDL_BenCo.png" alt="OSQ" style="width: 28%; min-width: 150px; display: block; margin: auto;">
+</p>
+
 # IMDLBenCo:  Comprehensive Benchmark and Codebase for Image Manipulation Detection & Localization
+
+Xiaochen Ma†, Xuekang Zhu†, Lei Su†, Bo Du†, Zhuohang Jiang†, Bingkui Tong1†,
+Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
+
+<div style="text-align: center;"><span style="font-size: smaller;">
+†: joint first author & equal contribution
+*: corresponding author.</span>
+</div>
+
+
+![Powered by](https://img.shields.io/badge/Based_on-Pytorch-blue?logo=pytorch) 
+![last commit](https://img.shields.io/github/last-commit/scu-zjz/IMDLBenCo)
+![GitHub](https://img.shields.io/github/license/scu-zjz/IMDLBenCo?logo=license)
+![](https://img.shields.io/github/repo-size/scu-zjz/IMDLBenCo?color=green)
+![](https://img.shields.io/github/stars/scu-zjz/IMDLBenCo/)
+[![Ask Me Anything!](https://img.shields.io/badge/Official%20-Yes-1abc9c.svg)](https://GitHub.com/scu-zjz/) 
+
+
+************
+## Features under developing
+This repository has completed training, testing, robustness testing, Grad-CAM, and other functionalities for mainstream models.
+
+However, more features are currently in testing for improved user experience. Updates will be rolled out frequently. Stay tuned!
+
+- [ ] Install and download via PyPI
+- [ ] Based on command line invocation, similar to `conda` in Anaconda.
+   - [ ] Dynamically create all training scripts to support personalized modifications.
+
+- [ ] Information library, downloading, and re-management of IMDL datasets.
+- [ ] Support for Weight & Bias visualization.
+
+## Overview
+Welcome to IMDL-BenCo, the first comprehensive IMDL benchmark and modular codebase. 
+
+This repo:
+- decomposes the IMDL framework into standardized, reusable components and revises the model construction pipeline, improving coding efficiency and customization flexibility;
+- fully implements or incorporates training code for state-of-the-art models to establish a comprehensive IMDL benchmark;
 
 ![](./images/IMDLBenCo_overview.png)
 
-# 需要各位务必在6月12号完成的任务
-## 目前合并仓库的任务方式
-目前仓库做了大幅度修改，以适配最后上线的准备。
-- 主要改动
-  - 训练脚本变成了`train.py`，测试脚本变为了`test.py`，他们都在`./training_scripts`路径下
-  - 目前所有的运行脚本都被放到了runs底下了，因为时间问题我只适配了`./runs/demo_train.sh`为最新的范式，其他脚本仍然是老版本。
-    - 运行脚本的方式为在`./`路径下运行如下指令`sh ./tests/demo_train.sh`，如果不在的话，可能会显示找不到运行脚本
-  - **最重要的改动，运行范式变为通过注册机制管理的机制** 
-    - 因此，所有模型共用一个`train.py`脚本，每个不同的模型，通过各自的sh文件传入相应的参数和设置。
-    - 如果你不了解注册机制，只需要知道，它可以维护一个字典，key是代表模型名的字符串，value是该模型的class名。
-    - 基于此只需要向`train.py`传入一个字符串，即可以由模型自动挑选**注册过的模型**加入训练
-## 所以需要各位完成的任务（如果你有n个模型，则需要完成如下任务n次）
-1. Clone本仓库，并从dev分支分出一个你自己的分支。
-2. 将你原来在IMDLBenCo_dev的model_zoo实现的模型放入新仓库的`model_zoo`
-3. 类比`./IMDLBenCo/model_zoo/iml_vit/iml_vit.py`的**第十六行**，在你的类名上方添加相同的`@MODELS.register_module()`，这样你的模型的*类名*就会被自动注册到全局的注册机中。
-4. 修改`./IMDLBenCo/model_zoo/__init__.py`文件，在上方用类似的方式import你实现的model的类，并且在__all__列表中添加同名字符串，类比现有的IML_ViT。**特别注意，这个文件最后一定不要commit提交，只留在你本地即可！！！这里添加只是为了测试可以正常运行，不添加主要是方便自动merge**
-5. 按照格式在`./runs`文件夹下创建名为`demo_train_XXXX.sh`的脚本，内容先copy `demo_train_iml_vit.sh`的。
-6. 修改你的`demo_train_XXXX.sh`中的`--model`字段，使其为你实现的类名，并修改其他相关字段为你的模型训练时需要的（比如`if_resizing`，`if_not_amp`等等）
-7. 尝试在`./`路径下运行如下指令`sh ./tests/demo_train_XXXX.sh`调试，有bug解决，解决不了的report到群里，找朱学康或者马晓晨。
-8. 确认可以正常开始训练后（能跑就行，不用训完），即可提交model_zoo中文件以及`./runs`下的sh脚本，以及可能需要的其他文件（tbk那里有一些yaml），**务必注意条目4不要提交__init__.py这个文件的修改。**
-9. 提交后push到github，然后通过pull Request提交一个从你的分支到dev分支的pull Request，**不要自己合并**，马晓晨或朱学康来检查并合并。
-10. 完成后，请找到你之前CASIAv2和CAT-Net数据集上最好的两个checkpoint，用如下脚本剥离优化器参数和scaler参数（减少大小）
-    ```python
-    import torch
-    model = torch.load("/mnt/data0/XXXXX/workspace/IML-VIT-rebuttal/rebuttal_TruFor/checkpoint-188.pth") # load那个checkpoint
-    output = {"model":model['model']}
-    torch.save(output, "checkpoint-188_striped.pth")
+
+## Quick start
+### Prepare environments
+Currently, you can create a PyTorch environment and run the following command to try our repo.
+```shell
+git clone https://github.com/scu-zjz/IMDLBenCo.git
+cd IMDLBenCo
+pip install -r requirements.txt
+```
+
+### Prepare IML Datasets
+- We defined three types of Dataset class
+  - `JsonDataset`, which gets input image and corresponding ground truth from a JSON file with a protocol like this:
     ```
-11. 将得到的checkpoint分别命名为`XXXX_casiav2.pth`和`XXXX_cat_net.py`，然后scp到A40(192.168.0.139)的这个路径下：`/mnt/data0/public_datasets/IML/IMDLBenCo_ckpt`
-12. 完成任务，基本收工！辛苦各位这一个月来的付出！
+    [
+        [
+          "/Dataset/CASIAv2/Tp/Tp_D_NRN_S_N_arc00013_sec00045_11700.jpg",
+          "/Dataset/CASIAv2/Gt/Tp_D_NRN_S_N_arc00013_sec00045_11700_gt.png"
+        ],
+        ......
+        [
+          "/Dataset/CASIAv2/Au/Au_nat_30198.jpg",
+          "Negative"
+        ],
+        ......
+    ]
+    ```
+    where "Negative" represents a totally black ground truth that doesn't need a path (all authentic)
+  - `ManiDataset` which loads images and ground truth pairs automatically from a directory having sub-directories named `Tp` (for input images) and `Gt` (for ground truths). This class will generate the pairs using the sorted `os.listdir()` function. You can take [this folder](https://github.com/SunnyHaze/IML-ViT/tree/main/images/sample_iml_dataset) as an example.
+  - `BalancedDataset` is a class used to manage large datasets according to the training method of [CAT-Net](https://github.com/mjkwon2021/CAT-Net). It reads an input file as [`./runs/balanced_dataset.json`](./runs/balanced_dataset.json), which contains types of datasets and corresponding paths. Then, for each epoch, it randomly samples over 1800 images from each dataset, achieving uniform sampling among datasets with various sizes.
+
+### Training
+#### Prepare pre-trained weights (if needed)
+Some models like TruFor may need pre-trained weights. Thus you need to download them in advance. You can check the guidance to download the weights in each folder under the `./IMDLBenCo/model_zoo` for the model. For example, the guidance for TruFor is under [`IMDLBenCo\model_zoo\trufor\README.md`](IMDLBenCo\model_zoo\trufor\README.md)
+
+#### Run shell script
+You can achieve customized training by modifying the dataset path and various parameters. For specific meanings of these parameters, please use python ./IMDLBenco/training_scripts/train.py -h to check.
+
+By default, all provided scrips are called as follows:
+```
+sh ./runs/demo_train_iml_vit.sh
+```
+
+#### Visualize the loss & metrics & figures
+Now, you can call a Tensorboard to visualize the training results by a browser.
+```
+tensorboard --logdir ./
+```
+
+### Customize your own model
+我们的设计范式希望绝大部分对于新模型的自定义（包括具体的模型和相应的loss）只发生在model_zoo中，所以我们采用了一套特殊的设计范式来对接其他模块。包含如下特征：
+- 损失函数在`__init__`中定义，并在`forward()`中被调用计算
+- `forward()`的形参列表必须由固定的key组成，以对应传入相应的image mask等等模型所需的信息，可以通过post_func生成更多需要的信息类型和相应的字段，并通过`forward()`函数中的同名形参进行接受。
+- `forward()`函数的返回值是一个组织好的字典，包含如下信息：
+
+
+## Citation
+Coming soon
+
+**************
+<div align="center">
+<a href="https://info.flagcounter.com/H5vw"><img src="https://s11.flagcounter.com/count2/H5vw/bg_FFFFFF/txt_000000/border_CCCCCC/columns_3/maxflags_12/viewers_0/labels_0/pageviews_1/flags_0/percent_0/" alt="Flag Counter" border="0"></a></div>
