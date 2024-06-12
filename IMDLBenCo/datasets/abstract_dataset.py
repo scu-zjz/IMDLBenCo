@@ -29,7 +29,7 @@ class AbstractDataset(Dataset):
                 common_transforms = None, 
                 edge_width = None,
                 img_loader = pil_loader,
-                post_funcs = []
+                post_funcs = None
                 ) -> None:
         super().__init__()
         self.tp_path, self.gt_path = self._init_dataset_path(path)
