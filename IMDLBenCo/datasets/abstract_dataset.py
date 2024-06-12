@@ -28,7 +28,8 @@ class AbstractDataset(Dataset):
                 output_size = (1024, 1024),
                 common_transforms = None, 
                 edge_width = None,
-                img_loader = pil_loader
+                img_loader = pil_loader,
+                post_funcs = None
                 ) -> None:
         super().__init__()
         self.tp_path, self.gt_path = self._init_dataset_path(path)
@@ -55,6 +56,7 @@ class AbstractDataset(Dataset):
         self.edge_mask_generator = None if edge_width is None else EdgeMaskGenerator(edge_width)
 
         self.img_loader = img_loader
+        self.post_funcs = post_funcs
         
     def __getitem__(self, index):
 
@@ -138,6 +140,23 @@ class AbstractDataset(Dataset):
             shape_mask = torch.zeros_like(gt_img)
             shape_mask[:, :tp_shape[0], :tp_shape[1]] = 1
             data_dict['shape_mask'] = shape_mask
+        # ====================================
+        # Post processing with callback functions on data_dict
+        if self.post_funcs == None:
+            pass    # Do nothing
+        elif isinstance(self.post_funcs, list):
+            # 如果是列表，循环调用列表中的每个回调函数
+            for func in self.post_funcs:
+                if callable(func):
+                    func(data_dict)
+                else:
+                    raise NotImplementedError(f"Element {func} in list is not callable")
+        elif callable(self.post_funcs):
+            # 如果是单个回调函数，直接调用
+            self.post_funcs(data_dict)
+        else:
+            # 其他类型抛出 NotImplementedError
+            raise NotImplementedError(f"Unsupported type: {type(self.post_funcs)}")
         # ====================================
 
         return data_dict

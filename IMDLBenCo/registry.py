@@ -70,6 +70,10 @@ class Registry:
     def name(self):
         return self._name
 
+    def has(self, name: str) -> bool:
+        """Check if a name is in the registry."""
+        return name in self._module_dict
+
     @property
     def module_dict(self):
         return self._module_dict
@@ -222,5 +226,7 @@ class Registry:
 MODELS = Registry(name = 'MODELS')
 
 DATASETS = Registry(name = 'DATASETS')
+
+POSTFUNCS = Registry(name = 'POSTFUNCS')
 
 PROTOCOLS = Registry(name = 'PROTOCOLS')
