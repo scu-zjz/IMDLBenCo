@@ -33,6 +33,7 @@ from IMDLBenCo.registry import MODELS
 from IMDLBenCo.datasets import ManiDataset, JsonDataset, BalancedDataset
 from IMDLBenCo.transforms import get_albu_transforms
 from IMDLBenCo.evaluation import PixelF1, ImageF1
+from IMDLBenCo.model_zoo import cat_net_post_func
 
 from trainer import train_one_epoch
 from tester import test_one_epoch
@@ -180,7 +181,8 @@ def main(args, model_args):
             is_resizing=args.if_resizing,
             output_size=(args.image_size, args.image_size),
             common_transforms=train_transform,
-            edge_width=args.edge_mask_width
+            edge_width=args.edge_mask_width,
+            post_funcs=cat_net_post_func
         )
     else:
         try:
@@ -190,7 +192,8 @@ def main(args, model_args):
                 is_resizing=args.if_resizing,
                 output_size=(args.image_size, args.image_size),
                 common_transforms=train_transform,
-                edge_width=args.edge_mask_width
+                edge_width=args.edge_mask_width,
+                post_funcs=cat_net_post_func
             )
         except:
             dataset_train = BalancedDataset(
@@ -199,7 +202,8 @@ def main(args, model_args):
                 is_resizing=args.if_resizing,
                 output_size=(args.image_size, args.image_size),
                 common_transforms=train_transform,
-                edge_width=args.edge_mask_width
+                edge_width=args.edge_mask_width,
+                post_funcs=cat_net_post_func
             )
     
     if os.path.isdir(args.test_data_path):
@@ -209,7 +213,8 @@ def main(args, model_args):
             is_resizing=args.if_resizing,
             output_size=(args.image_size, args.image_size),
             common_transforms=test_transform,
-            edge_width=args.edge_mask_width
+            edge_width=args.edge_mask_width,
+            post_funcs=cat_net_post_func
         )
 
     else:
@@ -219,7 +224,8 @@ def main(args, model_args):
             is_resizing=args.if_resizing,
             output_size=(args.image_size, args.image_size),
             common_transforms=test_transform,
-            edge_width=args.edge_mask_width
+            edge_width=args.edge_mask_width,
+            post_funcs=cat_net_post_func
         )
     # ------------------------------------
     
