@@ -20,6 +20,7 @@ torchrun  \
     --lr 4e-6 \
     --if_predict_label \
     --if_not_amp \
+    --find_unused_parameters \
     --image_size 512 \
     --if_resizing \
     --min_lr 0 \

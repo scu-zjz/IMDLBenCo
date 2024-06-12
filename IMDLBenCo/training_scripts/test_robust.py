@@ -1,31 +1,24 @@
-# --------------------------------------------------------
-# References:
-# MAE:  https://github.com/facebookresearch/mae
-# DeiT: https://github.com/facebookresearch/deit
-# BEiT: https://github.com/microsoft/unilm/tree/master/beit
-# --------------------------------------------------------
 import argparse
+import inspect
 import datetime
 import json
 import numpy as np
 import os
 import time
 from pathlib import Path
-
+import types
 import torch
 import torch.backends.cudnn as cudnn
 import torch.utils.data
-from torch.utils.data import Subset
 from torch.utils.tensorboard import SummaryWriter
 import sys
 sys.path.append(".")
-# assert timm.__version__ == "0.3.2"  # version check
 import timm.optim.optim_factory as optim_factory
 
 import utils.misc as misc
 
-from IMDLBenCo.registry import MODELS
-from IMDLBenCo.datasets import ManiDataset, JsonDataset
+from IMDLBenCo.registry import MODELS, POSTFUNCS
+from IMDLBenCo.datasets import ManiDataset, JsonDataset, BalancedDataset
 from IMDLBenCo.transforms import get_albu_transforms
 from IMDLBenCo.evaluation import PixelF1, ImageF1
 
@@ -34,20 +27,26 @@ from tester import test_one_epoch
 from IMDLBenCo.model_zoo import IML_ViT
 
 def get_args_parser():
-    parser = argparse.ArgumentParser('IMDLBench testing', add_help=True)
+    parser = argparse.ArgumentParser('IMDLBench Robustness test Launch!', add_help=True)
     # ++++++++++++TODO++++++++++++++++
     # 这里是每个模型定制化的input区域，包括load与训练模型，模型的magic number等等
     # 需要根据你们的模型定制化修改这里 
     # 目前这里的内容都是仅仅给IML-ViT用的
-    parser.add_argument('--vit_pretrain_path', default = None, type=str, help='path to vit pretrain model by MAE')
-    parser.add_argument('--edge_broaden', default=7, type=int,
-                        help='Edge broaden size (in pixels) for edge_generator.')
-    parser.add_argument('--edge_lambda', default=20, type=float,
-                        help='hyper-parameter of the weight for proposed edge loss.')
-    parser.add_argument('--predict_head_norm', default="BN", type=str,
-                        help="norm for predict head, can be one of 'BN', 'LN' and 'IN' (batch norm, layer norm and instance norm). It may influnce the result  on different machine or datasets!")
+    # parser.add_argument('--vit_pretrain_path', default = None, type=str, help='path to vit pretrain model by MAE')
+    # parser.add_argument('--edge_broaden', default=7, type=int,
+    #                     help='Edge broaden size (in pixels) for edge_generator.')
+    # parser.add_argument('--edge_lambda', default=20, type=float,
+    #                     help='hyper-parameter of the weight for proposed edge loss.')
+    # parser.add_argument('--predict_head_norm', default="BN", type=str,
+    #                     help="norm for predict head, can be one of 'BN', 'LN' and 'IN' (batch norm, layer norm and instance norm). It may influnce the result  on different machine or datasets!")
     # -------------------------------
+    # Model name
+    parser.add_argument('--model', default=None, type=str,
+                        help='The name of applied model', required=True)
     
+    # 可以接受label的模型是否接受label输入，并启用相关的loss。
+    parser.add_argument('--if_predict_label', action='store_true',
+                        help='Does the model that can accept labels actually take label input and enable the corresponding loss function?')
     # ----Dataset parameters 数据集相关的参数----
     parser.add_argument('--image_size', default=512, type=int,
                         help='image size of the images in datasets')
@@ -57,6 +56,8 @@ def get_args_parser():
     
     parser.add_argument('--if_resizing', action='store_true', 
                         help='resize all images to same resolution.')
+    parser.add_argument('--edge_mask_width', default=None, type=int,
+                        help='Edge broaden size (in pixels) for edge maks generator.')
     parser.add_argument('--test_data_path', default='/root/Dataset/CASIA1.0', type=str,
                         help='test dataset path, should be our json_dataset or mani_dataset format. Details are in readme.md')
     # ------------------------------------
@@ -88,32 +89,53 @@ def get_args_parser():
     parser.add_argument('--dist_on_itp', action='store_true')
     parser.add_argument('--dist_url', default='env://',
                         help='url used to set up distributed training')
-    return parser
+    args, remaining_args = parser.parse_known_args()
+    # 获取对应的模型类
+    model_class = MODELS.get(args.model)
 
-def main(args):
+    # 根据模型类动态创建参数解析器
+    model_parser = misc.create_argparser(model_class)
+    model_args = model_parser.parse_args(remaining_args)
+
+    return args, model_args
+
+def main(args, model_args):
     # init parameters for distributed training
     misc.init_distributed_mode(args)
     import torch.multiprocessing
     torch.multiprocessing.set_sharing_strategy('file_system')
     print('job dir: {}'.format(os.path.dirname(os.path.realpath(__file__))))
+    print("=====args:=====")
     print("{}".format(args).replace(', ', ',\n'))
-
+    print("=====Model args:=====")
+    print("{}".format(model_args).replace(', ', ',\n'))
     device = torch.device(args.device)
     
-
     if args.distributed:
         num_tasks = misc.get_world_size()
         global_rank = misc.get_rank()
     else:
         global_rank = 0
     
-    # ------------------ 
-    # define the model and Evaluators here
-    model = IML_ViT(
-        vit_pretrain_path = args.vit_pretrain_path,
-        predict_head_norm= args.predict_head_norm,
-        edge_lambda = args.edge_lambda
-    )
+    # ========define the model directly==========
+    # model = IML_ViT(
+    #     vit_pretrain_path = model_args.vit_pretrain_path,
+    #     predict_head_norm= model_args.predict_head_norm,
+    #     edge_lambda = model_args.edge_lambda
+    # )
+    
+    # --------------- or -------------------------
+    # Init model with registry
+    model = MODELS.get(args.model)
+    # Filt usefull args
+    if isinstance(model,(types.FunctionType, types.MethodType)):
+        model_init_params = inspect.signature(model).parameters
+    else:
+        model_init_params = inspect.signature(model.__init__).parameters
+    combined_args = {k: v for k, v in vars(args).items() if k in model_init_params}
+    combined_args.update({k: v for k, v in vars(model_args).items() if k in model_init_params})
+    model = model(**combined_args)
+    # ============================================
     from IMDLBenCo.transforms.robustness_wrapper import (
         GaussianBlurWrapper,
         GaussianNoiseWrapper,
@@ -145,8 +167,15 @@ def main(args):
         model_without_ddp = model.module
     
     start_time = time.time()
+    # get post function (if have)
+    post_function_name = f"{args.model}_post_func".lower()
+    print(f"Post function check: {post_function_name}")
+    print(POSTFUNCS)
+    if POSTFUNCS.has(post_function_name):
+        post_function = POSTFUNCS.get(post_function_name)
+    else:
+        post_function = None
     
-
     for attack_wrapper in robustness_list:
         for attack_param, attack_transform in attack_wrapper:
             args.full_log_dir = os.path.join(args.log_dir, str(attack_transform))
@@ -167,7 +196,8 @@ def main(args):
                     is_resizing=args.if_resizing,
                     output_size=(args.image_size, args.image_size),
                     common_transforms=attack_transform,
-                    edge_width=args.edge_broaden
+                    edge_width=args.edge_mask_width,
+                    post_funcs=post_function
                 )
             else:
                 dataset_test = JsonDataset(
@@ -176,7 +206,8 @@ def main(args):
                     is_resizing=args.if_resizing,
                     output_size=(args.image_size, args.image_size),
                     common_transforms=attack_transform,
-                    edge_width=args.edge_broaden
+                    edge_width=args.edge_mask_width,
+                    post_funcs=post_function
                 )
             # ------------------------------------
             print(dataset_test)
@@ -243,8 +274,7 @@ def main(args):
 
 
 if __name__ == '__main__':
-    args = get_args_parser()
-    args = args.parse_args()
+    args, model_args = get_args_parser()
     if args.output_dir:
         Path(args.output_dir).mkdir(parents=True, exist_ok=True)
-    main(args)
+    main(args, model_args)
