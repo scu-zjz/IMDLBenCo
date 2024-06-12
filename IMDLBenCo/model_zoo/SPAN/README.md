@@ -1,0 +1,1 @@
+Please download pretrained weights IMTFEv4.pt from [ManTraNet-pytorch](https://github.com/RonyAbecidan/ManTraNet-pytorch)
