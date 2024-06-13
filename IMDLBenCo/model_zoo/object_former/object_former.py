@@ -247,7 +247,7 @@ sys.path.append('./modules')
 from IMDLBenCo.registry import MODELS
 @MODELS.register_module()
 class ObjectFormer(nn.Module):
-    def __init__(self,patch_size:int =16 ,input_size:int =224, num_prototypes:int =392, embedding_dim:int =768, num_layers:int =8, init_weight_path=None):
+    def __init__(self,patch_size:int =16 ,input_size:int =224, num_prototypes:int =392, embedding_dim:int =768, num_layers:int =8, init_weight_path:str =None):
         super(ObjectFormer, self).__init__()
         self.input_size = input_size
         self.encoder_net_r = nn.Sequential(
