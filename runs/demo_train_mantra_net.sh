@@ -1,18 +1,16 @@
 base_dir="./output_dir"
 mkdir -p ${base_dir}
 
-CUDA_VISIBLE_DEVICES=4 \
+CUDA_VISIBLE_DEVICES=4,5 \
 torchrun  \
     --standalone    \
     --nnodes=1     \
-    --nproc_per_node=1 \
+    --nproc_per_node=2 \
 ./IMDLBenCo/training_scripts/train.py \
-    --model IML-ViT \
-    --edge_lambda 20 \
-    --vit_pretrain_path /mnt/data0/xiaochen/workspace/IML-ViT/pretrained-weights/mae_pretrain_vit_base.pth \
+    --model MantraNet \
     --world_size 1 \
     --batch_size 1 \
-    --data_path /mnt/data0/xiaochen/workspace/IMDLBench/balanced_dataset.json \
+    --data_path /mnt/data0/public_datasets/IML/CASIA2.0 \
     --epochs 200 \
     --lr 1e-4 \
     --image_size 1024 \

@@ -1,9 +1,3 @@
-# --------------------------------------------------------
-# References:
-# MAE:  https://github.com/facebookresearch/mae
-# DeiT: https://github.com/facebookresearch/deit
-# BEiT: https://github.com/microsoft/unilm/tree/master/beit
-# --------------------------------------------------------
 import argparse
 import inspect
 import datetime
@@ -12,18 +6,14 @@ import numpy as np
 import os
 import time
 from pathlib import Path
-
+import types
 import torch
 import torch.backends.cudnn as cudnn
 import torch.utils.data
 from torch.utils.tensorboard import SummaryWriter
-import torchvision.transforms as transforms
-import torchvision.datasets as datasets
 import sys
 sys.path.append(".")
-# assert timm.__version__ == "0.3.2"  # version check
 import timm.optim.optim_factory as optim_factory
-
 
 import utils.misc as misc
 from utils.misc import NativeScalerWithGradNormCount as NativeScaler
@@ -33,7 +23,6 @@ from IMDLBenCo.registry import MODELS, POSTFUNCS
 from IMDLBenCo.datasets import ManiDataset, JsonDataset, BalancedDataset
 from IMDLBenCo.transforms import get_albu_transforms
 from IMDLBenCo.evaluation import PixelF1, ImageF1
-# from IMDLBenCo.model_zoo import cat_net_post_func
 
 from trainer import train_one_epoch
 from tester import test_one_epoch
@@ -60,7 +49,6 @@ def get_args_parser():
     # 可以接受label的模型是否接受label输入，并启用相关的loss。
     parser.add_argument('--if_predict_label', action='store_true',
                         help='Does the model that can accept labels actually take label input and enable the corresponding loss function?')
-
     # ----Dataset parameters 数据集相关的参数----
     parser.add_argument('--image_size', default=512, type=int,
                         help='image size of the images in datasets')
@@ -92,6 +80,9 @@ def get_args_parser():
     parser.add_argument('--log_per_epoch_count', default=20, type=int,
                         help="how many loggings (data points for loss) per testing epoch in Tensorboard")
     
+    parser.add_argument('--find_unused_parameters', action='store_true',
+                        help='find_unused_parameters for DDP. Mainly solve issue for model with image-level prediction but not activate during training.')
+    
     # 不启用AMP（自动精度）进行训练
     parser.add_argument('--if_not_amp', action='store_false',
                         help='Do not use automatic precision.')
@@ -116,7 +107,6 @@ def get_args_parser():
     parser.add_argument('--log_dir', default='./output_dir',
                         help='path where to tensorboard log')
     # -----------------------
-
     
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
@@ -288,13 +278,14 @@ def main(args, model_args):
     # Init model with registry
     model = MODELS.get(args.model)
     # Filt usefull args
-    model_init_params = inspect.signature(model.__init__).parameters
+    if isinstance(model,(types.FunctionType, types.MethodType)):
+        model_init_params = inspect.signature(model).parameters
+    else:
+        model_init_params = inspect.signature(model.__init__).parameters
     combined_args = {k: v for k, v in vars(args).items() if k in model_init_params}
     combined_args.update({k: v for k, v in vars(model_args).items() if k in model_init_params})
-    
     model = model(**combined_args)
     # ============================================
-    
     evaluator_list = [
         PixelF1(threshold=0.5, mode="origin"),
         # ImageF1(threshold=0.5)
@@ -320,7 +311,7 @@ def main(args, model_args):
     print("effective batch size: %d" % eff_batch_size)
 
     if args.distributed:
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=False)
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=args.find_unused_parameters)
         model_without_ddp = model.module
     
     # following timm: set wd as 0 for bias and norm layers
@@ -394,7 +385,6 @@ def main(args, model_args):
 
 if __name__ == '__main__':
     args, model_args = get_args_parser()
-
     if args.output_dir:
         Path(args.output_dir).mkdir(parents=True, exist_ok=True)
     main(args, model_args)

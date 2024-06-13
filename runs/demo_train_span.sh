@@ -1,21 +1,19 @@
 base_dir="./output_dir"
 mkdir -p ${base_dir}
 
-CUDA_VISIBLE_DEVICES=4 \
+CUDA_VISIBLE_DEVICES=0,1,2,3 \
 torchrun  \
     --standalone    \
     --nnodes=1     \
-    --nproc_per_node=1 \
+    --nproc_per_node=4 \
 ./IMDLBenCo/training_scripts/train.py \
-    --model IML-ViT \
-    --edge_lambda 20 \
-    --vit_pretrain_path /mnt/data0/xiaochen/workspace/IML-ViT/pretrained-weights/mae_pretrain_vit_base.pth \
+    --model SPAN \
     --world_size 1 \
-    --batch_size 1 \
-    --data_path /mnt/data0/xiaochen/workspace/IMDLBench/balanced_dataset.json \
+    --batch_size 8 \
+    --data_path /mnt/data0/public_datasets/IML/CASIA2.0 \
     --epochs 200 \
     --lr 1e-4 \
-    --image_size 1024 \
+    --image_size 224 \
     --if_resizing \
     --min_lr 5e-7 \
     --weight_decay 0.05 \
@@ -27,4 +25,5 @@ torchrun  \
     --accum_iter 8 \
     --seed 42 \
     --test_period 4 \
+    --weight_path '/home/zeyu/workspace/IMDLBenCo/IMDLBenCo/model_zoo/span/IMTFEv4.pt' \
 2> ${base_dir}/error.log 1>${base_dir}/logs.log
