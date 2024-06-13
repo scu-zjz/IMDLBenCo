@@ -1,0 +1,22 @@
+CUDNN:
+  BENCHMARK: false
+  DETERMINISTIC: false
+  ENABLED: false
+WORKERS: 16
+
+DATASET:
+  NUM_CLASSES: 2
+MODEL:
+  NAME: detconfcmx
+  MODS: ('RGB','NP++')
+  EXTRA:
+      BACKBONE: mit_b2
+      DECODER: MLPDecoder
+      DECODER_EMBED_DIM: 512
+      PREPRC: 'imagenet'
+      BN_EPS: 0.001
+      BN_MOMENTUM: 0.1
+      DETECTION: 'confpool'
+      CONF: true
+TEST:
+  MODEL_FILE: '../weights/trufor.pth.tar'
