@@ -71,10 +71,14 @@ def get_args_parser():
                         help='Batch size per GPU (effective batch size is batch_size * accum_iter * # gpus')
     parser.add_argument('--test_batch_size', default=2, type=int,
                         help="batch size for testing")
-    
     parser.add_argument('--epochs', default=200, type=int)
+    # Test related
+    parser.add_argument('--no_model_eval', action='store_true', 
+                        help='Do not use model.eval() during testing.')
     parser.add_argument('--test_period', default=4, type=int,
                         help="how many epoch per testing one time")
+    
+    
     
     # 一个epoch在tensorboard中打几个loss的data point
     parser.add_argument('--log_per_epoch_count', default=20, type=int,
