@@ -56,16 +56,18 @@ def get_args_parser():
     
     parser.add_argument('--if_resizing', action='store_true', 
                         help='resize all images to same resolution.')
+    # If edge mask activated
     parser.add_argument('--edge_mask_width', default=None, type=int,
                         help='Edge broaden size (in pixels) for edge maks generator.')
     parser.add_argument('--test_data_path', default='/root/Dataset/CASIA1.0', type=str,
-                        help='test dataset path, should be our json_dataset or mani_dataset format. Details are in readme.md')
+                        help='test dataset path, should be our JsonDataset or Manidataset format. Details are in readme.md')
     # ------------------------------------
     # Testing 相关的参数
     parser.add_argument('--checkpoint_path', default = '/root/workspace/IML-ViT/output_dir', type=str, help='path to the dir where saving checkpoints')
     parser.add_argument('--test_batch_size', default=2, type=int,
                         help="batch size for testing")
-
+    parser.add_argument('--no_model_eval', action='store_true', 
+                        help='Do not use model.eval() during testing.')
     # ----输出的日志相关的参数-----------
     parser.add_argument('--output_dir', default='./output_dir',
                         help='path where to save, empty for no saving')
