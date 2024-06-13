@@ -7,11 +7,12 @@
 Xiaochen Ma†, Xuekang Zhu†, Lei Su†, Bo Du†, Zhuohang Jiang†, Bingkui Tong1†,
 Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
 
-<div style="text-align: center;"><span style="font-size: smaller;">
+<div align="center"><span style="font-size: smaller;">
 †: joint first author & equal contribution
 *: corresponding author.</span>
 </div>
 
+******
 
 ![Powered by](https://img.shields.io/badge/Based_on-Pytorch-blue?logo=pytorch) 
 ![last commit](https://img.shields.io/github/last-commit/scu-zjz/IMDLBenCo)
@@ -21,7 +22,15 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
 [![Ask Me Anything!](https://img.shields.io/badge/Official%20-Yes-1abc9c.svg)](https://GitHub.com/scu-zjz/) 
 
 
-************
+## Overview
+Welcome to IMDL-BenCo, the first comprehensive IMDL benchmark and modular codebase. 
+
+This repo:
+- decomposes the IMDL framework into standardized, reusable components and revises the model construction pipeline, improving coding efficiency and customization flexibility;
+- fully implements or incorporates training code for state-of-the-art models to establish a comprehensive IMDL benchmark;
+
+![](./images/IMDLBenCo_overview.png)
+
 ## Features under developing
 This repository has completed training, testing, robustness testing, Grad-CAM, and other functionalities for mainstream models.
 
@@ -33,15 +42,6 @@ However, more features are currently in testing for improved user experience. Up
 
 - [ ] Information library, downloading, and re-management of IMDL datasets.
 - [ ] Support for Weight & Bias visualization.
-
-## Overview
-Welcome to IMDL-BenCo, the first comprehensive IMDL benchmark and modular codebase. 
-
-This repo:
-- decomposes the IMDL framework into standardized, reusable components and revises the model construction pipeline, improving coding efficiency and customization flexibility;
-- fully implements or incorporates training code for state-of-the-art models to establish a comprehensive IMDL benchmark;
-
-![](./images/IMDLBenCo_overview.png)
 
 
 ## Quick start
@@ -93,10 +93,40 @@ tensorboard --logdir ./
 ```
 
 ### Customize your own model
-我们的设计范式希望绝大部分对于新模型的自定义（包括具体的模型和相应的loss）只发生在model_zoo中，所以我们采用了一套特殊的设计范式来对接其他模块。包含如下特征：
-- 损失函数在`__init__`中定义，并在`forward()`中被调用计算
-- `forward()`的形参列表必须由固定的key组成，以对应传入相应的image mask等等模型所需的信息，可以通过post_func生成更多需要的信息类型和相应的字段，并通过`forward()`函数中的同名形参进行接受。
-- `forward()`函数的返回值是一个组织好的字典，包含如下信息：
+Our design paradigm aims for the majority of customization for new models (including specific models and their respective losses) to occur within the model_zoo. Therefore, we have adopted a special design paradigm to interface with other modules. It includes the following features:
+
+- Loss functions are defined in `__init__` and computed within `forward()`.
+- The parameter list of `forward()` must consist of fixed keys to correspond to the input of required information such as `image`, `mask`, and so forth. Additional types of information can be generated via post_func and their respective fields, accepted through corresponding parameters with the same names in `forward().`
+- The return value of the `forward()` function is a well-organized dictionary containing the following information as an example:
+```python
+  # -----------------------------------------
+  output_dict = {
+      # loss for backward
+      "backward_loss": combined_loss,
+      # predicted mask, will calculate for metrics automatically
+      "pred_mask": mask_pred,
+      # predicted binaray label, will calculate for metrics automatically
+      "pred_label": None,
+
+      # ----values below is for visualization----
+      # automatically visualize with the key-value pairs
+      "visual_loss": {
+        # customized float for visualize, the key will shown as the figure name. Any number of keys and any str can be added as key.
+          "predict_loss": predict_loss,
+          "edge_loss": edge_loss,
+          "combined_loss": combined_loss
+      },
+
+      "visual_image": {
+        # customized tensor for visualize, the key will shown as the figure name. Any number of keys and any str can be added as key.
+          "pred_mask": mask_pred,
+          "edge_mask": edge_mask
+  }
+      # -----------------------------------------
+```
+
+Following this format, it is convenient for the framework to backpropagate the corresponding loss, compute final metrics using masks, and visualize any other scalars and tensors to observe the training process.
+
 
 
 ## Citation
