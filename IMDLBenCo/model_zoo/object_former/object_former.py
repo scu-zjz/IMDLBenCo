@@ -6,7 +6,6 @@ import sys
 from timm.layers import PatchEmbed, Mlp, DropPath, AttentionPoolLatent, RmsNorm, PatchDropout
 from timm.models.vision_transformer import Block
 
-# DCT and IDCT functions
 def dct(x):
     N = x.size(-1)
     x_v = torch.cat([x, x.flip(dims=[-1])], dim=-1)
@@ -241,15 +240,6 @@ class EncoderDecoder(nn.Module):
 
 import torchvision.models as models
 
-# class FeatureExtractor(nn.Module):
-#     def __init__(self):
-#         model = models.efficientnet_b4(pretrained=True)
-#         super(FeatureExtractor, self).__init__()
-#         self.features = nn.Sequential(*list(model.children())[0][:-1])
-
-#     def forward(self, x):
-#         # x = self.features(x)
-#         return x
 
 
 sys.path.append('./modules')
@@ -257,10 +247,9 @@ sys.path.append('./modules')
 from IMDLBenCo.registry import MODELS
 @MODELS.register_module()
 class ObjectFormer(nn.Module):
-    def __init__(self,patch_size=16 ,input_size=224, num_prototypes=392, embedding_dim=768, num_layers=8,load_pretrain=True, init_weight_path='' , is_pred_label = False):
+    def __init__(self,patch_size:int =16 ,input_size:int =224, num_prototypes:int =392, embedding_dim:int =768, num_layers:int =8, init_weight_path:str =None):
         super(ObjectFormer, self).__init__()
         self.input_size = input_size
-        self.is_pred_label = is_pred_label
         self.encoder_net_r = nn.Sequential(
             # nn.Conv2d(3, 3, kernel_size=33, stride=1, padding=0),
             nn.Conv2d(3, embedding_dim, kernel_size=patch_size, stride=patch_size)
@@ -279,16 +268,11 @@ class ObjectFormer(nn.Module):
             nn.Conv2d(384, 1, kernel_size=3, stride=1, padding=1),
             # nn.ConvTranspose2d(in_channels=1, out_channels=1, kernel_size=33, stride=1, padding=0)
         )
-        if is_pred_label:
-            self.classifier = nn.Sequential(
-                nn.AdaptiveAvgPool2d((1, 1)),
-                nn.Flatten(),
-                nn.Linear(1536, 1),
-                nn.Sigmoid()
-            )
+
         self.BCE_loss = nn.BCEWithLogitsLoss()
         self.pos_encoding = nn.Parameter(torch.randn(1, 2 * (input_size // patch_size) ** 2, embedding_dim) * .02)
-        if load_pretrain:
+
+        if init_weight_path is not None:
             self._load_pretrain(init_weight_path)
     def _load_pretrain(self,init_weight_path):
         state_dict = torch.load(init_weight_path)
@@ -331,12 +315,9 @@ class ObjectFormer(nn.Module):
         # mask_pred = self.localization[-1](mask_pred)
         mask_loss = self.BCE_loss(mask_pred, mask)
         mask_pred = torch.sigmoid(mask_pred)
-        if self.is_pred_label:
-            lable_pred = self.classifier(refined_patches).squeeze(1)
-            label_loss = self.BCE_loss(lable_pred, label.float())
-        else:
-            label_loss = torch.tensor(0.0)
-            lable_pred = None
+
+        label_loss = torch.tensor(0.0)
+        lable_pred = None
         combined_loss =  mask_loss + label_loss
         output_dict = {
             # loss for backward
