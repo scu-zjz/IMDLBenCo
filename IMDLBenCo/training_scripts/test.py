@@ -60,7 +60,7 @@ def get_args_parser():
     parser.add_argument('--edge_mask_width', default=None, type=int,
                         help='Edge broaden size (in pixels) for edge maks generator.')
     parser.add_argument('--test_data_json', default='/root/Dataset/CASIA1.0', type=str,
-                        help='test dataset path, should be our json_dataset or mani_dataset format. Details are in readme.md')
+                        help='test dataset json, should be a json file contains many datasets. Details are in readme.md')
     # ------------------------------------
     # Testing 相关的参数
     parser.add_argument('--checkpoint_path', default = '/root/workspace/IML-ViT/output_dir', type=str, help='path to the dir where saving checkpoints')
