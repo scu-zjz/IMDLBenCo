@@ -4,7 +4,7 @@
 
 # IMDLBenCo:  Comprehensive Benchmark and Codebase for Image Manipulation Detection & Localization
 
-Xiaochen Ma†, Xuekang Zhu†, Lei Su†, Bo Du†, Zhuohang Jiang†, Bingkui Tong1†,
+Xiaochen Ma†, Xuekang Zhu†, Lei Su†, Bo Du†, Zhuohang Jiang†, Bingkui Tong†,
 Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
 
 <div align="center"><span style="font-size: smaller;">
