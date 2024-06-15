@@ -8,11 +8,13 @@ Xiaochen Ma†, Xuekang Zhu†, Lei Su†, Bo Du†, Zhuohang Jiang†, Bingkui 
 Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
 
 <div align="center"><span style="font-size: smaller;">
-†: joint first author & equal contribution
-*: corresponding author.</span>
-</div>
+<br>†: joint first author & equal contribution
+*: corresponding author</br>
+🏎️Special thanks to Dr. <a href="https://cs.scu.edu.cn/info/1359/17839.htm">Wentao Feng</a> for the workplace, computation power, and physical infrastructure support.</span>    
 
-******
+</div>  
+
+******  
 
 ![Powered by](https://img.shields.io/badge/Based_on-Pytorch-blue?logo=pytorch) 
 ![last commit](https://img.shields.io/github/last-commit/scu-zjz/IMDLBenCo)
