@@ -214,7 +214,8 @@ def main(args, model_args):
                 dataset_test, 
                 num_replicas=num_tasks, 
                 rank=global_rank, 
-                shuffle=False
+                shuffle=False,
+                drop_last=True
             )
             print("Sampler_test = %s" % str(sampler_test))
         else:

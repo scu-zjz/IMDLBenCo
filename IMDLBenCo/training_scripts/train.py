@@ -241,7 +241,7 @@ def main(args, model_args):
             dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
         )
         sampler_test = torch.utils.data.DistributedSampler(
-            dataset_test, num_replicas=num_tasks, rank=global_rank, shuffle=True
+            dataset_test, num_replicas=num_tasks, rank=global_rank, shuffle=False, drop_last=True
         )
         print("Sampler_train = %s" % str(sampler_train))
         print("Sampler_test = %s" % str(sampler_test))
@@ -268,7 +268,7 @@ def main(args, model_args):
         batch_size=args.test_batch_size,
         num_workers=args.num_workers,
         pin_memory=args.pin_mem,
-        drop_last=False,
+        drop_last=True,
     )
     
     # ========define the model directly==========
