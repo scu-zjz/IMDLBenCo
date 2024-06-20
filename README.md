@@ -15,7 +15,7 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
 </div>  
 
 ******  
-
+[![Arxiv](https://img.shields.io/badge/arXiv-2406.10580-b31b1b.svg)](https://arxiv.org/abs/2406.10580)
 ![Powered by](https://img.shields.io/badge/Based_on-Pytorch-blue?logo=pytorch) 
 ![last commit](https://img.shields.io/github/last-commit/scu-zjz/IMDLBenCo)
 ![GitHub](https://img.shields.io/github/license/scu-zjz/IMDLBenCo?logo=license)
@@ -132,7 +132,17 @@ Following this format, it is convenient for the framework to backpropagate the c
 
 
 ## Citation
-Coming soon
+If you find our work valuable and it has contributed to your research or projects, we kindly request that you cite our paper. Your recognition is a driving force for our continuous improvement and innovation🤗.
+```
+@misc{ma2024imdlbenco,
+    title={IMDL-BenCo: A Comprehensive Benchmark and Codebase for Image Manipulation Detection & Localization},
+    author={Xiaochen Ma and Xuekang Zhu and Lei Su and Bo Du and Zhuohang Jiang and Bingkui Tong and Zeyu Lei and Xinyu Yang and Chi-Man Pun and Jiancheng Lv and Jizhe Zhou},
+    year={2024},
+    eprint={2406.10580},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
+}
+```
 
 **************
 <div align="center">
