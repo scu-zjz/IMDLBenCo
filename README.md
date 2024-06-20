@@ -23,8 +23,9 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
 ![GitHub](https://img.shields.io/github/license/scu-zjz/IMDLBenCo?logo=license)
 ![](https://img.shields.io/github/repo-size/scu-zjz/IMDLBenCo?color=green)
 ![](https://img.shields.io/github/stars/scu-zjz/IMDLBenCo/)
+<!----
 [![Ask Me Anything!](https://img.shields.io/badge/Official%20-Yes-1abc9c.svg)](https://GitHub.com/scu-zjz/) 
-
+---->
 
 ## Overview
 Welcome to IMDL-BenCo, the first comprehensive IMDL benchmark and modular codebase. 
