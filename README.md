@@ -15,8 +15,10 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
 </div>  
 
 ******  
-[![Arxiv](https://img.shields.io/badge/arXiv-2406.10580-b31b1b.svg)](https://arxiv.org/abs/2406.10580)
-![Powered by](https://img.shields.io/badge/Based_on-Pytorch-blue?logo=pytorch) 
+
+[![Powered by](https://img.shields.io/badge/Based_on-Pytorch-blue?logo=pytorch)](https://pytorch.org/) 
+[![Arxiv](https://img.shields.io/badge/arXiv-2406.10580-b31b1b.svg?logo=arxiv)](https://arxiv.org/abs/2406.10580)
+[![Documents](https://img.shields.io/badge/Documents-Click_here-brightgreen?logo=read-the-docs)](https://scu-zjz.github.io/IMDLBenCo-doc/)
 ![last commit](https://img.shields.io/github/last-commit/scu-zjz/IMDLBenCo)
 ![GitHub](https://img.shields.io/github/license/scu-zjz/IMDLBenCo?logo=license)
 ![](https://img.shields.io/github/repo-size/scu-zjz/IMDLBenCo?color=green)
