@@ -34,6 +34,9 @@ This repo:
 - decomposes the IMDL framework into standardized, reusable components and revises the model construction pipeline, improving coding efficiency and customization flexibility;
 - fully implements or incorporates training code for state-of-the-art models to establish a comprehensive IMDL benchmark;
 
+
+**Important! The current documentation and tutorials are not complete. This is a project that requires a lot of manpower, and we will do our best to complete it as quickly as possible. 
+Currently, you can use the demo following the brief tutorial below.**
 ![](./images/IMDLBenCo_overview.png)
 
 ## Features under developing
