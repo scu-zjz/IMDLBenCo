@@ -34,8 +34,8 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
 - Cite and star if you feel helpful. This will encourage us a lot 🥰.   
 
 ☑️**About the Developers:**  
-- IMDL-BenCo project is initialized and supervised by Associate Professor 🏀 [_Jizhe Zhou_(周吉喆)](https://knightzjz.github.io/), Sichuan University🇨🇳.
-- IMDL-BenCo's codebase design and coding leader is [Xiaochen Ma(马晓晨)](https://me.xiaochen.world/).   
+- IMDL-BenCo project is initialized and supervised by Associate Professor 🏀 [_Jizhe Zhou_ (周吉喆)](https://knightzjz.github.io/), Sichuan University🇨🇳.
+- IMDL-BenCo's codebase designer and coding leader is [_Xiaochen Ma_ (马晓晨)](https://me.xiaochen.world/).   
 - IMDL-BenCo is jointly sponsored and advised by Prof. _Jiancheng LV_ (吕建成), Sichuan University 🐼, and Prof. _Chi-Man PUN_ (潘治文), University of Macau 🇲🇴, through the [Research Center of Machine Learning and Industry Intelligence, China MOE](https://center.dicalab.cn/) platform.  
 
 **Important! The current documentation and tutorials are not complete. This is a project that requires a lot of manpower, and we will do our best to complete it as quickly as possible. 
