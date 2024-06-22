@@ -2,7 +2,7 @@
 <img src="images/IMDL_BenCo.png" alt="OSQ" style="width: 28%; min-width: 150px; display: block; margin: auto;">
 </p>
 
-# IMDLBenCo:  Comprehensive Benchmark and Codebase for Image Manipulation Detection & Localization
+# IMDL-BenCo:  Comprehensive Benchmark and Codebase for Image Manipulation Detection & Localization
 <div align="center">
 Xiaochen Ma†, Xuekang Zhu†, Lei Su†, Bo Du†, Zhuohang Jiang†, Bingkui Tong†,
 Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
@@ -34,7 +34,7 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
 - Cite and star if you feel helpful. This will encourage us a lot 🥰.   
 
 ☑️**About the Developers:**  
-- IMDL-BenCo's project leader/supervisor is Associate Professor 🏀 [_Jizhe Zhou_ (周吉喆)](https://knightzjz.github.io/), Sichuan University🇨🇳.  
+- IMDL-BenCo's project leader/supervisor is Associate Professor 🏀[_Jizhe Zhou_ (周吉喆)](https://knightzjz.github.io/), Sichuan University🇨🇳.  
 - IMDL-BenCo's codebase designer and coding leader is Research Assitant [_Xiaochen Ma_ (马晓晨)](https://me.xiaochen.world/), Sichuan University🇨🇳.  
 - IMDL-BenCo is jointly sponsored and advised by Prof. _Jiancheng LV_ (吕建成), Sichuan University 🐼, and Prof. _Chi-Man PUN_ (潘治文), University of Macau 🇲🇴, through the [Research Center of Machine Learning and Industry Intelligence, China MOE](https://center.dicalab.cn/) platform.  
 
