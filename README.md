@@ -28,12 +28,16 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
 ---->
 
 ## Overview
-Welcome to IMDL-BenCo, the first comprehensive IMDL benchmark and modular codebase. 
+☑️**Welcome to IMDL-BenCo, the first comprehensive IMDL benchmark and modular codebase.**  
+- You can find the pre-print version of our paper through [IMDL-BenCo](https://arxiv.org/pdf/2406.10580).  
+- This codebase is under long-term maintenance and updating. New features, extra baseline/sota models, and bug fixes will be continuously involved. You can find the corresponding plan here shortly.
+- This repo decomposes the IMDL framework into **standardized, reusable components and revises the model construction pipeline**, improving coding efficiency and customization flexibility.
+- This repo **fully implements or incorporates training code for state-of-the-art models** to establish a comprehensive IMDL benchmark.
+- Cite and star if you feel helpful. This will encourage us a lot 🥰.   
 
-This repo:
-- decomposes the IMDL framework into standardized, reusable components and revises the model construction pipeline, improving coding efficiency and customization flexibility;
-- fully implements or incorporates training code for state-of-the-art models to establish a comprehensive IMDL benchmark;
-
+☑️**About Us:**  
+- We are the Special Interest Group on IML, led by Associate Professor 🏀 _Jizhe Zhou_(周吉喆), under Sichuan University🇨🇳. Please refer to [here](https://knightzjz.github.io/) for more information.  
+- This work is jointly advised by Prof. _Jiancheng LV_ (吕建成), Sichuan University 🐼, and Prof. _Chi-Man PUN_ (潘治文), University of Macau 🇲🇴, through the [Research Center of Machine Learning and Industry Intelligence, China MOE](https://center.dicalab.cn/).  
 
 **Important! The current documentation and tutorials are not complete. This is a project that requires a lot of manpower, and we will do our best to complete it as quickly as possible. 
 Currently, you can use the demo following the brief tutorial below.**
