@@ -3,15 +3,14 @@
 </p>
 
 # IMDLBenCo:  Comprehensive Benchmark and Codebase for Image Manipulation Detection & Localization
-
+<div align="center">
 Xiaochen Ma†, Xuekang Zhu†, Lei Su†, Bo Du†, Zhuohang Jiang†, Bingkui Tong†,
 Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
-
+</div>  
 <div align="center"><span style="font-size: smaller;">
 <br>†: joint first author & equal contribution
 *: corresponding author</br>
 🏎️Special thanks to Dr. <a href="https://cs.scu.edu.cn/info/1359/17839.htm">Wentao Feng</a> for the workplace, computation power, and physical infrastructure support.</span>    
-
 </div>  
 
 ******  
@@ -28,16 +27,16 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
 ---->
 
 ## Overview
-☑️**Welcome to IMDL-BenCo, the first comprehensive IMDL benchmark and modular codebase.**  
-- You can find the pre-print version of our paper through [IMDL-BenCo](https://arxiv.org/pdf/2406.10580).  
+☑️**Welcome to IMDL-BenCo, the first comprehensive IMDL benchmark and modular codebase.**    
 - This codebase is under long-term maintenance and updating. New features, extra baseline/sota models, and bug fixes will be continuously involved. You can find the corresponding plan here shortly.
 - This repo decomposes the IMDL framework into **standardized, reusable components and revises the model construction pipeline**, improving coding efficiency and customization flexibility.
 - This repo **fully implements or incorporates training code for state-of-the-art models** to establish a comprehensive IMDL benchmark.
 - Cite and star if you feel helpful. This will encourage us a lot 🥰.   
 
-☑️**About Us:**  
-- We are the Special Interest Group on IML, led by Associate Professor 🏀 _Jizhe Zhou_(周吉喆), under Sichuan University🇨🇳. Please refer to [here](https://knightzjz.github.io/) for more information.  
-- This work is jointly advised by Prof. _Jiancheng LV_ (吕建成), Sichuan University 🐼, and Prof. _Chi-Man PUN_ (潘治文), University of Macau 🇲🇴, through the [Research Center of Machine Learning and Industry Intelligence, China MOE](https://center.dicalab.cn/).  
+☑️**About the Developers:**  
+- IMDL-BenCo project is initialized and supervised by Associate Professor 🏀 [_Jizhe Zhou_(周吉喆)](https://knightzjz.github.io/), Sichuan University🇨🇳.
+- IMDL-BenCo's codebase design and coding leader is [Xiaochen Ma(马晓晨)](https://me.xiaochen.world/).   
+- IMDL-BenCo is jointly sponsored and advised by Prof. _Jiancheng LV_ (吕建成), Sichuan University 🐼, and Prof. _Chi-Man PUN_ (潘治文), University of Macau 🇲🇴, through the [Research Center of Machine Learning and Industry Intelligence, China MOE](https://center.dicalab.cn/) platform.  
 
 **Important! The current documentation and tutorials are not complete. This is a project that requires a lot of manpower, and we will do our best to complete it as quickly as possible. 
 Currently, you can use the demo following the brief tutorial below.**
