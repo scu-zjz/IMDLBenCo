@@ -10,3 +10,5 @@ fvcore
 tensorboard
 grad_cam
 ttach
+appdirs
+colorama

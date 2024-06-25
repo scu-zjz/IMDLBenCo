@@ -15,8 +15,8 @@ import sys
 sys.path.append(".")
 import timm.optim.optim_factory as optim_factory
 
-import utils.misc as misc
-from utils.misc import NativeScalerWithGradNormCount as NativeScaler
+import IMDLBenCo.training_scripts.utils.misc as misc
+from IMDLBenCo.training_scripts.utils.misc import NativeScalerWithGradNormCount as NativeScaler
 
 
 from IMDLBenCo.registry import MODELS, POSTFUNCS
@@ -24,8 +24,8 @@ from IMDLBenCo.datasets import ManiDataset, JsonDataset, BalancedDataset
 from IMDLBenCo.transforms import get_albu_transforms
 from IMDLBenCo.evaluation import PixelF1, ImageF1
 
-from trainer import train_one_epoch
-from tester import test_one_epoch
+from IMDLBenCo.training_scripts.trainer import train_one_epoch
+from IMDLBenCo.training_scripts.tester import test_one_epoch
 
 from IMDLBenCo.model_zoo import IML_ViT
 

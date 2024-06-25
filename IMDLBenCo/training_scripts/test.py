@@ -15,14 +15,14 @@ import sys
 sys.path.append(".")
 import timm.optim.optim_factory as optim_factory
 
-import utils.misc as misc
+import IMDLBenCo.training_scripts.utils.misc as misc
 
 from IMDLBenCo.registry import MODELS, POSTFUNCS
-from IMDLBenCo.datasets import ManiDataset, JsonDataset, BalancedDataset
+from IMDLBenCo.datasets import ManiDataset, JsonDataset
 from IMDLBenCo.transforms import get_albu_transforms
 from IMDLBenCo.evaluation import PixelF1, ImageF1
 
-from tester import test_one_epoch
+from IMDLBenCo.training_scripts.tester import test_one_epoch
 
 from IMDLBenCo.model_zoo import IML_ViT
 
@@ -136,11 +136,13 @@ def main(args, model_args):
     # --------------- or -------------------------
     # Init model with registry
     model = MODELS.get(args.model)
+    
     # Filt usefull args
     if isinstance(model,(types.FunctionType, types.MethodType)):
         model_init_params = inspect.signature(model).parameters
     else:
         model_init_params = inspect.signature(model.__init__).parameters
+        
     combined_args = {k: v for k, v in vars(args).items() if k in model_init_params}
     combined_args.update({k: v for k, v in vars(model_args).items() if k in model_init_params})
     model = model(**combined_args)

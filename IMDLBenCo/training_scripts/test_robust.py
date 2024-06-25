@@ -15,14 +15,14 @@ import sys
 sys.path.append(".")
 import timm.optim.optim_factory as optim_factory
 
-import utils.misc as misc
+import IMDLBenCo.training_scripts.utils.misc as misc
 
 from IMDLBenCo.registry import MODELS, POSTFUNCS
-from IMDLBenCo.datasets import ManiDataset, JsonDataset, BalancedDataset
+from IMDLBenCo.datasets import ManiDataset, JsonDataset
 from IMDLBenCo.transforms import get_albu_transforms
 from IMDLBenCo.evaluation import PixelF1, ImageF1
 
-from tester import test_one_epoch
+from IMDLBenCo.training_scripts.tester import test_one_epoch
 
 from IMDLBenCo.model_zoo import IML_ViT
 

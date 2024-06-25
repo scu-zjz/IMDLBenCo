@@ -9,3 +9,5 @@ robust_dir*
 *.jpg
 dist_test.py
 ckpt/
+
+*.egg-info
