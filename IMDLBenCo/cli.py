@@ -6,18 +6,31 @@ from pathlib import Path
 from IMDLBenCo.utils.paths import BencoPath
 
 
-def copy_files(source, destination):
-    # 列出所有模板文件并复制到目标目录
+def copy_files(source: Path, destination):
+    yes_to_all, none_to_all=False, False
+    
     for template_file in source.iterdir():
         if template_file.is_file():
+            if template_file.name == "__init__.py":
+                continue  # 跳过 __init__.py 文件
             destination_file = Path(destination) / template_file.name
             if destination_file.exists():
-                # 提示用户确认覆盖
-                print(f'  {Fore.YELLOW}Warning: {template_file.name} already exists in {destination}.{Style.RESET_ALL}')
-                user_input = input(f'  Do you want to overwrite {template_file.name}? (y/n): ').strip().lower()
-                if user_input != 'y':
+                if none_to_all:
                     print(f'  Skipping {template_file.name}.\n')
                     continue
+                if not yes_to_all:
+                    # 提示用户确认覆盖
+                    print(f'  {Fore.YELLOW}Warning: {template_file.name} already exists in {destination}.{Style.RESET_ALL}')
+                    user_input = input(f'  Do you want to overwrite {template_file.name}? (y/n/all/none): ').strip().lower()
+                    if user_input == 'all':
+                        yes_to_all = True
+                    elif user_input == 'none':
+                        none_to_all = True
+                        print(f'  Skipping {template_file.name}.\n')
+                        continue
+                    elif user_input != 'y':
+                        print(f'  Skipping {template_file.name}.\n')
+                        continue
             shutil.copy(template_file, destination_file)
             print(f'  Copied {template_file.name} to {destination}.\n')
 
@@ -77,6 +90,13 @@ def init(config):
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
     copy_files(BencoPath.get_runs_dir(), target_dir)
+    
+    # Copy demo configs
+    target_dir = os.path.join(current_dir,'IMDLBenCo', 'configs')
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+    copy_files(BencoPath.get_configs_dir(), target_dir)
+    
     
     
     print(f'{Fore.GREEN}Successfully initialized IMDLBenCo scripts.{Style.RESET_ALL}')

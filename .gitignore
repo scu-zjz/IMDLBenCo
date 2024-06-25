@@ -11,3 +11,5 @@ dist_test.py
 ckpt/
 
 *.egg-info
+build
+dist

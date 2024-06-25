@@ -24,4 +24,8 @@ class BencoPath:
 
     @classmethod
     def get_runs_dir(cls):
-        return cls.get_package_dir().parent / 'runs'
+        return cls.get_package_dir() / 'runs'
+    
+    @classmethod
+    def get_configs_dir(cls):
+        return cls.get_package_dir() / 'configs'

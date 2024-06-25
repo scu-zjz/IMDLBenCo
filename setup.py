@@ -17,7 +17,11 @@ def readme():
         content = f.read()
     return content
 
-print(find_packages(exclude="tests"))
+def requirements():
+    with open('requirements.txt') as f:
+        requirements = f.read().splitlines()
+    return requirements
+
 # exit(0)
 
 setup(
@@ -61,12 +65,9 @@ setup(
     packages=find_packages(),
     python_requires=">=3.7, <4",
     
-    
-    include_package_data=True,
-    install_requires=[
-        'torch',  # 你的包依赖的其他库
-        # 其他依赖
-    ],
+
+    include_package_data=True, #
+    install_requires=requirements(),
     license='CC-BY-4.0',
     entry_points={
         'console_scripts': [
