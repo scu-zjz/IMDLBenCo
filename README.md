@@ -48,14 +48,49 @@ This repository has completed training, testing, robustness testing, Grad-CAM, a
 However, more features are currently in testing for improved user experience. Updates will be rolled out frequently. Stay tuned!
 
 - [ ] Install and download via PyPI
-- [ ] Based on command line invocation, similar to `conda` in Anaconda.
-   - [ ] Dynamically create all training scripts to support personalized modifications.
+   - [x] You can experience on test PyPI now! 
+- [x] Based on command line invocation, similar to `conda` in Anaconda.
+   - [x] Dynamically create all training scripts to support personalized modifications.
 
 - [ ] Information library, downloading, and re-management of IMDL datasets.
 - [ ] Support for Weight & Bias visualization.
 
+## Quick Experience about our Modern Paradigm (New!)
+We are rapidly advancing the testing of the CLI and other features. In the meantime, you can experience the development paradigm designed by IMDL-BenCo via `Test PyPI`. We strive to provide users with enough personalized options while maximizing the efficiency, accuracy, and fairness of completing IML experiments.
 
-## Quick start
+```shell
+pip install imdlbenco==0.1.10 -i  https://test.pypi.org/simple/
+```
+
+If you encounter issues with some packages not being found on `test PyPI`, you can pre-install the packages listed in this repository's `requirements.txt` with normal PyPI.
+
+```shell
+pip install -r requirements.txt
+```
+After installation, you can create a clean working directory and execute the following command. IMDL-BenCo will automatically generate some files in the current directory as a minimal demo for you to experience our paradigm.
+
+```shell
+benco init
+```
+If everything works correctly, you can find following files:
+
+```
+.
+├── mymodel.py
+├── README-IMDLBenCo.md
+├── test_datasets.json
+├── test_mymodel.sh
+├── test.py
+├── test_robust_mymodel.sh
+├── test_robust.py
+├── train_mymodel.sh
+└── train.py
+```
+At this point, you can complete the testing process by following the guidance in `README-IMDLBenCo.md`. Alternatively, you can directly refer to the [`README-IMDLBenCo.md`]([./IMDLBenCo/statics/base/README-IMDLBenCo.md](https://github.com/scu-zjz/IMDLBenCo/blob/dev-cmd/IMDLBenCo/statics/base/README-IMDLBenCo.md)) in this repository to understand the relevant paradigm.
+
+> Currently, it may be necessary to correctly configure the dataset before running. Please refer to the configuration below temporarily, or follow the dataset organization method in [IML-ViT](https://github.com/SunnyHaze/IML-ViT) to configure it. Then, passing the corresponding location into the shell script will be ok.
+
+## Quick start(Will be revised soon)
 ### Prepare environments
 Currently, you can create a PyTorch environment and run the following command to try our repo.
 ```shell
