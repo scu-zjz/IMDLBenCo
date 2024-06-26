@@ -86,7 +86,7 @@ If everything works correctly, you can find following files:
 ├── train_mymodel.sh
 └── train.py
 ```
-At this point, you can complete the testing process by following the guidance in `README-IMDLBenCo.md`. Alternatively, you can directly refer to the [`README-IMDLBenCo.md`]([./IMDLBenCo/statics/base/README-IMDLBenCo.md](https://github.com/scu-zjz/IMDLBenCo/blob/dev-cmd/IMDLBenCo/statics/base/README-IMDLBenCo.md)) in this repository to understand the relevant paradigm.
+At this point, you can complete the testing process by following the guidance in `README-IMDLBenCo.md`. Alternatively, you can directly refer to the [`README-IMDLBenCo.md`](https://github.com/scu-zjz/IMDLBenCo/blob/dev-cmd/IMDLBenCo/statics/base/README-IMDLBenCo.md) in this repository to understand the relevant paradigm.
 
 > Currently, it may be necessary to correctly configure the dataset before running. Please refer to the configuration below temporarily, or follow the dataset organization method in [IML-ViT](https://github.com/SunnyHaze/IML-ViT) to configure it. Then, passing the corresponding location into the shell script will be ok.
 
