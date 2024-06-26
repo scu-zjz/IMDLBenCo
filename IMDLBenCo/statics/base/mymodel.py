@@ -12,32 +12,40 @@ class MyModel(nn.Module):
         """
         super().__init__()
         
+        # Useless, just an example
         self.MyModel_Customized_param = MyModel_Customized_param
         self.pre_trained_weights = pre_trained_weights
 
-        # does not matter
+        # A single layer conv2d 
         self.demo_layer = nn.Conv2d(
-            in_channels=1,
-            out_channels=3,
+            in_channels=3,
+            out_channels=1,
             kernel_size=3,
             stride=1,
             padding=1,
         )
 
-        self.loss_func = torch.mean
+        # A simple loss
+        self.loss_func_a = nn.BCEWithLogitsLoss()
         
     def forward(self, image, mask, label, *args, **kwargs):
+        # simple forwarding
+        pred_mask = self.demo_layer(image)
         
-        loss = self.loss_func(image)
-        pred_mask = torch.mean(image, dim=1, keepdim=True)
-        pred_label = torch.mean(image)
+        # simple loss
+        loss_a = self.loss_func_a(pred_mask, mask)
+        loss_b = torch.abs(torch.mean(pred_mask - mask))
+        combined_loss = loss_a + loss_b
+        
+        
+        pred_label = torch.mean(pred_mask)
         
         inverse_mask = 1 - mask
         
         # ----------Output interface--------------------------------------
         output_dict = {
             # loss for backward
-            "backward_loss": loss,
+            "backward_loss": combined_loss,
             # predicted mask, will calculate for metrics automatically
             "pred_mask": pred_mask,
             # predicted binaray label, will calculate for metrics automatically
@@ -47,8 +55,9 @@ class MyModel(nn.Module):
             # automatically visualize with the key-value pairs
             "visual_loss": {
                 # keys here can be customized by yourself.
-                "predict_loss": loss,
-                'lable_loss' : loss
+                "predict_loss": combined_loss,
+                'loss_a' : loss_a,
+                "I am loss_b :)": loss_b, 
             },
 
             "visual_image": {

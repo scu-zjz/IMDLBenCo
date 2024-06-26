@@ -12,7 +12,7 @@ torchrun  \
     --pre_trained_weights '<change to your path>' \
     --world_size 1 \
     --test_data_json "./test_datasets.json" \
-    --checkpoint_path "./output_dir/checkpoint-0.pth" \
+    --checkpoint_path "./output_dir/" \
     --test_batch_size 2 \
     --image_size 512 \
     --if_resizing \
