@@ -1,105 +1,52 @@
 import argparse
 import os
-import shutil
+
 from colorama import init, Fore, Style
 from pathlib import Path
-from IMDLBenCo.utils.paths import BencoPath
+# from IMDLBenCo.utils.paths import BencoPath
+from IMDLBenCo.cli_funcs import cli_init, cli_guide, cli_data
 
-
-def copy_files(source: Path, destination):
-    yes_to_all, none_to_all=False, False
+def main():
+    parser = argparse.ArgumentParser(description='Command line interface for IMDLBenCo')
+    subparsers = parser.add_subparsers(dest='command', required=True)
     
-    for template_file in source.iterdir():
-        if template_file.is_file():
-            if template_file.name == "__init__.py":
-                continue  # 跳过 __init__.py 文件
-            destination_file = Path(destination) / template_file.name
-            if destination_file.exists():
-                if none_to_all:
-                    print(f'  Skipping {template_file.name}.\n')
-                    continue
-                if not yes_to_all:
-                    # 提示用户确认覆盖
-                    print(f'  {Fore.YELLOW}Warning: {template_file.name} already exists in {destination}.{Style.RESET_ALL}')
-                    user_input = input(f'  Do you want to overwrite {template_file.name}? (y/n/all/none): ').strip().lower()
-                    if user_input == 'all':
-                        yes_to_all = True
-                    elif user_input == 'none':
-                        none_to_all = True
-                        print(f'  Skipping {template_file.name}.\n')
-                        continue
-                    elif user_input != 'y':
-                        print(f'  Skipping {template_file.name}.\n')
-                        continue
-            shutil.copy(template_file, destination_file)
-            print(f'  Copied {template_file.name} to {destination}.\n')
+    
+    # init command
+    parser_init = subparsers.add_parser('init', help='Initialize the environment')
+    init_subparsers = parser_init.add_subparsers(dest='subcommand', required=False)
+    
+    # init base
+    parser_init_base = init_subparsers.add_parser('base', help='Initialize the base environment')
+    parser_init_base.set_defaults(subcommand='base')
 
-# def copy_template_files(destination):
-#     # 获取当前文件所在目录
-#     current_dir = BencoPath.get_package_dir()
-#     # print(current_dir)
-#     templates_dir = BencoPath.get_templates_dir()
-
-#     # 列出所有模板文件并复制到目标目录
-#     for template_file in templates_dir.iterdir():
-#         if template_file.is_file():
-#             destination_file = Path(destination) / template_file.name
-#             if destination_file.exists():
-#                 # 提示用户确认覆盖
-#                 print(f'  {Fore.YELLOW}Warning: {template_file.name} already exists in {destination}.{Style.RESET_ALL}')
-#                 user_input = input(f'  Do you want to overwrite {template_file.name}? (y/n): ').strip().lower()
-#                 if user_input != 'y':
-#                     print(f'  Skipping {template_file.name}.\n')
-#                     continue
-#             shutil.copy(template_file, destination_file)
-#             print(f'  Copied {template_file.name} to {destination}.\n')
-
-def main():    
-    parser = argparse.ArgumentParser(description='Command line for IMDLBenCo')
-    parser.add_argument(
-        'command', 
-        choices=[
-            'init', 
-            'guide', # TODO
-            'data'   # TODO
-        ], 
-        help='Command to execute'
-    )
+    # init model_zoo
+    parser_init_model_zoo = init_subparsers.add_parser('model_zoo', help='Initialize the model zoo')
+    
+    # init backbone
+    parser_init_backbone = init_subparsers.add_parser('backbone', help='Initialize the backbone')
+    
+    
+    # guide command
+    parser_guide = subparsers.add_parser('guide', help='Guide for using the tool')
+    
+    # data command
+    parser_data = subparsers.add_parser('data', help='Manage data')
+    
     parser.add_argument('--config', type=str, help='Path to the configuration file')
     
     args = parser.parse_args()
     
+    
     if args.command == 'init':
-        init(args.config)
+        if args.subcommand is None:
+            args.subcommand = 'base'
+        cli_init(args.config, subcommand=args.subcommand)
+        
     elif args.command == 'guide':
-        train(args.config)
+        cli_guide(args.config)
     elif args.command == 'data':
-        evaluate(args.config)
+        cli_data(args.config)
 
-def init(config):
-    print(f'{Fore.GREEN}Initializing in current working directory...{Style.RESET_ALL}')
-    current_dir = os.getcwd()
-    # Copy train scripts
-    target_dir = os.path.join(current_dir, 'IMDLBenCo', 'training_scripts')
-    if not os.path.exists(target_dir):
-        os.makedirs(target_dir)
-    copy_files(BencoPath.get_templates_dir(), target_dir)
-    
-    # Copy demo runs
-    target_dir = os.path.join(current_dir, 'runs')
-    if not os.path.exists(target_dir):
-        os.makedirs(target_dir)
-    copy_files(BencoPath.get_runs_dir(), target_dir)
-    
-    # Copy demo configs
-    target_dir = os.path.join(current_dir,'IMDLBenCo', 'configs')
-    if not os.path.exists(target_dir):
-        os.makedirs(target_dir)
-    copy_files(BencoPath.get_configs_dir(), target_dir)
-    
-    
-    
-    print(f'{Fore.GREEN}Successfully initialized IMDLBenCo scripts.{Style.RESET_ALL}')
 def train(config):
     print(f'Training with config: {config}')
 

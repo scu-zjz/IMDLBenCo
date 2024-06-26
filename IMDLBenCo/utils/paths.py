@@ -5,7 +5,7 @@ import appdirs
 
 class BencoPath:
     app_name = "IMDLBenCo"
-    app_author = "MyCompany"
+    app_author = "IMDLBenCo-authors"
 
     @classmethod
     def get_data_storage_path(cls):
@@ -23,9 +23,13 @@ class BencoPath:
         return cls.get_package_dir() / 'training_scripts'
 
     @classmethod
-    def get_runs_dir(cls):
-        return cls.get_package_dir() / 'runs'
+    def get_init_base_dir(cls):
+        return cls.get_package_dir() / 'statics' / 'base'
+
+    @classmethod
+    def get_model_zoo_runs_dir(cls):
+        return cls.get_package_dir() / 'statics' / 'model_zoo' / 'runs'
     
     @classmethod
-    def get_configs_dir(cls):
-        return cls.get_package_dir() / 'configs'
+    def get_model_zoo_configs_dir(cls):
+        return cls.get_package_dir() / 'statics' / 'model_zoo' / 'configs'

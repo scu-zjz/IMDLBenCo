@@ -228,5 +228,3 @@ MODELS = Registry(name = 'MODELS')
 DATASETS = Registry(name = 'DATASETS')
 
 POSTFUNCS = Registry(name = 'POSTFUNCS')
-
-PROTOCOLS = Registry(name = 'PROTOCOLS')
