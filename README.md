@@ -56,17 +56,12 @@ However, more features are currently in testing for improved user experience. Up
 - [ ] Support for Weight & Bias visualization.
 
 ## Quick Experience about our Modern Paradigm (New!)
-We are rapidly advancing the testing of the CLI and other features. In the meantime, you can experience the development paradigm designed by IMDL-BenCo via `Test PyPI`. We strive to provide users with enough personalized options while maximizing the efficiency, accuracy, and fairness of completing IML experiments.
+We are rapidly advancing the testing of the CLI and other features. In the meantime, you can experience the development paradigm designed by IMDL-BenCo via `PyPI`. We strive to provide users with enough personalized options while maximizing the efficiency, accuracy, and fairness of completing IML experiments.
 
 ```shell
-pip install imdlbenco==0.1.10 -i  https://test.pypi.org/simple/
+pip install imdlbenco==0.1.10
 ```
 
-If you encounter issues with some packages not being found on `test PyPI`, you can pre-install the packages listed in this repository's `requirements.txt` with normal PyPI.
-
-```shell
-pip install -r requirements.txt
-```
 After installation, you can create a clean working directory and execute the following command. IMDL-BenCo will automatically generate some files in the current directory as a minimal demo for you to experience our paradigm.
 
 ```shell
