@@ -9,7 +9,7 @@ from .span.SPAN import SPAN
 from .trufor.trufor import Trufor
 
 __all__ = [
-    'IML_ViT',
+    # 'IML_ViT',
     "Cat_Net",
     'cat_net_post_func',
     "MantraNet",

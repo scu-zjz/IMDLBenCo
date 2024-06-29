@@ -5,7 +5,7 @@ from typing import Iterable
 
 import torch
 
-import utils.misc as misc
+import IMDLBenCo.training_scripts.utils.misc as misc
 from IMDLBenCo.training_scripts.schedular.cos_lr_schedular import adjust_learning_rate # TODO
 
 from IMDLBenCo.datasets import denormalize

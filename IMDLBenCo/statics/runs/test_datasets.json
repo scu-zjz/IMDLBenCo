@@ -1,0 +1,8 @@
+{
+    "Columbia": "/mnt/data0/public_datasets/IML/Columbia.json",
+    "NIST16_1024": "/mnt/data0/public_datasets/IML/NIST16_1024",
+    "NIST16_cleaned": "/mnt/data0/public_datasets/IML/NIST16_1024_cleaning",
+    "coverage": "/mnt/data0/public_datasets/IML/coverage.json",
+    "CASIAv1": "/mnt/data0/public_datasets/IML/CASIA1.0",
+    "IMD20_1024": "/mnt/data0/public_datasets/IML/IMD_20_1024"
+}

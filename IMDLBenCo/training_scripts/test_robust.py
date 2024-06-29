@@ -15,16 +15,23 @@ import sys
 sys.path.append(".")
 import timm.optim.optim_factory as optim_factory
 
-import utils.misc as misc
+import IMDLBenCo.training_scripts.utils.misc as misc
 
 from IMDLBenCo.registry import MODELS, POSTFUNCS
-from IMDLBenCo.datasets import ManiDataset, JsonDataset, BalancedDataset
+from IMDLBenCo.datasets import ManiDataset, JsonDataset
 from IMDLBenCo.transforms import get_albu_transforms
 from IMDLBenCo.evaluation import PixelF1, ImageF1
 
-from tester import test_one_epoch
+from IMDLBenCo.training_scripts.tester import test_one_epoch
 
 from IMDLBenCo.model_zoo import IML_ViT
+
+# robustness wrappers
+from IMDLBenCo.transforms.robustness_wrapper import (
+    GaussianBlurWrapper,
+    GaussianNoiseWrapper,
+    JpegCompressionWrapper
+)
 
 def get_args_parser():
     parser = argparse.ArgumentParser('IMDLBench Robustness test Launch!', add_help=True)
@@ -138,11 +145,7 @@ def main(args, model_args):
     combined_args.update({k: v for k, v in vars(model_args).items() if k in model_init_params})
     model = model(**combined_args)
     # ============================================
-    from IMDLBenCo.transforms.robustness_wrapper import (
-        GaussianBlurWrapper,
-        GaussianNoiseWrapper,
-        JpegCompressionWrapper
-    )
+
     robustness_list = [
             GaussianBlurWrapper([0, 3, 7, 11, 15, 19, 23]),
             GaussianNoiseWrapper([3, 7, 11, 15, 19, 23]), 
