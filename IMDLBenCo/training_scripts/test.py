@@ -1,19 +1,12 @@
-import argparse
-import inspect
-import datetime
-import json
-import numpy as np
 import os
+import json
 import time
-from pathlib import Path
 import types
-import torch
-import torch.backends.cudnn as cudnn
-import torch.utils.data
+import inspect
+import argparse
+import datetime
+from pathlib import Path
 from torch.utils.tensorboard import SummaryWriter
-import sys
-sys.path.append(".")
-import timm.optim.optim_factory as optim_factory
 
 import IMDLBenCo.training_scripts.utils.misc as misc
 
@@ -23,8 +16,6 @@ from IMDLBenCo.transforms import get_albu_transforms
 from IMDLBenCo.evaluation import PixelF1, ImageF1
 
 from IMDLBenCo.training_scripts.tester import test_one_epoch
-
-from IMDLBenCo.model_zoo import IML_ViT
 
 def get_args_parser():
     parser = argparse.ArgumentParser('IMDLBench testing launch!', add_help=True)
