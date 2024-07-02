@@ -85,14 +85,6 @@ At this point, you can complete the testing process by following the guidance in
 
 > Currently, it may be necessary to correctly configure the dataset before running. Please refer to the configuration below temporarily, or follow the dataset organization method in [IML-ViT](https://github.com/SunnyHaze/IML-ViT) to configure it. Then, passing the corresponding location into the shell script will be ok.
 
-## Quick start(Will be revised soon)
-### Prepare environments
-Currently, you can create a PyTorch environment and run the following command to try our repo.
-```shell
-git clone https://github.com/scu-zjz/IMDLBenCo.git
-cd IMDLBenCo
-pip install -r requirements.txt
-```
 
 ### Prepare IML Datasets
 - We defined three types of Dataset class
