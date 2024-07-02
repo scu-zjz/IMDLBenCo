@@ -12,7 +12,7 @@ torchrun  \
     --vit_pretrain_path /mnt/data0/xiaochen/workspace/IML-ViT/pretrained-weights/mae_pretrain_vit_base.pth \
     --world_size 1 \
     --batch_size 1 \
-    --data_path /mnt/data0/xiaochen/workspace/IMDLBench/balanced_dataset.json \
+    --data_path ./balanced_dataset.json \
     --epochs 200 \
     --lr 1e-4 \
     --image_size 1024 \

@@ -12,6 +12,15 @@ def _copy_train_scripts():
         os.makedirs(target_dir)
     copy_files(BencoPath.get_templates_dir(), target_dir)
     
+    
+def _copy_dataset_json():
+    current_dir = os.getcwd()
+    # Copy train scripts
+    target_dir = os.path.join(current_dir)
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+    copy_files(BencoPath.get_dataset_json_dir(), target_dir)
+    
 def _copy_init_base_files():
     current_dir = os.getcwd()
     # Copy train scripts
@@ -73,6 +82,7 @@ def cli_init(config, subcommand):
     if subcommand == "base":
         _copy_train_scripts()
         _copy_init_base_files()
+        _copy_dataset_json()
         for name in ['train.py', 'test.py', 'test_robust.py']:
             injected_str = "from mymodel import MyModel"
             current_dir = os.getcwd()
@@ -83,11 +93,11 @@ def cli_init(config, subcommand):
         _copy_train_scripts()
         _copy_demo_runs() 
         _copy_demo_configs()
-    
+        _copy_dataset_json()
     # base initialize that only contain default scripts
     if subcommand == "backbone":
         _copy_train_scripts()
         _copy_demo_runs() 
         _copy_demo_configs()
-       
+        _copy_dataset_json()
     print(f'{Fore.GREEN}Successfully initialized IMDLBenCo scripts.{Style.RESET_ALL}')

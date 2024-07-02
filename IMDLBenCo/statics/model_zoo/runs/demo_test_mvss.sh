@@ -10,7 +10,7 @@ torchrun  \
     --model MVSSNet \
     --edge_mask_width 7 \
     --world_size 1 \
-    --test_data_json "./runs/test_datasets.json" \
+    --test_data_json "./test_datasets.json" \
     --checkpoint_path "/mnt/data0/sulei/workspace/IMDLBench/output_dir_MVSS_bachsize32_best" \
     --test_batch_size 3 \
     --image_size 512 \

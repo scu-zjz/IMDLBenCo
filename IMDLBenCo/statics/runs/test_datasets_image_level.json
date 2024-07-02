@@ -1,6 +1,0 @@
-{
-    "Columbia": "/mnt/data0/public_datasets/IML/Columbia_full.json",
-    "NIST16_1024": "/mnt/data0/public_datasets/IML/NIST16_full.json",
-    "coverage": "/mnt/data0/public_datasets/IML/coverage_full.json",
-    "IMD20_1024": "/mnt/data0/public_datasets/IML/IMD_20_1024_full.json"
-}

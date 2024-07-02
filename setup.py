@@ -60,7 +60,13 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3 :: Only",
     ],
-    keywords="AI, image manipulation localization",  # Optional
+    keywords=[
+        "AI",
+        "artificial intelligence",
+        "image forensics",
+        "image manipulation localization",
+        "image manipulation detection"
+        ],  # Optional
     
     packages=find_packages(),
     python_requires=">=3.7, <4",

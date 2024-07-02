@@ -10,7 +10,7 @@ torchrun  \
     --model MVSSNet \
     --world_size 1 \
     --batch_size 1 \
-    --data_path /mnt/data0/sulei/workspace/IMDLBenCo/runs/balanced_dataset.json \
+    --data_path ./balanced_dataset.json \
     --epochs 200 \
     --lr 2e-5 \
     --image_size 512 \
