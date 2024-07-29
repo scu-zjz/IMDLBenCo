@@ -10,7 +10,7 @@ torchrun  \
     --model SPAN \
     --edge_mask_width 7 \
     --world_size 1 \
-    --test_data_json "./runs/test_datasets.json" \
+    --test_data_json "./test_datasets.json" \
     --checkpoint_path "/home/zeyu/workspace/IMDLBenCo/output_dir" \
     --test_batch_size 3 \
     --image_size 224 \

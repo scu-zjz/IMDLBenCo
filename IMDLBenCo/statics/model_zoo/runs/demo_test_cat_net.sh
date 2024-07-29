@@ -9,7 +9,7 @@ torchrun  \
 ./test.py \
     --model Cat_Net \
     --world_size 1 \
-    --test_data_json "./runs/test_datasets.json" \
+    --test_data_json "./test_datasets.json" \
     --checkpoint_path "/home/bingkui/IMDLBenCo/output_dir_balance" \
     --test_batch_size 3 \
     --if_resizing \

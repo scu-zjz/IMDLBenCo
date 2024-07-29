@@ -1,33 +1,24 @@
-import argparse
-import inspect
-import datetime
-import json
-import numpy as np
 import os
+import json
 import time
-from pathlib import Path
 import types
-import torch
-import torch.backends.cudnn as cudnn
-import torch.utils.data
-from torch.utils.tensorboard import SummaryWriter
-import sys
-sys.path.append(".")
+import inspect
+import argparse
+import datetime
+import numpy as np
+from pathlib import Path
 import timm.optim.optim_factory as optim_factory
-
+from torch.utils.tensorboard import SummaryWriter
 import IMDLBenCo.training_scripts.utils.misc as misc
-from IMDLBenCo.training_scripts.utils.misc import NativeScalerWithGradNormCount as NativeScaler
-
 
 from IMDLBenCo.registry import MODELS, POSTFUNCS
-from IMDLBenCo.datasets import ManiDataset, JsonDataset, BalancedDataset
 from IMDLBenCo.transforms import get_albu_transforms
-from IMDLBenCo.evaluation import PixelF1, ImageF1
 
-from IMDLBenCo.training_scripts.trainer import train_one_epoch
+from IMDLBenCo.datasets import ManiDataset, JsonDataset, BalancedDataset
+from IMDLBenCo.evaluation import PixelF1, ImageF1 # TODO You can select evaluator you like here
+
 from IMDLBenCo.training_scripts.tester import test_one_epoch
-
-from IMDLBenCo.model_zoo import IML_ViT
+from IMDLBenCo.training_scripts.trainer import train_one_epoch
 
 def get_args_parser():
     parser = argparse.ArgumentParser('IMDLBenCo training launch!', add_help=True)
@@ -324,7 +315,7 @@ def main(args, model_args):
     args.momentum=0.9
     optimizer  = optim_factory.create_optimizer(args, model_without_ddp)
     print(optimizer)
-    loss_scaler = NativeScaler()
+    loss_scaler = misc.NativeScalerWithGradNormCount()
 
     misc.load_model(args=args, model_without_ddp=model_without_ddp, optimizer=optimizer, loss_scaler=loss_scaler)
 

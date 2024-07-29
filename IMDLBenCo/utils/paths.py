@@ -21,6 +21,10 @@ class BencoPath:
     @classmethod
     def get_templates_dir(cls):
         return cls.get_package_dir() / 'training_scripts'
+    
+    @classmethod
+    def get_dataset_json_dir(cls):
+        return cls.get_package_dir() / 'statics' / 'dataset_json'
 
     @classmethod
     def get_init_base_dir(cls):

@@ -7,7 +7,7 @@ torchrun  \
     --nnodes=1     \
     --nproc_per_node=1 \
 ./train.py \
-    --model IML-ViT \
+    --model IML_ViT \
     --edge_lambda 20 \
     --vit_pretrain_path /mnt/data0/xiaochen/workspace/IML-ViT/pretrained-weights/mae_pretrain_vit_base.pth \
     --world_size 1 \

@@ -10,7 +10,7 @@ torchrun  \
     --model ObjectFormer \
     --edge_mask_width 7 \
     --world_size 1 \
-    --test_data_json "./runs/test_datasets.json" \
+    --test_data_json "./test_datasets.json" \
     --checkpoint_path "/mnt/data0/username/workspace/IMDLBench/output_test/standard" \
     --test_batch_size 3 \
     --image_size 224 \
