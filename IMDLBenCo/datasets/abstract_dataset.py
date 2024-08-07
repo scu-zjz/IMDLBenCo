@@ -91,6 +91,11 @@ class AbstractDataset(Dataset):
             res_dict = self.common_transforms(image = tp_img, mask = gt_img)
             tp_img = res_dict['image']
             gt_img = res_dict['mask']
+            # copy_move may cause the label change, so we need to update the label
+            if np.all(gt_img == 0):
+                label = 0
+            else:
+                label = 1
             
         # redefine the shape, here is np.array
         tp_shape = tp_img.shape[0:2]  # H, W, 3 去掉最后一个3
