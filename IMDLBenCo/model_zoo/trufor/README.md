@@ -1,12 +1,12 @@
 ### Pretrain weights
 
-The segformer pretrain weights are from the official repository: https://github.com/grip-unina/TruFor.
+The segformer pretrain weights are from the official repository: https://github.com/NVlabs/SegFormer.
 
-As the author does not provide the pretrain weights of the NoisePrint++, we separate the weights from the checkpoint provided:
+We also provide SegFormer weights in the following link. As the author does not provide the pretrain weights of the NoisePrint++, we separate the weights from the checkpoint provided:
 
-百度网盘:https://pan.baidu.com/s/16TRLzxw2ak4Z3keu5IWgNA?pwd=m4sx 提取码: m4sx
+百度网盘:链接: https://pan.baidu.com/s/1SAXJMiWbUsssk7RtwiOdMQ?pwd=3hmr 提取码: 3hmr 
 
-Google Drive:https://drive.google.com/file/d/1emiiOnIDUHgZCEpA-k74e5EkeOoGoK0I/view?usp=sharing
+Google Drive:https://drive.google.com/drive/folders/1Q9RxEHsIcRWeZjJRBtAwW4au5QybIoP2?usp=sharing
 
 ### Training Phase
 
