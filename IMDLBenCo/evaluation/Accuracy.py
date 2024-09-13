@@ -132,7 +132,7 @@ def test_origin_image_ACC():
     float_tensor = torch.rand(DATA_LEN * num_gpus).cuda(local_rank)  # 生成一个长度为 200*num_gpus 的浮点数 tensor
     int_tensor = torch.randint(0, 2, (DATA_LEN * num_gpus,)).cuda(local_rank)  # 生成一个包含 0 或 1 的整数 tensor
     
-    evaluator = Image_Accuracy(threshold=0.5)
+    evaluator = ImageAccuracy(threshold=0.5)
     dist.barrier()
     dist.broadcast(float_tensor, src=0)
     dist.broadcast(int_tensor, src=0)
@@ -177,7 +177,7 @@ def test_pixal_ACC():
     # 生成一个 shape_mask
     shape_mask = torch.randint(0, 2, (batch_size, channels, height, width)).float()
     # shape_mask = None
-    acc = Pixel_Accuracy(mode="origin")
+    acc = PixelAccuracy(mode="origin")
     acc_value_pytorch = acc.batch_update(predict, mask, shape_mask)
     print(acc_value_pytorch)
 
