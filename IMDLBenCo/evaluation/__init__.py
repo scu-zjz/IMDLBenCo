@@ -1,8 +1,9 @@
 from .temp import cal_confusion_matrix, genertate_region_mask, cal_F1
 from .abstract_class import AbstractEvaluator
 from .F1 import ImageF1, PixelF1
+from .AUC import ImageAUC, PixelAUC
 from .IOU import PixelIOU
-from .Accuracy import Image_Accuracy, Pixel_Accuracy
+from .Accuracy import ImageAccuracy, PixelAccuracy
 from .gradcam.grad_camera_visualize import grad_camera_visualize
 
 __all__ = [
@@ -14,8 +15,10 @@ __all__ = [
     'AbstractEvaluator',
     'ImageF1',
     'PixelF1',
+    'ImageAUC',
+    'PixelAUC',
     'PixelIOU',
-    'Image_Accuracy', 
-    'Pixel_Accuracy', 
+    'ImageAccuracy', 
+    'PixelAccuracy', 
     'grad_camera_visualize'
     ]

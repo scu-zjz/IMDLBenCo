@@ -7,7 +7,7 @@ from .abstract_class import AbstractEvaluator
 import torch.distributed as dist
 import os
 
-class Image_Accuracy(AbstractEvaluator):
+class ImageAccuracy(AbstractEvaluator):
     def __init__(self, threshold=0.5) -> None:
         super().__init__()
         self.name = "image-level Accuracy"
@@ -35,7 +35,7 @@ class Image_Accuracy(AbstractEvaluator):
         self.true_cnt = torch.tensor(0.0, dtype=torch.float64, device='cuda')
         self.cnt = torch.tensor(0.0, dtype=torch.float64, device='cuda')
 
-class Pixel_Accuracy(AbstractEvaluator):
+class PixelAccuracy(AbstractEvaluator):
     def __init__(self,threshold = 0.5, mode="origin") -> None:
         super().__init__()
         self.name = "pixel-level Accuracy"
