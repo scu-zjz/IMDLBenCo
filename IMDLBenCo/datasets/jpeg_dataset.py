@@ -92,6 +92,11 @@ class MetaCatnetDataset(AbstractDataset):
             res_dict = self.common_transforms(image = tp_img, mask = gt_img)
             tp_img = res_dict['image']
             gt_img = res_dict['mask']
+            # copy_move may cause the label change, so we need to update the label
+            if np.all(gt_img == 0):
+                label = 0
+            else:
+                label = 1
         
         gt_img =  (np.mean(gt_img, axis = 2, keepdims = True)  > 127.5 ) * 1.0 # fuse the 3 channels to 1 channel, and make it binary(0 or 1)
         gt_img =  gt_img.transpose(2,0,1)[0] # H W C -> C H W -> H W
