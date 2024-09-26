@@ -2,7 +2,7 @@
 <img src="images/IMDL_BenCo.png" alt="OSQ" style="width: 28%; min-width: 150px; display: block; margin: auto;">
 </p>
 
-# IMDL-BenCo:  Comprehensive Benchmark and Codebase for Image Manipulation Detection & Localization
+# [NeurIPS24 Spotlight] IMDL-BenCo:  Comprehensive Benchmark and Codebase for Image Manipulation Detection & Localization
 <div align="center">
 Xiaochen Ma†, Xuekang Zhu†, Lei Su†, Bo Du†, Zhuohang Jiang†, Bingkui Tong†,
 Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
@@ -24,6 +24,9 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, Jizhe Zhou*
 <!----
 [![Ask Me Anything!](https://img.shields.io/badge/Official%20-Yes-1abc9c.svg)](https://GitHub.com/scu-zjz/) 
 ---->
+
+## News
+- [2024/09/26] This paper, IMDL-BenCo has been accepted as **Spotlight** to NeurIPS 2024 Track Datasets and Benchmarks!!! 🎉🎉🎉
 
 ## Overview
 ☑️**Welcome to IMDL-BenCo, the first comprehensive IMDL benchmark and modular codebase.**    
