@@ -81,5 +81,15 @@ If you find our work valuable and it has contributed to your research or project
 ```
 
 **************
+## Statistics and Star History
 <div align="center">
+   
+<a href="https://star-history.com/#scu-zjz/IMDLBenCo&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=scu-zjz/IMDLBenCo&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=scu-zjz/IMDLBenCo&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=scu-zjz/IMDLBenCo&type=Date" />
+ </picture>
+</a>
+
 <a href="https://info.flagcounter.com/H5vw"><img src="https://s11.flagcounter.com/count2/H5vw/bg_FFFFFF/txt_000000/border_CCCCCC/columns_3/maxflags_12/viewers_0/labels_0/pageviews_1/flags_0/percent_0/" alt="Flag Counter" border="0"></a></div>
