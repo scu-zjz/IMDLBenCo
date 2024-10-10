@@ -58,7 +58,7 @@ IMDL-BenCo is a Python library managed on PYPI now, it's easy to install by foll
 pip install imdlbenco
 ```
 
-For further guidance, please check our official documentation; we provided an English version and a Chinese version:
+For further guidance, please **click the buttons below** for official documentation:
 
 [![Documents](https://img.shields.io/badge/Documents-Go_to_Main_Page-brightgreen?logo=read-the-docs)](https://scu-zjz.github.io/IMDLBenCo-doc/) [![Documents](https://img.shields.io/badge/中文文档-前往主页-brightgreen?logo=read-the-docs)](https://scu-zjz.github.io/IMDLBenCo-doc/zh/)
 
