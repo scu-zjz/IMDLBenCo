@@ -74,7 +74,7 @@ class Trufor(nn.Module):
         pred_mask, conf, det, npp = self.model(image)
         pred_mask = F.softmax(pred_mask, dim=1)
         pred_mask = pred_mask[:, -1, ...].unsqueeze(1)
-        pred_label = torch.sigmoid(det)
+        pred_label = torch.sigmoid(det).squeeze()
 
         if self.phase == 2:
             loss_ce = self.weighted_cross_entropy_loss(pred_mask, mask)
