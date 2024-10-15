@@ -456,7 +456,7 @@ def batch_norm(X, eps=0.001):
 
 class IMTFE(nn.Module):
     # ********** IMAGE MANIPULATION TRACE FEATURE EXTRACTOR *********
-    def __init__(self, weight_path, in_channel=3,device=device):
+    def __init__(self, in_channel=3,device=device):
         super(IMTFE, self).__init__()
 
         self.relu = nn.ReLU()
