@@ -456,7 +456,7 @@ def batch_norm(X, eps=0.001):
 
 class IMTFE(nn.Module):
     # ********** IMAGE MANIPULATION TRACE FEATURE EXTRACTOR *********
-    def __init__(self, in_channel=3,device=device):
+    def __init__(self, weight_path, in_channel=3,device=device):
         super(IMTFE, self).__init__()
 
         self.relu = nn.ReLU()
@@ -474,7 +474,7 @@ class IMTFE(nn.Module):
         self.bayar_final[2, 2] = -1
 
         self.SRMConv2D = nn.Conv2d(in_channel, 9, 5, 1, padding=0, bias=False).to(self.device)
-        self.SRMConv2D.weight.data=torch.load('/home/zeyu/workspace/IMDLBenCo/IMDLBenCo/model_zoo/span/IMTFEv4.pt')['SRMConv2D.weight'].to(self.device)
+        self.SRMConv2D.weight.data=torch.load(weight_path)['SRMConv2D.weight'].to(self.device)
 
         ##SRM filters (fixed)
         for param in self.SRMConv2D.parameters():
