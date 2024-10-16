@@ -42,7 +42,8 @@ class Trufor(nn.Module):
         else:
             raise NotImplementedError('Trufor training phase not implement!')
 
-    def weighted_cross_entropy_loss(self, prediction, target, gamma_0=0.5, gamma_1=2.5):
+    def weighted_cross_entropy_loss(self, prediction, target, gamma_0=0.5, gamma_1=2.5, epsilon=1e-7):
+        prediction = torch.clamp(prediction, epsilon, 1 - epsilon)
         loss = - (gamma_0 * (1 - target) * torch.log(1 - prediction) +
                   gamma_1 * target * torch.log(prediction))
         return loss.mean()
