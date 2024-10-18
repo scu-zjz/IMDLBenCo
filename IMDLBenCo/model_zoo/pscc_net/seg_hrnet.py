@@ -444,7 +444,8 @@ class HighResolutionNet(nn.Module):
             for k, v in pretrained_dict.items():
                 if 'model.' in k:
                     k = k.replace('model.', '')
-
+                if k.startswith('module.'):
+                    k = k[7:]
                 if k in model_dict.keys():
                     pretrained_dict_used[k] = v
                     nopretrained_dict.pop(k)
