@@ -28,11 +28,11 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 ---->
 
 ## News
-- [2024/09/26] This paper, IMDL-BenCo has been accepted as **Spotlight** to NeurIPS 2024 Track Datasets and Benchmarks!!! 🎉🎉🎉
+- [2024/09/26] This paper, IMDL-BenCo, has been accepted as **Spotlight** to NeurIPS 2024 Track Datasets and Benchmarks!!! 🎉🎉🎉
 
 > [!WARNING]
 > **Existing bug**:
->    1. The `Image-Acc` evaluator may not return an accurate value under the current version during multi-GPU inference. Please be careful with it! We are locating the exact issue. Details found in issue: https://github.com/scu-zjz/IMDLBenCo/issues/42.
+>    1. The `Image-Acc` evaluator may not return an accurate value under the current version during multi-GPU inference. Please be careful with it! We are locating the exact issue. Details found in issue: https://github.com/scu-zjz/IMDLBenCo/issues/42. Thanks [@iamwangyabin](https://github.com/iamwangyabin) for reporting the issue.
 
 ## Overview
 ☑️**Welcome to IMDL-BenCo, the first comprehensive IMDL benchmark and modular codebase.**    
