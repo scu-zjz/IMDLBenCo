@@ -2,16 +2,15 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
+# from abstract_class import AbstractEvaluator
 from .abstract_class import AbstractEvaluator
 import torch.distributed as dist
 import os
 from sklearn.metrics import roc_auc_score
-
 class ImageAUC(AbstractEvaluator):
-    def __init__(self, threshold=0.5) -> None:
+    def __init__(self) -> None:
         self.name = "image-level AUC"
         self.desc = "image-level AUC"
-        self.threshold = threshold
         self.predict_label = torch.tensor([], device='cuda')
         self.label = torch.tensor([], device='cuda')
         self.cnt = torch.tensor(0, device='cuda')
@@ -40,31 +39,31 @@ class ImageAUC(AbstractEvaluator):
     
     
     def batch_update(self, predict_label, label, *args, **kwargs):
-        predict = (predict_label > self.threshold).float().cuda()
+
+        predict = predict_label.float().cuda()
         self.predict_label = torch.cat([self.predict_label, predict], dim=0)
         self.label = torch.cat([self.label, label], dim=0)
         self.cnt += torch.tensor(len(label), device='cuda')
         return None
 
     def epoch_update(self):
-        cnt = torch.tensor(self.cnt, dtype=torch.int64).cuda()
+        # cnt = torch.tensor(self.cnt, dtype=torch.int64).cuda()
+        cnt = self.cnt.clone().detach().cuda()
         t_gather_cnt = [torch.zeros(1, dtype=torch.int64, device='cuda') for _ in range(dist.get_world_size())]
         dist.barrier()
         dist.all_gather(t_gather_cnt, cnt)
         
         max_cnt = torch.max(torch.stack(t_gather_cnt, dim=0), dim=0)[0].cuda()
         max_idx = torch.max(torch.stack(t_gather_cnt, dim=0), dim=0)[1].cuda()
-        # print(max_cnt)
         if max_cnt > self.cnt:
-            # print("yes")
             self.predict_label = torch.cat([self.predict_label, torch.zeros(max_cnt-self.cnt, device='cuda')], dim=0)
             self.label = torch.cat([self.label, torch.zeros(max_cnt-self.cnt, device='cuda')], dim=0)
 
         t_label = self.label.float().cuda()
         t_predict_label = self.predict_label.float().cuda()
 
-        t_gather_predict_label = [torch.zeros(max_cnt, dtype=torch.float64, device='cuda') for _ in range(dist.get_world_size())]
-        t_gather_label = [torch.zeros(max_cnt, dtype=torch.float64, device='cuda') for _ in range(dist.get_world_size())]
+        t_gather_predict_label = [torch.zeros(max_cnt, dtype=torch.float32, device='cuda') for _ in range(dist.get_world_size())]
+        t_gather_label = [torch.zeros(max_cnt, dtype=torch.float32, device='cuda') for _ in range(dist.get_world_size())]
         dist.barrier()
 
         dist.all_gather(t_gather_label, t_label)
@@ -159,8 +158,8 @@ class PixelAUC(AbstractEvaluator):
         return None
 
 
-def test_origin_image_f1():
-    # test imageF1
+def test_origin_image_AUC():
+    # test imageauc
     # 初始化分布式环境
     dist.init_process_group(backend='nccl', init_method='env://')
     
@@ -179,7 +178,7 @@ def test_origin_image_f1():
     # print(float_tensor)
     # print(int_tensor)
     
-    evaluator = ImageAUC(threshold=0.5)
+    evaluator = ImageAUC()
     dist.barrier()
     dist.broadcast(float_tensor, src=0)
     dist.broadcast(int_tensor, src=0)
@@ -210,8 +209,8 @@ def test_origin_image_f1():
     # 模拟一个 epoch 结束，调用 epoch_update 来计算 F1 分数
     gpu_f1_score = evaluator.epoch_update()
     if(dist.get_rank() == 0):
-        print(f"AUC Score: {gpu_f1_score}")
-        print(f"{roc_auc_score(all_labels[:-50], (all_predicts[:-50] > 0.5).astype(int))}")
+        print(f"Ours AUC Score: {gpu_f1_score}")
+        print(f"Sklearn AUC Score:{roc_auc_score(all_labels[:-50], all_predicts[:-50])}")
 
 
     # 清理分布式环境
@@ -267,4 +266,4 @@ if __name__ == "__main__":
 
     # # print(f"PyTorch Image AUC: {image_auc_value_pytorch}")
     # # print(f"scikit-learn Image AUC: {image_auc_value_sklearn}")
-    test_origin_image_f1()
+    test_origin_image_AUC()
