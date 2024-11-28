@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-from abstract_class import AbstractEvaluator
-# from .abstract_class import AbstractEvaluator
+# from abstract_class import AbstractEvaluator
+from .abstract_class import AbstractEvaluator
 import torch.distributed as dist
 import os
 from sklearn.metrics import roc_auc_score
