@@ -4,7 +4,7 @@
 
 # [NeurIPS'24 Spotlight] IMDL-BenCo: Comprehensive Benchmark and Codebase for Image Manipulation Detection & Localization
 <div align="center">
-   
+
 [Xiaochen Ma](https://ma.xiaochen.world/) †, Xuekang Zhu†, Lei Su†, Bo Du†, Zhuohang Jiang†, Bingkui Tong†,
 Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knightzjz.github.io/) *
 
@@ -15,7 +15,7 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 🏎️Special thanks to Dr. <a href="https://cs.scu.edu.cn/info/1359/17839.htm">Wentao Feng</a> for the workplace, computation power, and physical infrastructure support.</span>    
 </div>  
 
-******  
+******
 
 [![Powered by](https://img.shields.io/badge/Based_on-Pytorch-blue?logo=pytorch)](https://pytorch.org/) 
 [![Arxiv](https://img.shields.io/badge/arXiv-2406.10580-b31b1b.svg?logo=arxiv)](https://arxiv.org/abs/2406.10580)
@@ -28,6 +28,8 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 ---->
 
 ## News
+- [2024/12/10] [Mesorch](https://arxiv.org/pdf/2412.13753)[![Stars](https://img.shields.io/github/stars/scu-zjz/Mesorch?style=social)](https://github.com/scu-zjz/Mesorch), our new IML backbone model, which adopts a parallel CNN+Transformer structure to simultaneously deal with image semantics and non-semantics, is accepted by AAAI 25!!!🎉🎉🎉
+- [2024/12/10] [Sparse-ViT](https://arxiv.org/pdf/2412.14598)[![Stars](https://img.shields.io/github/stars/scu-zjz/SparseViT?style=social)](https://github.com/scu-zjz/SparseViT), the very first solution of constructing the non-semantic feature extractor through a self-supervised manner in IML is proposed by us and accepted by AAAI 25!!!🎉🎉🎉
 - [2024/09/26] This paper, IMDL-BenCo, has been accepted as **Spotlight** to NeurIPS 2024 Track Datasets and Benchmarks!!! 🎉🎉🎉
 
 > [!WARNING]
@@ -95,7 +97,7 @@ If you find our work valuable and it has contributed to your research or project
 **************
 ## Statistics and Star History
 <div align="center">
-   
+
 <a href="https://star-history.com/#scu-zjz/IMDLBenCo&Date">
  <picture>
    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=scu-zjz/IMDLBenCo&type=Date&theme=dark" />
