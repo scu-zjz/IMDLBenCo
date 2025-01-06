@@ -5,7 +5,7 @@ from torch.utils.data import Dataset, DataLoader
 import IMDLBenCo
 import IMDLBenCo.datasets
 from IMDLBenCo.datasets import ManiDataset
-from IMDLBenCo.datasets.jpeg_dataset import MetaCatnetDataset
+from IMDLBenCo.datasets.jpeg_dataset_deprecated import MetaCatnetDataset
 from IMDLBenCo.registry import DATASETS
 import torch
 
