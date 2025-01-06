@@ -3,8 +3,16 @@ import torch
 from PIL import Image
 import numpy as np
 from PIL import Image
-import jpegio as jio
 import tempfile, os, io
+
+
+def import_jpegio() -> None:
+    try:
+        import jpegio as jio
+        return jio
+    except ImportError:
+        raise ImportError(
+            'Please run "pip install jpegio" to install jpegio. This only support Linux system')
 
 def pil_loader(path: str) -> Image.Image:
     """PIL image loader
@@ -43,6 +51,7 @@ def convert_to_temp_jpeg(tensor):
     return temp_file_path
 
 def read_jpeg_from_memory(tensor):
+    jio = import_jpegio()
     temp_file_path = convert_to_temp_jpeg(tensor)
     jpeg = jio.read(temp_file_path)
     os.remove(temp_file_path)
