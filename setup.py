@@ -25,7 +25,7 @@ def requirements():
 # exit(0)
 
 setup(
-    name='IMDLBenCo',
+    name='imdlbenco',
     version=__version__,
     description="A comprehensive benchmark and code base for Image manipulation and localization.",
     long_description=readme(),
