@@ -47,6 +47,6 @@ class JsonDataset(AbstractDataset):
                 tp_list.append(record[0])
                 gt_list.append(record[1])
             else: 
-                raise TypeError("Not a file in Json Dataset Error. Try other dataset")
+                raise TypeError("You have to pass a Json File to JsonDataset. Or try ManiDataset with a path. For more information please see the protocol here: https://scu-zjz.github.io/IMDLBenCo-doc/guide/quickstart/0_dataprepare.html#specific-format-definitions")
         return tp_list, gt_list
 
