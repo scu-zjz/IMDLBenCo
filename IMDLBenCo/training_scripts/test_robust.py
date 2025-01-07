@@ -5,6 +5,7 @@ import types
 import inspect
 import argparse
 import datetime
+import numpy as np
 from pathlib import Path
 from torch.utils.tensorboard import SummaryWriter
 
@@ -75,6 +76,8 @@ def get_args_parser():
     
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
+    # Since augmentation includes randomize functions, here need to set the seeds
+    parser.add_argument('--seed', default=42, type=int)
 
     parser.add_argument('--num_workers', default=1, type=int)
     parser.add_argument('--pin_mem', action='store_true',
@@ -110,6 +113,13 @@ def main(args, model_args):
     print("=====Model args:=====")
     print("{}".format(model_args).replace(', ', ',\n'))
     device = torch.device(args.device)
+    
+    # Since augmentation includes randomize functions, here need to set the seeds
+    # fix the seed for reproducibility
+    seed = args.seed + misc.get_rank()
+    misc.seed_torch(seed)
+    torch.manual_seed(seed)
+    np.random.seed(seed)
     
     if args.distributed:
         num_tasks = misc.get_world_size()
