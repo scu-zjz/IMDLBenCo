@@ -16,7 +16,7 @@ torchrun  \
     --epochs 200 \
     --lr 1e-4 \
     --image_size 1024 \
-    --if_resizing \
+    --if_padding \
     --min_lr 5e-7 \
     --weight_decay 0.05 \
     --edge_mask_width 7 \
