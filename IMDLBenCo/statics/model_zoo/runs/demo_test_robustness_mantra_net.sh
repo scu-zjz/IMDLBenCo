@@ -14,7 +14,7 @@ torchrun  \
     --checkpoint_path "/home/zeyu/workspace/IMDLBenCo/eval_dir/checkpoint-0.pth" \
     --test_batch_size 2 \
     --image_size 1024 \
-    --if_padding \
+    --if_resizing \
     --output_dir ${base_dir}/ \
     --log_dir ${base_dir}/ \
 2> ${base_dir}/error.log 1>${base_dir}/logs.log
