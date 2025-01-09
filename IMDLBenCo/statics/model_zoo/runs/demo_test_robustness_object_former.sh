@@ -14,7 +14,7 @@ torchrun  \
     --checkpoint_path "/mnt/data0/username/workspace/IMDLBench/output_test/standard/output_dir_pretrain_224_1100_12_1e4_checkpoint-1052.pth" \
     --test_batch_size 2 \
     --image_size 224 \
-    --if_padding \
+    --if_resizing \
     --output_dir ${base_dir}/ \
     --log_dir ${base_dir}/ \
 2> ${base_dir}/error.log 1>${base_dir}/logs.log
