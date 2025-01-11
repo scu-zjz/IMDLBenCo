@@ -16,20 +16,24 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 </div>  
 
 ******
-
+<!----
 [![Powered by](https://img.shields.io/badge/Based_on-Pytorch-blue?logo=pytorch)](https://pytorch.org/) 
+---->
 [![Arxiv](https://img.shields.io/badge/arXiv-2406.10580-b31b1b.svg?logo=arxiv)](https://arxiv.org/abs/2406.10580)
 [![Documents](https://img.shields.io/badge/Documents-Click_here-brightgreen?logo=read-the-docs)](https://scu-zjz.github.io/IMDLBenCo-doc/)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/imdlbenco?label=PyPI%20Downloads&logo=pypi&logoColor=white&color=blue)](https://pypi.org/project/IMDLBenCo/)
-![GitHub](https://img.shields.io/github/license/scu-zjz/IMDLBenCo?logo=license)
+![pypi version](https://img.shields.io/pypi/v/imdlbenco?logo=pypi&label=Latest%20PyPI%20Version&color=green)
+![license](https://img.shields.io/github/license/scu-zjz/IMDLBenCo?logo=license)
 
 <!----
 [![Ask Me Anything!](https://img.shields.io/badge/Official%20-Yes-1abc9c.svg)](https://GitHub.com/scu-zjz/) 
 ---->
 
 ## News
-- [2024/12/10] [Mesorch](https://arxiv.org/pdf/2412.13753)[![Stars](https://img.shields.io/github/stars/scu-zjz/Mesorch?style=social)](https://github.com/scu-zjz/Mesorch), our new IML backbone model, which adopts a parallel CNN+Transformer structure to simultaneously deal with image semantics and non-semantics, is accepted by AAAI 25!!!🎉🎉🎉
-- [2024/12/10] [Sparse-ViT](https://arxiv.org/pdf/2412.14598)[![Stars](https://img.shields.io/github/stars/scu-zjz/SparseViT?style=social)](https://github.com/scu-zjz/SparseViT), the very first solution of constructing the non-semantic feature extractor through a self-supervised manner in IML is proposed by us and accepted by AAAI 25!!!🎉🎉🎉
+
+- [2024/12/10] [Mesorch](https://arxiv.org/pdf/2412.13753) [![Stars](https://img.shields.io/github/stars/scu-zjz/Mesorch?style=social)](https://github.com/scu-zjz/Mesorch), our new IML backbone model, which adopts a parallel CNN+Transformer structure to simultaneously deal with image semantics and non-semantics, is accepted by AAAI 25!!!🎉🎉🎉
+   
+- [2024/12/10] [Sparse-ViT](https://arxiv.org/pdf/2412.14598) [![Stars](https://img.shields.io/github/stars/scu-zjz/SparseViT?style=social)](https://github.com/scu-zjz/SparseViT), the very first solution of constructing the non-semantic feature extractor through a self-supervised manner in IML is proposed by us and accepted by AAAI 25!!!🎉🎉🎉
 - [2024/09/26] This paper, IMDL-BenCo, has been accepted as **Spotlight** to NeurIPS 2024 Track Datasets and Benchmarks!!! 🎉🎉🎉
 
 > [!WARNING]
