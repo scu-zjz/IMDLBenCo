@@ -81,7 +81,7 @@ class AbstractDataset(Dataset):
             gt_shape = (temp.shape[1], temp.shape[0])
             label = 0
             
-        assert tp_shape == gt_shape, "tp and gt image shape must be the same, but got {} and {}".format(tp_shape, gt_shape)
+        assert tp_shape == gt_shape, "tp and gt image shape must be the same, but got shape {} and {} for image '{}' and '{}'. Please check it!".format(tp_shape, gt_shape, tp_path, gt_path)
         
         tp_img = np.array(tp_img) # H W C
         gt_img = np.array(gt_img) # H W C
