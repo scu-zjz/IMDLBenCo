@@ -8,7 +8,7 @@ from .abstract_dataset import AbstractDataset
 @DATASETS.register_module()
 class ManiDataset(AbstractDataset):
     def _init_dataset_path(self, path):
-        path = path
+        self.entry_path = path
         tp_dir = os.path.join(path, 'Tp')
         gt_dir = os.path.join(path, 'Gt')
         tp_list = os.listdir(tp_dir)
@@ -39,6 +39,7 @@ class JsonDataset(AbstractDataset):
         if_return_shape
     """
     def _init_dataset_path(self, path):
+        self.entry_path = path
         images = json.load(open(path, 'r'))
         tp_list = []
         gt_list = []

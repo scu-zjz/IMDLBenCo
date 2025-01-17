@@ -222,8 +222,8 @@ def main(args, model_args):
         )
     # ------------------------------------
     
-    print(dataset_train)
-    print(dataset_test)
+    print("Training Dataset:\n", dataset_train)
+    print("Testing Dataset:\n", dataset_test)
 
     if args.distributed:
         num_tasks = misc.get_world_size()

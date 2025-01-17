@@ -32,6 +32,7 @@ class AbstractDataset(Dataset):
                 post_funcs = None
                 ) -> None:
         super().__init__()
+        self.entry_path = "Abstract"
         self.tp_path, self.gt_path = self._init_dataset_path(path)
         
         if is_padding == True and is_resizing == True:
@@ -57,6 +58,7 @@ class AbstractDataset(Dataset):
 
         self.img_loader = img_loader
         self.post_funcs = post_funcs
+
         
     def __getitem__(self, index):
 
@@ -168,3 +170,10 @@ class AbstractDataset(Dataset):
         
     def __len__(self):
         return len(self.tp_path)
+    
+    def __str__(self):
+        cls_name = self.__class__.__name__
+        cls_path = self.entry_path
+        cls_len = len(self.tp_path)
+        info = f"[{cls_name}] at {cls_path}, with length of {cls_len:,}"
+        return info

@@ -20,7 +20,7 @@ class BalancedDataset(Dataset):
 
     def __init__(self, 
                  path = None, 
-                 sample_number = 1840,
+                 sample_number = 2010,
                  *args, 
                  **kwargs
                 ) -> None:
@@ -57,7 +57,6 @@ class BalancedDataset(Dataset):
     def _get_dataset(self, path, dataset_type, *args, **kwargs):
         return dataset_type(path, *args, **kwargs)
         
-        
     def __len__(self):
         return self.sample_number * len(self.settings_list)    
     
@@ -69,3 +68,21 @@ class BalancedDataset(Dataset):
         selected_item = random.randint(0, length - 1)
         return selected_dataset[selected_item]
 
+    def __str__(self):
+        # Print basic information about the dataset and its settings
+        info = f"<===BalancedDataset with {len(self.settings_list)} datasets:===>\n"
+        
+        total_sample = 0
+        # Iterate through the settings list and print dataset paths and types
+        for idx, (i_dataset) in enumerate(self.dataset_list):
+            i_len = len(i_dataset)
+            total_sample += i_len
+            info += f"  Dataset {idx + 1}: {i_dataset}\n"
+        
+        # Print sample number and total number of samples
+        info += f"Sample number per dataset: {self.sample_number:,}\n"
+        epoch_samples = self.__len__()
+        info += f"Samples per Epoch: {epoch_samples:,}\n"
+        info += f"Total images in whole dataset: {total_sample:,}\n"
+        info += f"<================================================>\n"
+        return info
