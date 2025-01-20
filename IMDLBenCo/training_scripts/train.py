@@ -105,7 +105,7 @@ def get_args_parser():
     
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
-    parser.add_argument('--seed', default=42, type=int)
+    parser.add_argument('--seed', default=0, type=int)
     parser.add_argument('--resume', default='',
                         help='resume from checkpoint, input the path of a ckpt.')
 
@@ -199,6 +199,7 @@ def main(args, model_args):
                 post_funcs=post_function
             )
     
+    test_datasets = {}
     if os.path.isdir(args.test_data_path):
         dataset_test = ManiDataset(
             args.test_data_path,
@@ -209,36 +210,58 @@ def main(args, model_args):
             edge_width=args.edge_mask_width,
             post_funcs=post_function
         )
-
+        test_datasets['test_dataset'] = dataset_test
     else:
-        dataset_test = JsonDataset(
-            args.test_data_path,
-            is_padding=args.if_padding,
-            is_resizing=args.if_resizing,
-            output_size=(args.image_size, args.image_size),
-            common_transforms=test_transform,
-            edge_width=args.edge_mask_width,
-            post_funcs=post_function
-        )
+        with open(args.test_data_path, "r") as f:
+            test_dataset_json = json.load(f)
+        for dataset_name, dataset_path in test_dataset_json.items():
+            if os.path.isdir(dataset_path):
+                dataset_test = ManiDataset(
+                    dataset_path,
+                    is_padding=args.if_padding,
+                    is_resizing=args.if_resizing,
+                    output_size=(args.image_size, args.image_size),
+                    common_transforms=test_transform,
+                    edge_width=args.edge_mask_width,
+                    post_funcs=post_function
+                )
+            else:
+                dataset_test = JsonDataset(
+                    dataset_path,
+                    is_padding=args.if_padding,
+                    is_resizing=args.if_resizing,
+                    output_size=(args.image_size, args.image_size),
+                    common_transforms=test_transform,
+                    edge_width=args.edge_mask_width,
+                    post_funcs=post_function
+                )
+            test_datasets[dataset_name] = dataset_test
     # ------------------------------------
-    
-    print("Training Dataset:\n", dataset_train)
-    print("Testing Dataset:\n", dataset_test)
-
+    print(dataset_train)
+    print(test_datasets)
+    test_sampler = {}
     if args.distributed:
         num_tasks = misc.get_world_size()
         global_rank = misc.get_rank()
         sampler_train = torch.utils.data.DistributedSampler(
             dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
         )
-        sampler_test = torch.utils.data.DistributedSampler(
-            dataset_test, num_replicas=num_tasks, rank=global_rank, shuffle=False, drop_last=True
-        )
+        for name, dataset_test in test_datasets.items():
+            sampler_test = torch.utils.data.DistributedSampler(
+                dataset_test, 
+                num_replicas=num_tasks, 
+                rank=global_rank, 
+                shuffle=False,
+                drop_last=True
+            )
+            test_sampler[name] = sampler_test
         print("Sampler_train = %s" % str(sampler_train))
         print("Sampler_test = %s" % str(sampler_test))
     else:
         sampler_train = torch.utils.data.RandomSampler(dataset_train)
-        sampler_test = torch.utils.data.RandomSampler(dataset_test)
+        for name,dataset_test in test_datasets.items():
+            sampler_test = torch.utils.data.RandomSampler(dataset_test)
+            test_sampler[name] = sampler_test
 
     if global_rank == 0 and args.log_dir is not None:
         os.makedirs(args.log_dir, exist_ok=True)
@@ -254,13 +277,16 @@ def main(args, model_args):
         drop_last=True,
     )
     
-    data_loader_test = torch.utils.data.DataLoader(
-        dataset_test, sampler=sampler_test,
-        batch_size=args.test_batch_size,
-        num_workers=args.num_workers,
-        pin_memory=args.pin_mem,
-        drop_last=True,
-    )
+    test_data_loader = {}
+    for name in test_sampler.keys():
+        data_loader_test = torch.utils.data.DataLoader(
+            test_datasets[name], sampler=test_sampler[name],
+            batch_size=args.test_batch_size,
+            num_workers=args.num_workers,
+            pin_memory=args.pin_mem,
+            drop_last=True,
+        )
+        test_data_loader[name] = data_loader_test
     
     # ========define the model directly==========
     # model = IML_ViT(
@@ -334,33 +360,52 @@ def main(args, model_args):
             args=args
         )
         
-        # saving checkpoint
-        if args.output_dir and (epoch % 50 == 0 or epoch + 1 == args.epochs):
+        # # saving checkpoint
+        if args.output_dir and (epoch % 25 == 0 or epoch + 1 == args.epochs):
             misc.save_model(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
                 loss_scaler=loss_scaler, epoch=epoch)
             
         optimizer.zero_grad()
         if epoch % args.test_period == 0 or epoch + 1 == args.epochs:
-            test_stats = test_one_epoch(
-                model, 
-                data_loader = data_loader_test, 
-                evaluator_list=evaluator_list,
-                device = device, 
-                epoch = epoch, 
-                log_writer=log_writer,
-                args = args
-            )
-            evaluate_metric_for_ckpt = evaluator_list[0].name
-            evaluate_metric_value = test_stats[evaluate_metric_for_ckpt]
+            values = {}
+            for name, data_loader_test in test_data_loader.items():
+                print(f'!!!Start Test: {name}',len(data_loader_test))
+                test_stats = test_one_epoch(
+                    model, 
+                    data_loader = data_loader_test, 
+                    evaluator_list=evaluator_list,
+                    device = device, 
+                    epoch = epoch,
+                    name = name, 
+                    log_writer=log_writer,
+                    args = args,
+                )
+                one_metric_value = {}
+                for evaluate_metric_for_ckpt in evaluator_list:
+                    evaluate_metric_for_ckpt_name = evaluate_metric_for_ckpt.name
+                    evaluate_metric_value = test_stats[evaluate_metric_for_ckpt_name]
+                    one_metric_value[evaluate_metric_for_ckpt_name] = evaluate_metric_value
+                values[name] = one_metric_value
+
+            metrics_dict = {metric: {dataset: values[dataset][metric] for dataset in values} for metric in {m for d in values.values() for m in d}}
+            metric_means = {metric: np.mean(list(datasets.values())) for metric, datasets in metrics_dict.items()}
+
+            evaluate_metric_value = np.mean(list(metric_means.values()))
+
             if evaluate_metric_value > best_evaluate_metric_value :
                 best_evaluate_metric_value = evaluate_metric_value
-                print(f"Best {evaluate_metric_for_ckpt} = {best_evaluate_metric_value}")
-                if epoch > 35:
+                print(f"Best {' '.join([evaluator.name for evaluator in evaluator_list])} = {best_evaluate_metric_value}")
+                if epoch > 20:
                     misc.save_model(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
                 loss_scaler=loss_scaler, epoch=epoch)
-                
+            else:
+                print(f"Average {' '.join([evaluator.name for evaluator in evaluator_list])} = {evaluate_metric_value}")
+            if log_writer is not None:
+                for metric, datasets in metrics_dict.items():
+                    log_writer.add_scalars(f'{metric}_Metric', datasets, epoch)
+                log_writer.add_scalar('Average', evaluate_metric_value, epoch)
             log_stats =  {**{f'train_{k}': v for k, v in train_stats.items()},
                         **{f'test_{k}': v for k, v in test_stats.items()},
                             'epoch': epoch,}
