@@ -87,9 +87,10 @@ def test_one_epoch(model: torch.nn.Module,
                     evaluator_list: List[AbstractEvaluator],
                     device: torch.device, 
                     epoch: int,
-                    name: str, 
+                    name='', 
                     log_writer=None,
-                    args=None,):
+                    args=None,
+                    is_test=True):
       
     # print(data_loader.dataset.tp_path)
     
@@ -176,8 +177,9 @@ def test_one_epoch(model: torch.nn.Module,
             print(evaluator.name, "reduced_sum", metric_logger.meters[evaluator.name].total)
         print('---syncronized done ---')
         if log_writer is not None:
-            # for evaluator in evaluator_list:
-            #     log_writer.add_scalar(f'{name}/test_evaluators/{evaluator.name}', metric_logger.meters[evaluator.name].global_avg, epoch)
+            if is_test:
+                for evaluator in evaluator_list:
+                    log_writer.add_scalar(f'{name}/test_evaluators/{evaluator.name}', metric_logger.meters[evaluator.name].global_avg, epoch)
             log_writer.add_images(f'{name}/test/image',  denormalize(data_dict['image']), epoch)
             log_writer.add_images(f'{name}/test/predict', output_dict['pred_mask'] * 1.0, epoch)
             log_writer.add_images(f'{name}/test/predict_threshold_0.5', (output_dict['pred_mask'] > 0.5)* 1.0, epoch)

@@ -380,6 +380,7 @@ def main(args, model_args):
                     name = name, 
                     log_writer=log_writer,
                     args = args,
+                    is_test = False,
                 )
                 one_metric_value = {}
                 for evaluate_metric_for_ckpt in evaluator_list:
