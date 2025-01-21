@@ -20,7 +20,7 @@ class BalancedDataset(Dataset):
 
     def __init__(self, 
                  path = None, 
-                 sample_number = 2010,
+                 sample_number = 1840,
                  *args, 
                  **kwargs
                 ) -> None:
