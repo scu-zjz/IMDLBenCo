@@ -38,7 +38,12 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 
 > [!WARNING]
 > **Existing bug**:
->    1. The `Image-Acc` evaluator may not return an accurate value under the current version during multi-GPU inference. Please be careful with it! We are locating the exact issue. Details found in issue: https://github.com/scu-zjz/IMDLBenCo/issues/42. Thanks [@iamwangyabin](https://github.com/iamwangyabin) for reporting the issue.
+> 1. The `Image-Acc` evaluator may not return an accurate value under the current version during multi-GPU inference. Please be careful with it! We are locating the exact issue. Details found in issue: https://github.com/scu-zjz/IMDLBenCo/issues/42. Thanks [@iamwangyabin](https://github.com/iamwangyabin) for reporting the issue.
+
+
+> [!IMPORTANT]
+> **Known Different with original CAT-Net Protocol：**
+>  1. The CAT-Protocol (implementation of default [balanced_dataset.py](https://github.com/scu-zjz/IMDLBenCo/blob/main/IMDLBenCo/statics/dataset_json/balanced_dataset.json)) used in the IMDLBenCo paper differ from the original [CAT-Net settings](https://github.com/mjkwon2021/CAT-Net/blob/main/Splicing/data/data_core.py). Several real image datasets are omitted. Please pay special attention! For more details, please check issue [#65](https://github.com/scu-zjz/IMDLBenCo/issues/65#issuecomment-2604861981).
 
 ## Overview
 ☑️**Welcome to IMDL-BenCo, the first comprehensive IMDL benchmark and modular codebase.**    

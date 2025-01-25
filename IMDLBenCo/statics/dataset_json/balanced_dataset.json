@@ -26,9 +26,5 @@
     [
         "JsonDataset",
         "/mnt/data0/public_datasets/IML/tampCOCO/bcmc_COCO_list.json"
-    ],
-    [
-        "JsonDataset",
-        "/mnt/data0/public_datasets/IML/compRAISE/compRAISE_list_1024.json"
     ]
 ]
