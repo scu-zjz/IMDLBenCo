@@ -48,6 +48,6 @@ class JsonDataset(AbstractDataset):
                 tp_list.append(record[0])
                 gt_list.append(record[1])
             else: 
-                raise TypeError("You have to pass a Json File to JsonDataset. Or try ManiDataset with a path. For more information please see the protocol here: https://scu-zjz.github.io/IMDLBenCo-doc/guide/quickstart/0_dataprepare.html#specific-format-definitions")
+                raise TypeError(f"Get Error when loading from {self.entry_path}, the error record is: {record[0]}, which is not a file. Please check this file or try to use absolute path instead. Otherwise if you want to use ManiDataset with a path instead of JsonDataset, please pass a path into the 'train_*.sh'. For more information please see the protocol here: https://scu-zjz.github.io/IMDLBenCo-doc/guide/quickstart/0_dataprepare.html#specific-format-definitions")
         return tp_list, gt_list
 
