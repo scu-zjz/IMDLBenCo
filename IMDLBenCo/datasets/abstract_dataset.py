@@ -133,7 +133,7 @@ class AbstractDataset(Dataset):
         data_dict['image'] = tp_img
         data_dict['mask'] = gt_img
         data_dict['label'] = label
-       
+        data_dict['origin_shape'] = torch.tensor(tp_shape) # (H, W) 经过data loader后会变成三维矩阵，第0维是batch_index
         # 如果经过resize
         if self.is_resizing:
             tp_shape = self.output_size

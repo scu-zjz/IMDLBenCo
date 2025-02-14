@@ -11,3 +11,4 @@ grad_cam
 ttach
 appdirs
 colorama
+pytest
