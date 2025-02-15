@@ -1,0 +1,77 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    name: Run tests on ${{ matrix.os }} with Python ${{ matrix.python }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
+        torch: [{base: '1.13.0', vision: '0.14.0'}, {base: '2.5.1', vision: '0.20.1'}]
+        python-version: ["3.9", "3.12"]
+        exclude:
+          - python: '3.12'
+            torch: {base: '1.13.0', vision: '0.14.0'}
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python }}
+
+    # install pytorch on different platform
+    - name: Install torch on mac
+      if: startsWith(matrix.os, 'macOS')
+      run: pip install --no-cache-dir torch==${{ matrix.torch.base }} torchvision==${{ matrix.torch.vision }}
+    - name: Install torch on Windows
+      if: startsWith(matrix.os, 'windows')
+      run: pip install --no-cache-dir torch==${{ matrix.torch.base }} torchvision==${{ matrix.torch.vision }}
+    - name: Install torch on ubuntu
+      if: startsWith(matrix.os, 'ubuntu')
+      run: |
+        sudo sed -i 's/azure\.//' /etc/apt/sources.list
+        sudo apt update
+        sudo apt install -y google-perftools
+        pip install --no-cache-dir torch==${{ matrix.torch.base }}+cpu torchvision==${{ matrix.torch.vision }}+cpu --index-url https://download.pytorch.org/whl/cpu
+        
+    - name: Install testing dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install flake8 pytest pytest-cov
+        pip install -r requirements.txt
+        
+    - name: Force old numpy for old torch
+      if: ${{ matrix.torch.base == '1.13.0' }}
+      run: pip install --upgrade 'numpy<2.0'
+    
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Run tests on Windows
+      if: startsWith(matrix.os, 'windows')
+      env:
+        PYTHONDONTWRITEBYTECODE: 1
+      run: |
+        pytest -vv --cov ./tests/pytests 
+    - name: Run '${{ matrix.testmarker }}' tests on Linux / Mac
+      if: ${{ !startsWith(matrix.os, 'windows') }}
+      env:
+        # LD_PRELOAD: /usr/lib/x86_64-linux-gnu/libtcmalloc.so.4
+        PYTHONDONTWRITEBYTECODE: 1
+      run: |
+        pytest -vv --cov ./tests/pytests 
