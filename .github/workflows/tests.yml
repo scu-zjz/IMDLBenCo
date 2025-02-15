@@ -67,11 +67,11 @@ jobs:
       env:
         PYTHONDONTWRITEBYTECODE: 1
       run: |
-        pytest -vv --cov ./tests/pytests 
+        pytest -vv --cov=IMDLBenCo tests/pytests
     - name: Run '${{ matrix.testmarker }}' tests on Linux / Mac
       if: ${{ !startsWith(matrix.os, 'windows') }}
       env:
         # LD_PRELOAD: /usr/lib/x86_64-linux-gnu/libtcmalloc.so.4
         PYTHONDONTWRITEBYTECODE: 1
       run: |
-        pytest -vv --cov ./tests/pytests 
+        pytest -vv --cov=IMDLBenCo tests/pytests
