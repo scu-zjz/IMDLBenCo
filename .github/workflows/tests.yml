@@ -55,7 +55,9 @@ jobs:
     - name: Force old numpy for old torch
       if: ${{ matrix.torch.base == '1.13.0' }}
       run: pip install --upgrade 'numpy<2.0'
-    
+    - name: Install Current Python Package
+      run: |
+        pip install -e .
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
