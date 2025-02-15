@@ -52,7 +52,7 @@ jobs:
         pip install wheel
         pip install -r requirements-dev.txt
         pip install -r requirements.txt
-        pip install .
+        pip install -e .
         
     - name: Force old numpy for old torch
       if: ${{ matrix.torch.base == '1.13.0' }}
