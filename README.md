@@ -25,6 +25,9 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 [![pypi version](https://img.shields.io/pypi/v/imdlbenco?logo=pypi&label=Latest%20PyPI%20Version&color=blue)](https://pypi.org/project/IMDLBenCo/)
 ![license](https://img.shields.io/github/license/scu-zjz/IMDLBenCo?logo=license)
 
+[![Action-Test](https://github.com/scu-zjz/imdlbenco/workflows/Python%20tests/badge.svg)](https://github.com/scu-zjz/IMDLBenCo/actions/workflows/tests.yml)
+[![Codecov](https://img.shields.io/codecov/c/github/scu-zjz/imdlbenco?label=Test%20Case%20Coverage)
+](https://app.codecov.io/)
 <!----
 [![Ask Me Anything!](https://img.shields.io/badge/Official%20-Yes-1abc9c.svg)](https://GitHub.com/scu-zjz/) 
 ---->
