@@ -20,7 +20,7 @@ class AbstractDataset(Dataset):
         
         raise NotImplementedError # abstract dataset!
     
-        return tp_path, gt_path, labels
+        return tp_path, gt_path # returns shuold be look like this
         
     def __init__(self, path, 
                 is_padding = False,

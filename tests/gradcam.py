@@ -7,9 +7,6 @@ from IMDLBenCo.model_zoo import cat_net
 from IMDLBench.model_zoo.cat_net.cat_net_post_function import cat_net_post_func
 import torch
 from IMDLBenCo.evaluation import grad_camera_visualize
-    
-
-
 
 if __name__ == '__main__':
     model = cat_net('/home/bingkui/IMDLBenCo/IMDLBench/training/CAT_full.yaml') # TODO 这里加载模型
@@ -23,7 +20,7 @@ if __name__ == '__main__':
                 is_resizing=True,
                 output_size=(512, 512),
                 common_transforms=get_albu_transforms('test'),
-                edge_width=7)
+                edge_width=7)[0:1]
                 #post_funcs=cat_net_post_func -> this argument is only for Cat-Net
     
     target_layers = [model.model.last_layer[-1]]
