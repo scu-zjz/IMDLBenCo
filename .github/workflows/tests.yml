@@ -57,7 +57,7 @@ jobs:
       run: pip install --upgrade 'numpy<2.0'
     - name: Install Current Python Package
       run: |
-        pip install -e .
+        pip install .
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
