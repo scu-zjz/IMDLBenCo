@@ -29,7 +29,7 @@ jobs:
       - name: Build release distributions
         run: |
           python -m pip install --upgrade pip
-          python install -r requirements.txt
+          pip install -r requirements.txt
           python -m pip install build
           python -m build
 
