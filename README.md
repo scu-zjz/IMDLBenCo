@@ -96,13 +96,13 @@ We also welcome contributors to translate it into other languages.
 ## Citation
 If you find our work valuable and it has contributed to your research or projects, we kindly request that you cite our paper. Your recognition is a driving force for our continuous improvement and innovation🤗.
 ```
-@misc{ma2024imdlbenco,
-    title={IMDL-BenCo: A Comprehensive Benchmark and Codebase for Image Manipulation Detection & Localization},
-    author={Xiaochen Ma and Xuekang Zhu and Lei Su and Bo Du and Zhuohang Jiang and Bingkui Tong and Zeyu Lei and Xinyu Yang and Chi-Man Pun and Jiancheng Lv and Jizhe Zhou},
-    year={2024},
-    eprint={2406.10580},
-    archivePrefix={arXiv},
-    primaryClass={cs.CV}
+@article{ma2025imdl,
+  title={Imdl-benco: A comprehensive benchmark and codebase for image manipulation detection \& localization},
+  author={Ma, Xiaochen and Zhu, Xuekang and Su, Lei and Du, Bo and Jiang, Zhuohang and Tong, Bingkui and Lei, Zeyu and Yang, Xinyu and Pun, Chi-Man and Lv, Jiancheng and others},
+  journal={Advances in Neural Information Processing Systems},
+  volume={37},
+  pages={134591--134613},
+  year={2025}
 }
 ```
 
