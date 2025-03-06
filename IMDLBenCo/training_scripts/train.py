@@ -304,7 +304,9 @@ def main(args, model_args):
     else:
         model_init_params = inspect.signature(model.__init__).parameters
     combined_args = {k: v for k, v in vars(args).items() if k in model_init_params}
-    combined_args.update({k: v for k, v in vars(model_args).items() if k in model_init_params})
+    for k, v in vars(model_args).items():
+        if k in model_init_params and k not in combined_args:
+            combined_args[k] = v
     model = model(**combined_args)
     # ============================================
     evaluator_list = [
