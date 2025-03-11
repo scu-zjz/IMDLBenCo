@@ -33,7 +33,7 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 ---->
 
 ## News
-
+- [2025/03/11] We have released pre-trained checkpoints on Baidu NetDisk that we utilized to report all metrics in the paper. Please see [this section](https://scu-zjz.github.io/IMDLBenCo-doc/guide/quickstart/3_load_ckpt.html#quick-testing-using-model-zoo-with-checkpoint) in our documents for details.
 - [2024/12/10] [Mesorch](https://arxiv.org/pdf/2412.13753) [![Stars](https://img.shields.io/github/stars/scu-zjz/Mesorch?style=social)](https://github.com/scu-zjz/Mesorch), our new IML backbone model, which adopts a parallel CNN+Transformer structure to simultaneously deal with image semantics and non-semantics, is accepted by AAAI 25!!!🎉🎉🎉
    
 - [2024/12/10] [Sparse-ViT](https://arxiv.org/pdf/2412.14598) [![Stars](https://img.shields.io/github/stars/scu-zjz/SparseViT?style=social)](https://github.com/scu-zjz/SparseViT), the very first solution of constructing the non-semantic feature extractor through a self-supervised manner in IML is proposed by us and accepted by AAAI 25!!!🎉🎉🎉
@@ -45,7 +45,7 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 
 
 > [!IMPORTANT]
-> **Known Different with original CAT-Net Protocol：**
+> **Known Differences with original CAT-Net Protocol**
 >  1. The CAT-Protocol (implementation of default [balanced_dataset.py](https://github.com/scu-zjz/IMDLBenCo/blob/main/IMDLBenCo/statics/dataset_json/balanced_dataset.json)) used in the IMDLBenCo paper differ from the original [CAT-Net settings](https://github.com/mjkwon2021/CAT-Net/blob/main/Splicing/data/data_core.py). Several real image datasets are omitted. Please pay special attention! For more details, please check issue [#65](https://github.com/scu-zjz/IMDLBenCo/issues/65#issuecomment-2604861981).
 
 ## Overview
@@ -57,24 +57,32 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 
 ![](./images/IMDLBenCo_overview.png)
 
-## Features under developing
-This repository has completed training, testing, robustness testing, Grad-CAM, and other functionalities for mainstream models.
-
-However, more features are currently being tested for improved user experience. Updates will be rolled out frequently. Stay tuned!
-
-- [x] Install and download via PyPI
-   - [x] You can experience on test PyPI now! 
-- [x] Based on command line invocation, similar to `conda` in Anaconda.
-   - [x] Dynamically create all training scripts to support personalized modifications.
-
-- [ ] Information library, downloading, and re-management of IMDL datasets.
-- [x] Support for Weight & Bias visualization.
 
 ## Quick Start
-IMDL-BenCo is a Python library managed on PYPI now, it's easy to install by following the command:
+IMDL-BenCo is a Python library managed on PYPI now, It's easy to install by following the command:
 ```bash
 pip install imdlbenco
 ```
+
+To verify your installation, you can try the following commands: 
+```bash
+benco -v
+```
+Of course, the following command is also okay:
+```bash
+benco --version
+```
+This repository is under rapid development, thus, you can also use the command above to check if the current version is our latest version.
+
+If everything works well, it should looks like this:
+```
+IMDLBenCo codebase version: 0.1.23
+        Checking for updates...
+        Local version:  0.1.23
+        PyPI newest version:  0.1.23
+You are using the latest version: 0.1.23.
+```
+*****
 
 For further guidance, please **click the buttons below** for official documentation:
 
