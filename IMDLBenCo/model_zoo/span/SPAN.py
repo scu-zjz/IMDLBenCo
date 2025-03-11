@@ -14,7 +14,8 @@ class SPAN(nn.Module):
     def __init__(self, weight_path, layers_steps=[1, 3, 9, 27, 81], device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')):
         super(SPAN, self).__init__()
         self.BCE_loss = nn.BCEWithLogitsLoss()
-        self.featex = mantranet.IMTFE(device=device)
+        self.featex = mantranet.IMTFE(device=device) # use to initialize the SRM filter.
+        print("Model SPAN: load weight from", weight_path)
         self.featex.load_state_dict(torch.load(weight_path), strict=True)
         self.last_layer = self.Last_Layer_0725
         self.pixel_attention = nn.ModuleList([pa.PixelAttention(shift=step, in_channels=32, use_bn=False, use_res=True) for step in layers_steps]).to(device)
