@@ -456,6 +456,35 @@ def batch_norm(X, eps=0.001):
 
 class IMTFE(nn.Module):
     # ********** IMAGE MANIPULATION TRACE FEATURE EXTRACTOR *********
+    def _get_srm_list(self) :
+        # srm kernel 1
+        srm1 = np.zeros([5,5]).astype('float32')
+        srm1[1:-1,1:-1] = np.array([[-1, 2, -1],
+                                    [2, -4, 2],
+                                    [-1, 2, -1]] )
+        srm1 /= 4.
+        # srm kernel 2
+        srm2 = np.array([[-1, 2, -2, 2, -1],
+                        [2, -6, 8, -6, 2],
+                        [-2, 8, -12, 8, -2],
+                        [2, -6, 8, -6, 2],
+                        [-1, 2, -2, 2, -1]]).astype('float32')
+        srm2 /= 12.
+        # srm kernel 3
+        srm3 = np.zeros([5,5]).astype('float32')
+        srm3[2,1:-1] = np.array([1,-2,1])
+        srm3 /= 2.
+        srm_list = [ srm1, srm2, srm3 ]
+    
+    
+        srm_matrix = np.zeros([9, 3, 5, 5])
+        for i in range(9):
+            first_idx = i // 3
+            second_idx = i % 3
+            srm_matrix[i, second_idx] = srm_list[first_idx]
+        srm_tensor = torch.tensor(srm_matrix, dtype=torch.float)
+        return srm_tensor
+    
     def __init__(self, in_channel=3,device=device):
         super(IMTFE, self).__init__()
 
@@ -474,8 +503,8 @@ class IMTFE(nn.Module):
         self.bayar_final[2, 2] = -1
 
         self.SRMConv2D = nn.Conv2d(in_channel, 9, 5, 1, padding=0, bias=False).to(self.device)
-        self.SRMConv2D.weight.data=torch.load('/home/zeyu/workspace/IMDLBenCo/IMDLBenCo/model_zoo/span/IMTFEv4.pt')['SRMConv2D.weight'].to(self.device)
-
+        self.SRMConv2D.weight.data = self._get_srm_list()
+        print("MANTRA NET: Load SRM Conv 2D parameters!")
         ##SRM filters (fixed)
         for param in self.SRMConv2D.parameters():
             param.requires_grad = False

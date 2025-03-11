@@ -13,7 +13,7 @@ torchrun  \
     --data_path /mnt/data0/public_datasets/IML/CASIA2.0 \
     --epochs 200 \
     --lr 1e-4 \
-    --image_size 1024 \
+    --image_size 512 \
     --if_resizing \
     --min_lr 5e-7 \
     --weight_decay 0.05 \
