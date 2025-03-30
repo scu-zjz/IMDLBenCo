@@ -72,8 +72,6 @@ def get_args_parser():
     parser.add_argument('--test_period', default=4, type=int,
                         help="how many epoch per testing one time")
     
-    
-    
     # 一个epoch在tensorboard中打几个loss的data point
     parser.add_argument('--log_per_epoch_count', default=20, type=int,
                         help="how many loggings (data points for loss) per testing epoch in Tensorboard")
@@ -129,7 +127,7 @@ def get_args_parser():
                         help='url used to set up distributed training')
 
     args, remaining_args = parser.parse_known_args()
-     # 获取对应的模型类
+    # 获取对应的模型类
     model_class = MODELS.get(args.model)
 
     # 根据模型类动态创建参数解析器
@@ -137,8 +135,6 @@ def get_args_parser():
     model_args = model_parser.parse_args(remaining_args)
 
     return args, model_args
-
-
 
 def main(args, model_args):
     # init parameters for distributed training
@@ -157,7 +153,10 @@ def main(args, model_args):
     misc.seed_torch(seed)
     torch.manual_seed(seed)
     np.random.seed(seed)
-
+    
+    """=========================================================
+    You Can Modify code below to customize your data augmentation
+    ========================================================="""
     train_transform = albu.Compose([
             # Rescale the input image by a random factor between 0.8 and 1.2
             albu.RandomScale(scale_limit=0.2, p=1), 
@@ -185,7 +184,8 @@ def main(args, model_args):
                 blur_limit = (3, 7),
                 p = 0.2
             ),
-        ])
+    ])
+
     test_transform = albu.Compose([
         # ---Blow for robustness evalution---
         # albu.Resize(512, 512),
@@ -203,7 +203,7 @@ def main(args, model_args):
         #     var_limit=(15, 15),
         #     p = 1
         # )
-        ])
+    ])
 
     print("Train transform: ", train_transform)
     print("Test transform: ", test_transform)
