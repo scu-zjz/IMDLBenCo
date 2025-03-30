@@ -27,7 +27,7 @@ class Cat_Net(nn.Module):
     self.model = get_seg_model(cfg)
     self.loss = CrossEntropy(ignore_label=cfg.TRAIN.IGNORE_LABEL, weight=torch.FloatTensor([0.5, 2.5])).cuda()
 
-  def forward(self, image, mask, DCT_coef, qtables, label, name, if_predcit_label=None, edge_mask=None, shape=None, ):
+  def forward(self, image, mask, DCT_coef, qtables, label, name, if_predcit_label=None, edge_mask=None, shape=None, *args, **kwargs):
     images, masks = self.__post_process_tensor(image, mask, DCT_coef)
     images, masks = images.detach(), masks.squeeze(1).detach()
     qtables = qtables.unsqueeze(1)
