@@ -52,7 +52,6 @@ class JpegCompressionWrapper(AbstractTransformWrapper):
             p=1.0
         )
     
-
 if __name__ == "__main__":
     # 示例用法
     param_list = [90, 80, 0]  # 传入一个装有int的列表，代表需要遍历的参数数值

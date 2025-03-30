@@ -7,14 +7,17 @@ import argparse
 import datetime
 import numpy as np
 from pathlib import Path
+import albumentations as albu
 import timm.optim.optim_factory as optim_factory
 from torch.utils.tensorboard import SummaryWriter
 import IMDLBenCo.training_scripts.utils.misc as misc
 
+# Register for generate function or CLASS from string
 from IMDLBenCo.registry import MODELS, POSTFUNCS
-from IMDLBenCo.transforms import get_albu_transforms
 
 from IMDLBenCo.datasets import ManiDataset, JsonDataset, BalancedDataset
+from IMDLBenCo.transforms import RandomCopyMove, RandomInpainting
+
 from IMDLBenCo.evaluation import PixelF1, ImageF1 # TODO You can select evaluator you like here
 
 from IMDLBenCo.training_scripts.tester import test_one_epoch
@@ -155,8 +158,55 @@ def main(args, model_args):
     torch.manual_seed(seed)
     np.random.seed(seed)
 
-    train_transform = get_albu_transforms('train')
-    test_transform = get_albu_transforms('test')
+    train_transform = albu.Compose([
+            # Rescale the input image by a random factor between 0.8 and 1.2
+            albu.RandomScale(scale_limit=0.2, p=1), 
+            RandomCopyMove(p = 0.1),
+            RandomInpainting(p = 0.1),
+            # Flips
+            # albu.Resize(512, 512),
+            albu.HorizontalFlip(p=0.5),
+            albu.VerticalFlip(p=0.5),
+            # Brightness and contrast fluctuation
+            albu.RandomBrightnessContrast(
+                brightness_limit=(-0.1, 0.1),
+                contrast_limit=0.1,
+                p=1
+            ),
+            albu.ImageCompression(
+                quality_lower = 70,
+                quality_upper = 100,
+                p = 0.2
+            ),
+            # Rotate
+            albu.RandomRotate90(p=0.5),
+            # Blur
+            albu.GaussianBlur(
+                blur_limit = (3, 7),
+                p = 0.2
+            ),
+        ])
+    test_transform = albu.Compose([
+        # ---Blow for robustness evalution---
+        # albu.Resize(512, 512),
+        #   albu.JpegCompression(
+        #         quality_lower = 89,
+        #         quality_upper = 90,
+        #         p = 1
+        #   ),
+        #  albu.GaussianBlur(
+        #         blur_limit = (5, 5),
+        #         p = 1
+        #     ),
+        
+        # albu.GaussNoise(
+        #     var_limit=(15, 15),
+        #     p = 1
+        # )
+        ])
+
+    print("Train transform: ", train_transform)
+    print("Test transform: ", test_transform)
 
     # get post function (if have)
     post_function_name = f"{args.model}_post_func".lower()

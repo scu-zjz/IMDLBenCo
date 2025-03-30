@@ -147,6 +147,9 @@ def main(args, model_args):
     model = model(**combined_args)
     # ============================================
 
+    """=================================================
+    Modify here to Set the robustness test parameters
+    ==================================================="""
     robustness_list = [
             GaussianBlurWrapper([0, 3, 7, 11, 15, 19, 23]),
             GaussianNoiseWrapper([3, 7, 11, 15, 19, 23]), 

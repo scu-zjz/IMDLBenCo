@@ -6,13 +6,13 @@ import inspect
 import argparse
 import datetime
 from pathlib import Path
+import albumentations as albu
 from torch.utils.tensorboard import SummaryWriter
 
 import IMDLBenCo.training_scripts.utils.misc as misc
 
 from IMDLBenCo.registry import MODELS, POSTFUNCS
 from IMDLBenCo.datasets import ManiDataset, JsonDataset
-from IMDLBenCo.transforms import get_albu_transforms
 from IMDLBenCo.evaluation import PixelF1, ImageF1
 
 from IMDLBenCo.training_scripts.tester import test_one_epoch
@@ -105,7 +105,24 @@ def main(args, model_args):
     print("{}".format(model_args).replace(', ', ',\n'))
     device = torch.device(args.device)
     
-    test_transform = get_albu_transforms('test')
+    test_transform = albu.Compose([
+        # ---Blow for robustness evalution---
+        # albu.Resize(512, 512),
+        #   albu.JpegCompression(
+        #         quality_lower = 89,
+        #         quality_upper = 90,
+        #         p = 1
+        #   ),
+        #  albu.GaussianBlur(
+        #         blur_limit = (5, 5),
+        #         p = 1
+        #     ),
+        
+        # albu.GaussNoise(
+        #     var_limit=(15, 15),
+        #     p = 1
+        # )
+        ])
 
     with open(args.test_data_json, "r") as f:
         test_dataset_json = json.load(f)

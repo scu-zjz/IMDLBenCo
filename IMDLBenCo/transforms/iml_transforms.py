@@ -99,6 +99,9 @@ class RandomCopyMove(DualTransform):
             self.p_pos_w : self.p_pos_w + self.p_window_w,
         ] = self.mask_value
         return img
+    # must be implemented for string output when print(RandomCopyMove())
+    def get_transform_init_args_names(self):
+        return ("max_h", "max_w", "min_h", "min_w", "mask_value", "always_apply", "p")
         
 class RandomInpainting(DualTransform):
     def __init__(self,
@@ -165,6 +168,10 @@ class RandomInpainting(DualTransform):
             self.pos_w : self.pos_w + self.window_w,
         ] = self.mask_value
         return img
+    
+    # must be implemented for string output when print(RandomInpainting())
+    def get_transform_init_args_names(self):
+        return ("max_h", "max_w", "min_h", "min_w", "mask_value", "always_apply", "p")
 
 def get_albu_transforms(type_ = 'train', output_size = (1024, 1024)):
     """get albumentations transforms
