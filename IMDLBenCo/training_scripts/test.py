@@ -273,8 +273,8 @@ def main(args, model_args):
                         'epoch': epoch
                 }
                 if args.full_log_dir and misc.is_main_process():
-                    if log_writer is not None:
-                        log_writer.flush()
+                    if dataset_logger[dataset_name] is not None:
+                        dataset_logger[dataset_name].flush()
                     with open(os.path.join(args.full_log_dir, "log.txt"), mode="a", encoding="utf-8") as f:
                         f.write(json.dumps(log_stats) + "\n")
         local_time = time.time() - start_time
