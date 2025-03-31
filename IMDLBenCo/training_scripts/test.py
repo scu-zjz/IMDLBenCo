@@ -180,6 +180,8 @@ def main(args, model_args):
     else:
         post_function = None
     
+    dataset_dict = {}
+    dataset_logger = {}
     # Start go through each datasets:
     for dataset_name, dataset_path in test_dataset_json.items():
         args.full_log_dir = os.path.join(args.log_dir, dataset_name)
@@ -189,6 +191,7 @@ def main(args, model_args):
             log_writer = SummaryWriter(log_dir=args.full_log_dir)
         else:
             log_writer = None
+        dataset_logger[dataset_name] = log_writer
         
         # ---- dataset with crop augmentation ----
         if os.path.isdir(dataset_path):
@@ -229,7 +232,7 @@ def main(args, model_args):
         else:
             sampler_test = torch.utils.data.RandomSampler(dataset_test)
 
-        data_loader_test = torch.utils.data.DataLoader(
+        dataloader_test = torch.utils.data.DataLoader(
             dataset_test, 
             sampler=sampler_test,
             batch_size=args.test_batch_size,
@@ -237,33 +240,38 @@ def main(args, model_args):
             pin_memory=args.pin_mem,
             drop_last=True,
         )
+        dataset_dict[dataset_name] = dataloader_test
+    print("dataset_dict", dataset_dict)
 
-        print(f"Start testing on {dataset_name}! ")
-
-        chkpt_list = os.listdir(args.checkpoint_path)
-        print(chkpt_list)
-        chkpt_pair = [(int(chkpt.split('-')[1].split('.')[0]) , chkpt) for chkpt in chkpt_list if chkpt.endswith(".pth")]
-        chkpt_pair.sort(key=lambda x: x[0])
-        print( "sorted checkpoint pairs in the ckpt dir: ",chkpt_pair)
-        for epoch , chkpt_dir in chkpt_pair:
-            if chkpt_dir.endswith(".pth"):
-                print("Loading checkpoint: %s" % chkpt_dir)
-                ckpt = os.path.join(args.checkpoint_path, chkpt_dir)
-                ckpt = torch.load(ckpt, map_location='cuda')
-                model.module.load_state_dict(ckpt['model'])            
+    
+    chkpt_list = os.listdir(args.checkpoint_path)
+    print(chkpt_list)
+    chkpt_pair = [(int(chkpt.split('-')[1].split('.')[0]) , chkpt) for chkpt in chkpt_list if chkpt.endswith(".pth")]
+    chkpt_pair.sort(key=lambda x: x[0])
+    print( "sorted checkpoint pairs in the ckpt dir: ",chkpt_pair)
+    for epoch , chkpt_dir in chkpt_pair:
+        if chkpt_dir.endswith(".pth"):
+            print("Loading checkpoint: %s" % chkpt_dir)
+            ckpt = os.path.join(args.checkpoint_path, chkpt_dir)
+            ckpt = torch.load(ckpt, map_location='cuda')
+            model.module.load_state_dict(ckpt['model'])     
+            
+            for dataset_name, dataloader_test in dataset_dict.items():
+                print("Testing on dataset: %s" % dataset_name)
                 test_stats = test_one_epoch(
                     model=model,
-                    data_loader=data_loader_test,
+                    data_loader=dataloader_test,
                     evaluator_list=evaluator_list,
                     device=device,
                     epoch=epoch,
-                    log_writer=log_writer,
+                    name="normal",
+                    log_writer=dataset_logger[dataset_name],
                     args=args
                 )
                 log_stats = {
                     **{f'test_{k}': v for k, v in test_stats.items()},
-                        'epoch': epoch}
-            
+                        'epoch': epoch
+                }
                 if args.full_log_dir and misc.is_main_process():
                     if log_writer is not None:
                         log_writer.flush()
@@ -271,7 +279,7 @@ def main(args, model_args):
                         f.write(json.dumps(log_stats) + "\n")
         local_time = time.time() - start_time
         local_time_str = str(datetime.timedelta(seconds=int(local_time)))
-        print(f'Testing on dataset {dataset_name} takes {local_time_str}')
+        print(f'Testing on ckpt {chkpt_dir} takes {local_time_str}')
         
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
