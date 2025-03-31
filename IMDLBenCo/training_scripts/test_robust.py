@@ -252,6 +252,7 @@ def main(args, model_args):
                     evaluator_list=evaluator_list,
                     device=device,
                     epoch=attack_param,
+                    name="robustness",
                     log_writer=log_writer,
                     args=args
                 )

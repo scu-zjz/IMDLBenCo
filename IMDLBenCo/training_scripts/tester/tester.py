@@ -22,9 +22,11 @@ def test_one_loader(model: torch.nn.Module,
                     if_remain=False,
                     args=None
                    ):
+    data_dict, output_dict = None, None # See https://github.com/scu-zjz/IMDLBenCo/blob/main/tests/test_tail_dataset.py for why this is needed
+
     # 具体data_dict的格式参考IMDLBench.datasets.abstract_dataset的108行 113行~117行
     for data_iter_step, data_dict in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
-
+        
         # move to device
         for key in data_dict.keys():
             if isinstance(data_dict[key], torch.Tensor):
@@ -146,7 +148,7 @@ def test_one_epoch(model: torch.nn.Module,
                 remaining_loader = DataLoader(remaining_subset, batch_size=batch_size)
                 # test on remaining loader
                 remaining_header = 'Test <remaining>: [{}]'.format(epoch)
-                test_one_loader(
+                rem_data_dict, rem_output_dict = test_one_loader(
                     model=model,
                     data_loader=remaining_loader,
                     evaluator_list=evaluator_list,
@@ -170,6 +172,9 @@ def test_one_epoch(model: torch.nn.Module,
                     **kwargs_evaluator,
                     _n=1
                 )
+        if data_dict is None:
+            data_dict = rem_data_dict
+            output_dict = rem_output_dict
         metric_logger.synchronize_between_processes()    
         print("---syncronized---")
         for evaluator in evaluator_list:
@@ -179,11 +184,11 @@ def test_one_epoch(model: torch.nn.Module,
         if log_writer is not None:
             if is_test:
                 for evaluator in evaluator_list:
-                    log_writer.add_scalar(f'{name}/test_evaluators/{evaluator.name}', metric_logger.meters[evaluator.name].global_avg, epoch)
-            log_writer.add_images(f'{name}/test/image',  denormalize(data_dict['image']), epoch)
-            log_writer.add_images(f'{name}/test/predict', output_dict['pred_mask'] * 1.0, epoch)
-            log_writer.add_images(f'{name}/test/predict_threshold_0.5', (output_dict['pred_mask'] > 0.5)* 1.0, epoch)
-            log_writer.add_images(f'{name}/test/mask', data_dict['mask'], epoch)
+                    log_writer.add_scalar(f'{name}_test_evaluators/{evaluator.name}', metric_logger.meters[evaluator.name].global_avg, epoch)
+            log_writer.add_images(f'{name}_test/image',  denormalize(data_dict['image']), epoch)
+            log_writer.add_images(f'{name}_test/predict', output_dict['pred_mask'] * 1.0, epoch)
+            log_writer.add_images(f'{name}_test/predict_threshold_0.5', (output_dict['pred_mask'] > 0.5)* 1.0, epoch)
+            log_writer.add_images(f'{name}_test/mask', data_dict['mask'], epoch)
             # log_writer.add_images('test/edge_mask', edge_mask, epoch)
             
         print("Averaged stats:", metric_logger)
