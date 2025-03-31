@@ -25,16 +25,7 @@ from IMDLBenCo.training_scripts.trainer import train_one_epoch
 
 def get_args_parser():
     parser = argparse.ArgumentParser('IMDLBenCo training launch!', add_help=True)
-    # ++++++++++++TODO++++++++++++++++
-    # 这里是每个模型定制化的input区域，包括load与训练模型，模型的magic number等等
-    # 需要根据你们的模型定制化修改这里 
-    # 目前这里的内容都是仅仅给IML-ViT用的
-    # parser.add_argument('--vit_pretrain_path', default = '/root/workspace/IML-ViT/pretrained-weights/mae_pretrain_vit_base.pth', type=str, help='path to vit pretrain model by MAE')
 
-    # parser.add_argument('--edge_lambda', default=20, type=float,
-    #                     help='hyper-parameter of the weight for proposed edge loss.')
-    # parser.add_argument('--predict_head_norm', default="BN", type=str,
-    #                     help="norm for predict head, can be one of 'BN', 'LN' and 'IN' (batch norm, layer norm and instance norm). It may influnce the result  on different machine or datasets!")
     # -------------------------------
     # Model name
     parser.add_argument('--model', default=None, type=str,
@@ -97,13 +88,13 @@ def get_args_parser():
     parser.add_argument('--warmup_epochs', type=int, default=4, metavar='N',
                         help='epochs to warmup LR')
 
-    # ----输出的日志相关的参数-----------
+    # ----输出的日志相关的参数----------
+    # ----output related parameters----
     parser.add_argument('--output_dir', default='./output_dir',
                         help='path where to save, empty for no saving')
     parser.add_argument('--log_dir', default='./output_dir',
                         help='path where to tensorboard log')
     # -----------------------
-    
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
     parser.add_argument('--seed', default=42, type=int)
@@ -128,9 +119,11 @@ def get_args_parser():
 
     args, remaining_args = parser.parse_known_args()
     # 获取对应的模型类
+    # Get the corresponding model class
     model_class = MODELS.get(args.model)
 
     # 根据模型类动态创建参数解析器
+    # Dynamically create a parameter parser based on the model class
     model_parser = misc.create_argparser(model_class)
     model_args = model_parser.parse_args(remaining_args)
 
@@ -155,7 +148,7 @@ def main(args, model_args):
     np.random.seed(seed)
     
     """=========================================================
-    You Can Modify code below to customize your data augmentation
+    You Can Modify code below to customize your data augmentation TODO
     ========================================================="""
     train_transform = albu.Compose([
             # Rescale the input image by a random factor between 0.8 and 1.2
@@ -185,7 +178,7 @@ def main(args, model_args):
                 p = 0.2
             ),
     ])
-
+    # TODO
     test_transform = albu.Compose([
         # ---Blow for robustness evalution---
         # albu.Resize(512, 512),
@@ -296,7 +289,7 @@ def main(args, model_args):
         sampler_train = torch.utils.data.DistributedSampler(
             dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
         )
-        for name, dataset_test in test_datasets.items():
+        for test_dataset_name, dataset_test in test_datasets.items():
             sampler_test = torch.utils.data.DistributedSampler(
                 dataset_test, 
                 num_replicas=num_tasks, 
@@ -304,14 +297,14 @@ def main(args, model_args):
                 shuffle=False,
                 drop_last=True
             )
-            test_sampler[name] = sampler_test
+            test_sampler[test_dataset_name] = sampler_test
         print("Sampler_train = %s" % str(sampler_train))
         print("Sampler_test = %s" % str(sampler_test))
     else:
         sampler_train = torch.utils.data.RandomSampler(dataset_train)
-        for name,dataset_test in test_datasets.items():
+        for test_dataset_name,dataset_test in test_datasets.items():
             sampler_test = torch.utils.data.RandomSampler(dataset_test)
-            test_sampler[name] = sampler_test
+            test_sampler[test_dataset_name] = sampler_test
 
     if global_rank == 0 and args.log_dir is not None:
         os.makedirs(args.log_dir, exist_ok=True)
@@ -327,16 +320,16 @@ def main(args, model_args):
         drop_last=True,
     )
     
-    test_data_loader = {}
-    for name in test_sampler.keys():
-        data_loader_test = torch.utils.data.DataLoader(
-            test_datasets[name], sampler=test_sampler[name],
+    test_dataloaders = {}
+    for test_dataset_name in test_sampler.keys():
+        test_dataloader = torch.utils.data.DataLoader(
+            test_datasets[test_dataset_name], sampler=test_sampler[test_dataset_name],
             batch_size=args.test_batch_size,
             num_workers=args.num_workers,
             pin_memory=args.pin_mem,
             drop_last=True,
         )
-        test_data_loader[name] = data_loader_test
+        test_dataloaders[test_dataset_name] = test_dataloader
     
     # ========define the model directly==========
     # model = IML_ViT(
@@ -359,6 +352,12 @@ def main(args, model_args):
             combined_args[k] = v
     model = model(**combined_args)
     # ============================================
+
+    """
+    TODO Set the evaluator you want to use
+    You can use PixelF1, ImageF1, or any other evaluator you like.
+    Available evaluators are in: https://github.com/scu-zjz/IMDLBenCo/blob/main/IMDLBenCo/evaluation/__init__.py
+    """    
     evaluator_list = [
         PixelF1(threshold=0.5, mode="origin"),
         # ImageF1(threshold=0.5)
@@ -387,7 +386,7 @@ def main(args, model_args):
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=args.find_unused_parameters)
         model_without_ddp = model.module
     
-    # following timm: set wd as 0 for bias and norm layers
+    # TODO You can set optimizer settings here
     args.opt='AdamW'
     args.betas=(0.9, 0.999)
     args.momentum=0.9
@@ -403,7 +402,7 @@ def main(args, model_args):
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             data_loader_train.sampler.set_epoch(epoch)
-            
+        # train for one epoch
         train_stats = train_one_epoch(
             model, data_loader_train,
             optimizer, device, epoch, loss_scaler,
@@ -419,42 +418,48 @@ def main(args, model_args):
                 loss_scaler=loss_scaler, epoch=epoch)
             
         optimizer.zero_grad()
+        # test for one epoch
         if epoch % args.test_period == 0 or epoch + 1 == args.epochs:
-            values = {}
-            for name, data_loader_test in test_data_loader.items():
-                print(f'!!!Start Test: {name}',len(data_loader_test))
+            values = {} # dict of dict (dataset_name: {metric_name: metric_value})
+            # test across all datasets in the `test_data_loaders' dict
+            for test_dataset_name, test_dataloader in test_dataloaders.items():
+                print(f'!!!Start Test: {test_dataset_name}',len(test_dataloader))
                 test_stats = test_one_epoch(
                     model, 
-                    data_loader = data_loader_test, 
+                    data_loader = test_dataloader, 
                     evaluator_list=evaluator_list,
                     device = device, 
                     epoch = epoch,
-                    name = name, 
+                    name = test_dataset_name, 
                     log_writer=log_writer,
                     args = args,
                     is_test = False,
                 )
                 one_metric_value = {}
-                for evaluate_metric_for_ckpt in evaluator_list:
-                    evaluate_metric_for_ckpt_name = evaluate_metric_for_ckpt.name
-                    evaluate_metric_value = test_stats[evaluate_metric_for_ckpt_name]
-                    one_metric_value[evaluate_metric_for_ckpt_name] = evaluate_metric_value
-                values[name] = one_metric_value
+                # Read the metric value from the test_stats dict
+                for evaluator in evaluator_list:
+                    evaluate_metric_value = test_stats[evaluator.name]
+                    one_metric_value[evaluator.name] = evaluate_metric_value
+                values[test_dataset_name] = one_metric_value
 
             metrics_dict = {metric: {dataset: values[dataset][metric] for dataset in values} for metric in {m for d in values.values() for m in d}}
+            # Calculate the mean of each metric across all datasets
             metric_means = {metric: np.mean(list(datasets.values())) for metric, datasets in metrics_dict.items()}
-
+            # Calculate the mean of all metrics
             evaluate_metric_value = np.mean(list(metric_means.values()))
-
+            
+            # Store the best metric value 
             if evaluate_metric_value > best_evaluate_metric_value :
                 best_evaluate_metric_value = evaluate_metric_value
                 print(f"Best {' '.join([evaluator.name for evaluator in evaluator_list])} = {best_evaluate_metric_value}")
+                # Save the best only after 20 epoch. TODO you can modify this.
                 if epoch > 20:
                     misc.save_model(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
                 loss_scaler=loss_scaler, epoch=epoch)
             else:
                 print(f"Average {' '.join([evaluator.name for evaluator in evaluator_list])} = {evaluate_metric_value}")
+            # Log the metrics to Tensorboard
             if log_writer is not None:
                 for metric, datasets in metrics_dict.items():
                     log_writer.add_scalars(f'{metric}_Metric', datasets, epoch)

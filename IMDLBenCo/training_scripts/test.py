@@ -13,23 +13,12 @@ import IMDLBenCo.training_scripts.utils.misc as misc
 
 from IMDLBenCo.registry import MODELS, POSTFUNCS
 from IMDLBenCo.datasets import ManiDataset, JsonDataset
-from IMDLBenCo.evaluation import PixelF1, ImageF1
+from IMDLBenCo.evaluation import PixelF1, ImageF1    # TODO You can select evaluator you like here
 
 from IMDLBenCo.training_scripts.tester import test_one_epoch
 
 def get_args_parser():
     parser = argparse.ArgumentParser('IMDLBench testing launch!', add_help=True)
-    # ++++++++++++TODO++++++++++++++++
-    # 这里是每个模型定制化的input区域，包括load与训练模型，模型的magic number等等
-    # 需要根据你们的模型定制化修改这里 
-    # 目前这里的内容都是仅仅给IML-ViT用的
-    # parser.add_argument('--vit_pretrain_path', default = None, type=str, help='path to vit pretrain model by MAE')
-    # parser.add_argument('--edge_broaden', default=7, type=int,
-    #                     help='Edge broaden size (in pixels) for edge_generator.')
-    # parser.add_argument('--edge_lambda', default=20, type=float,
-    #                     help='hyper-parameter of the weight for proposed edge loss.')
-    # parser.add_argument('--predict_head_norm', default="BN", type=str,
-    #                     help="norm for predict head, can be one of 'BN', 'LN' and 'IN' (batch norm, layer norm and instance norm). It may influnce the result  on different machine or datasets!")
     # -------------------------------
     # Model name
     parser.add_argument('--model', default=None, type=str,
@@ -104,7 +93,10 @@ def main(args, model_args):
     print("=====Model args:=====")
     print("{}".format(model_args).replace(', ', ',\n'))
     device = torch.device(args.device)
-    
+
+    """=========================================================
+    You Can Modify code below to customize your data augmentation TODO
+    ========================================================="""
     test_transform = albu.Compose([
         # ---Blow for robustness evalution---
         # albu.Resize(512, 512),
@@ -155,6 +147,12 @@ def main(args, model_args):
     combined_args.update({k: v for k, v in vars(model_args).items() if k in model_init_params})
     model = model(**combined_args)
     # ============================================
+
+    """
+    TODO Set the evaluator you want to use
+    You can use PixelF1, ImageF1, or any other evaluator you like.
+    Available evaluators are in: https://github.com/scu-zjz/IMDLBenCo/blob/main/IMDLBenCo/evaluation/__init__.py
+    """    
     evaluator_list = [
         PixelF1(threshold=0.5, mode="origin"),
         # ImageF1(threshold=0.5)
