@@ -84,7 +84,7 @@ def cli_init(config, subcommand):
         _copy_init_base_files()
         _copy_dataset_json()
         for name in ['train.py', 'test.py', 'test_robust.py']:
-            injected_str = "from mymodel import MyModel"
+            injected_str = "from mymodel import MyModel  # TODO, you need to change this line when modifying the name model"
             current_dir = os.getcwd()
             target_dir = os.path.join(current_dir, name)
             _inject_after_last_import(target_dir, injected_str)
