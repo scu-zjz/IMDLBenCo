@@ -95,6 +95,12 @@ We will keep updating the document with tricks and user cases. Please stay tuned
 
 We also welcome contributors to translate it into other languages.
 
+## Awsome Works Using IMDLBenCo
+- [OpenSDI](https://iamwangyabin.github.io/OpenSDI/): A large dataset for Spotting Diffusion-Generated Images in the Open World and a corresponding SoTA model. CVPR25. ![GitHub Repo stars](https://img.shields.io/github/stars/iamwangyabin/OpenSDI)
+- [Sparse-ViT](https://arxiv.org/abs/2412.14598): A SoTA model constructing the non-semantic feature extractor through a sparse-designed attention transformer. AAAI'25. [![Stars](https://img.shields.io/github/stars/scu-zjz/SparseViT?style=social)](https://github.com/scu-zjz/SparseViT)
+- [Mesorch](https://arxiv.org/abs/2412.13753): A SoTA model adopts a parallel CNN+Transformer structure to simultaneously deal with image semantics and non-semantics. AAAI'25. [![Stars](https://img.shields.io/github/stars/scu-zjz/Mesorch?style=social)](https://github.com/scu-zjz/Mesorch)
+
+
 ## About
 ☑️**About the Developers:**  
 - IMDL-BenCo's project leader/supervisor is Associate Professor 🏀[_Jizhe Zhou_ (周吉喆)](https://knightzjz.github.io/), Sichuan University🇨🇳.  
