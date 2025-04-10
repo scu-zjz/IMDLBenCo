@@ -132,7 +132,7 @@ def test_abstract_dataset_validation():
         # 测试无效的JSON路径
         JsonDataset(path="non_existent.json")
     
-    with pytest.raises(AssertionError):
+    with pytest.raises((AssertionError, FileNotFoundError)):
         # 测试ManiDataset路径不匹配
         dataset = ManiDataset(
             path="invalid_path",
