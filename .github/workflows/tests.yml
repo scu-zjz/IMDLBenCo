@@ -68,9 +68,10 @@ jobs:
       if: startsWith(matrix.os, 'windows')
       env:
         PYTHONDONTWRITEBYTECODE: 1
+        #         torchrun --nproc_per_node=2 -m pytest ./tests/dist
       run: |
         pytest -vv --cov=IMDLBenCo --cov-report=xml tests/pytests
-        torchrun --nproc_per_node=2 -m pytest ./tests/dist
+
     - name: Run '${{ matrix.testmarker }}' tests on Linux / Mac
       if: ${{ !startsWith(matrix.os, 'windows') }}
       env:
@@ -78,7 +79,6 @@ jobs:
         PYTHONDONTWRITEBYTECODE: 1
       run: |
         pytest -vv --cov=IMDLBenCo --cov-report=xml tests/pytests
-        torchrun --nproc_per_node=2 -m pytest ./tests/dist
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v5
       with:

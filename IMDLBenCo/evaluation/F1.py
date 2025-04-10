@@ -122,6 +122,7 @@ class PixelF1(AbstractEvaluator):
         precision = TP / (TP + FP + 1e-8)
         recall = TP / (TP + FN + 1e-8)
         F1 = 2 * precision * recall / (precision + recall + 1e-8)
+        print("F1:", F1)
         # F1 = torch.mean(F1) # fuse the Batch dimension
         return F1
 

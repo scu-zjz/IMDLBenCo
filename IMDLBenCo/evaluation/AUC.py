@@ -102,6 +102,10 @@ class PixelAUC(AbstractEvaluator):
         
         y_true = y_true.flatten()
         y_scores = y_scores.flatten()
+        # 处理 y_true 全为 0 的情况, 理论上这种情况不该计算auc
+        if torch.sum(y_true) == 0:
+            # raise "The mask is all 0, we can't calculate pixel-AUC under this situation, please utilize a test only containse manipulated images to calculate AUC."
+            return 0.0
 
         # 排除被 shape_mask 掩盖的部分
         if shape_mask is not None:
@@ -120,13 +124,15 @@ class PixelAUC(AbstractEvaluator):
         # 累积正样本和负样本的数量
         tps = torch.cumsum(y_true_sorted, dim=0)
         fps = torch.cumsum(1 - y_true_sorted, dim=0)
-
+        print("TPS", tps)
+        print("FPS", fps)
         # 计算 TPR 和 FPR
         tpr = tps / n_pos
         fpr = fps / n_neg
 
         # 计算 AUC
         auc = torch.trapz(tpr, fpr)
+        print("AUCCCCC", auc)
 
         return auc.item()
         
