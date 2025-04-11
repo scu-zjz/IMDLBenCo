@@ -104,6 +104,7 @@ class PixelAccuracy(AbstractEvaluator):
             ACC = torch.max((TP + TN)/(TP + TN + FP + FN), (FP + FN)/(TP + TN + FP + FN))
         else:
             raise RuntimeError(f"Cal_ACC no mode name {self.mode}")
+        print("ACCCCCCCCCC",ACC)
         return ACC
     def epoch_update(self):
 

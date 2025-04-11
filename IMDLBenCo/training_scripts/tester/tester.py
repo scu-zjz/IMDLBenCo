@@ -91,6 +91,7 @@ def test_one_epoch(model: torch.nn.Module,
                     epoch: int,
                     name='', 
                     log_writer=None,
+                    print_freq = 20,
                     args=None,
                     is_test=True):
       
@@ -104,7 +105,6 @@ def test_one_epoch(model: torch.nn.Module,
             model.eval()
         metric_logger = misc.MetricLogger(delimiter="  ")
         # F1 evaluation for an Epoch during training
-        print_freq = 20
         header = 'Test: [{}]'.format(epoch)
         
         # Full test on the vanilla dataloader with drop_last==True
