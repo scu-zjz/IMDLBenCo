@@ -1,5 +1,7 @@
-base_dir="./output_dir"
+base_dir="./output_dir_pscc"
 mkdir -p ${base_dir}
+# Check point to hrnet_w18_small_v2.pth please reference here:
+# https://github.com/proteus1991/PSCC-Net/blob/main/models/hrnet_w18_small_v2.pth
 
 CUDA_VISIBLE_DEVICES=4 \
 torchrun  \
@@ -11,7 +13,7 @@ torchrun  \
     --world_size 1 \
     --batch_size 16 \
     --data_path /mnt/data0/public_datasets/IML/CASIA2.0 \
-    --pretrain_path "/mnt/data0/dubo/workspace/IMDLBenCo/IMDLBenCo/model_zoo/pscc/hrnet_w18_small_v2.pth" \
+    --pretrain_path "/mnt/data0/xiaochen/workspace/IMDLBenCo_pure/test_cat_net/hrnet_w18_small_v2.pth" \
     --epochs 150 \
     --lr 1e-4 \
     --image_size 256 \

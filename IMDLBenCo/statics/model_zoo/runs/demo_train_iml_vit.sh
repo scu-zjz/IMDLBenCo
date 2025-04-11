@@ -1,6 +1,7 @@
 base_dir="./output_dir"
 mkdir -p ${base_dir}
-
+# For MAE Pretrained weights please reference here:
+# https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_base.pth
 CUDA_VISIBLE_DEVICES=0 \
 torchrun  \
     --standalone    \

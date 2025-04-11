@@ -1,5 +1,7 @@
 base_dir="./output_dir"
 mkdir -p ${base_dir}
+# For Pretrained weights please reference here:
+# https://github.com/scu-zjz/IMDLBenCo/tree/main/IMDLBenCo/model_zoo/trufor
 
 CUDA_VISIBLE_DEVICES=4 \
 torchrun  \
