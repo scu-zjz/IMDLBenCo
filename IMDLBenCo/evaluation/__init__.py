@@ -1,4 +1,4 @@
-from .temp import cal_confusion_matrix, genertate_region_mask, cal_F1
+from .temp import cal_confusion_matrix, generate_region_mask, cal_F1
 from .abstract_class import AbstractEvaluator
 from .F1 import ImageF1, PixelF1
 from .AUC import ImageAUC, PixelAUC

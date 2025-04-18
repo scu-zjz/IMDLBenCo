@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score,roc_curve
 import numpy as np
 from torch.utils.data import DataLoader
-def genertate_region_mask(masks ,batch_shape:torch.Tensor):
+def generate_region_mask(masks ,batch_shape:torch.Tensor):
     """generate B 1 H W meaningful-region-mask for a batch of masks
 
     Args:

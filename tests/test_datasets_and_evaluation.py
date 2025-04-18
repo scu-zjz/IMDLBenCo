@@ -9,7 +9,7 @@ from IMDLBenCo.datasets.jpeg_dataset_deprecated import MetaCatnetDataset
 from IMDLBenCo.registry import DATASETS
 import torch
 
-from IMDLBenCo.evaluation import genertate_region_mask, cal_confusion_matrix, cal_F1
+from IMDLBenCo.evaluation import generate_region_mask, cal_confusion_matrix, cal_F1
 from IMDLBenCo.datasets import denormalize
 
 
