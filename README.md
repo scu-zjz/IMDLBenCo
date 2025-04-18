@@ -39,18 +39,14 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 - [2024/12/10] [Sparse-ViT](https://arxiv.org/pdf/2412.14598) [![Stars](https://img.shields.io/github/stars/scu-zjz/SparseViT?style=social)](https://github.com/scu-zjz/SparseViT), the very first solution of constructing the non-semantic feature extractor through a self-supervised manner in IML is proposed by us and accepted by AAAI 25!!!🎉🎉🎉
 - [2024/09/26] This paper, IMDL-BenCo, has been accepted as **Spotlight** to NeurIPS 2024 Track Datasets and Benchmarks!!! 🎉🎉🎉
 
-> [!WARNING]
-> **Existing bug**:
-> 1. The `Image-Acc` evaluator may not return an accurate value under the current version during multi-GPU inference. Please be careful with it! We are locating the exact issue. Details found in issue: https://github.com/scu-zjz/IMDLBenCo/issues/42. Thanks [@iamwangyabin](https://github.com/iamwangyabin) for reporting the issue.
-
-
 > [!IMPORTANT]
 > **Known Differences with original CAT-Net Protocol**
->  1. The CAT-Protocol (implementation of default [balanced_dataset.py](https://github.com/scu-zjz/IMDLBenCo/blob/main/IMDLBenCo/statics/dataset_json/balanced_dataset.json)) used in the IMDLBenCo paper differ from the original [CAT-Net settings](https://github.com/mjkwon2021/CAT-Net/blob/main/Splicing/data/data_core.py). Several real image datasets are omitted. Please pay special attention! For more details, please check issue [#65](https://github.com/scu-zjz/IMDLBenCo/issues/65#issuecomment-2604861981).
+>  1. We **Highly Recommend** everyone update IMDLBenCo to the latest version `v0.1.27` since we fixed a bug🐞 that may lead to inaccurate image-level metrics!!! For details, see [IMDLBenCo v0.1.27 Release Notes](https://github.com/scu-zjz/IMDLBenCo/releases/tag/v0.1.27).
+>  2. The CAT-Protocol (implementation of default [balanced_dataset.py](https://github.com/scu-zjz/IMDLBenCo/blob/main/IMDLBenCo/statics/dataset_json/balanced_dataset.json)) used in the IMDLBenCo paper differs from the original [CAT-Net settings](https://github.com/mjkwon2021/CAT-Net/blob/main/Splicing/data/data_core.py). Several real image datasets are omitted. Please pay special attention! For more details, please check issue [#65](https://github.com/scu-zjz/IMDLBenCo/issues/65#issuecomment-2604861981).
 
 ## Overview
 ☑️**Welcome to IMDL-BenCo, the first comprehensive IMDL benchmark and modular codebase.**    
-- This codebase is under long-term maintenance and updating. New features, extra baseline/sota models, and bug fixes will be continuously involved. You can find the corresponding plan here shortly.
+- This codebase is under long-term maintenance and updating. New features, extra baseline/SOTA models, and bug fixes will be continuously involved. You can find the corresponding plan here shortly.
 - This repo decomposes the IMDL framework into **standardized, reusable components and revises the model construction pipeline**, improving coding efficiency and customization flexibility.
 - This repo **fully implements or incorporates training code for state-of-the-art models** to establish a comprehensive IMDL benchmark.
 - Cite and star if you feel helpful. This will encourage us a lot 🥰.   
@@ -74,7 +70,7 @@ benco --version
 ```
 This repository is under rapid development, thus, you can also use the command above to check if the current version is our latest version.
 
-If everything works well, it should looks like this:
+If everything works well, it should look like this:
 ```
 IMDLBenCo codebase version: 0.1.23
         Checking for updates...
@@ -105,7 +101,7 @@ We also welcome contributors to translate it into other languages.
 ## About
 ☑️**About the Developers:**  
 - IMDL-BenCo's project leader/supervisor is Associate Professor 🏀[_Jizhe Zhou_ (周吉喆)](https://knightzjz.github.io/), Sichuan University🇨🇳.  
-- IMDL-BenCo's codebase designer and coding leader is the Research Assitant [_Xiaochen Ma_ (马晓晨)](https://me.xiaochen.world/), Sichuan University🇨🇳.  
+- IMDL-BenCo's codebase designer and coding leader is the Research Assistant [_Xiaochen Ma_ (马晓晨)](https://me.xiaochen.world/), Sichuan University🇨🇳.  
 - IMDL-BenCo is jointly sponsored and advised by Prof. _Jiancheng LV_ (吕建成), Sichuan University 🐼, and Prof. _Chi-Man PUN_ (潘治文), University of Macau 🇲🇴, through the [Research Center of Machine Learning and Industry Intelligence, China MOE](https://center.dicalab.cn/) platform.  
 
 ## Citation
