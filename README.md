@@ -40,9 +40,12 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 - [2024/09/26] This paper, IMDL-BenCo, has been accepted as **Spotlight** to NeurIPS 2024 Track Datasets and Benchmarks!!! 🎉🎉🎉
 
 > [!IMPORTANT]
+> **Upgrade to LATEST VERSION to Avoid Bugs!**
+> - We **Highly Recommend** everyone update IMDLBenCo to the latest version `v0.1.27` since we fixed a bug🐞 that may lead to inaccurate image-level metrics!!! For details, see [IMDLBenCo v0.1.27 Release Notes](https://github.com/scu-zjz/IMDLBenCo/releases/tag/v0.1.27).
+> 
 > **Known Differences with original CAT-Net Protocol**
->  1. We **Highly Recommend** everyone update IMDLBenCo to the latest version `v0.1.27` since we fixed a bug🐞 that may lead to inaccurate image-level metrics!!! For details, see [IMDLBenCo v0.1.27 Release Notes](https://github.com/scu-zjz/IMDLBenCo/releases/tag/v0.1.27).
->  2. The CAT-Protocol (implementation of default [balanced_dataset.py](https://github.com/scu-zjz/IMDLBenCo/blob/main/IMDLBenCo/statics/dataset_json/balanced_dataset.json)) used in the IMDLBenCo paper differs from the original [CAT-Net settings](https://github.com/mjkwon2021/CAT-Net/blob/main/Splicing/data/data_core.py). Several real image datasets are omitted. Please pay special attention! For more details, please check issue [#65](https://github.com/scu-zjz/IMDLBenCo/issues/65#issuecomment-2604861981).
+> 
+> - The CAT-Protocol (implementation of default [balanced_dataset.py](https://github.com/scu-zjz/IMDLBenCo/blob/main/IMDLBenCo/statics/dataset_json/balanced_dataset.json)) used in the IMDLBenCo paper differs from the original [CAT-Net settings](https://github.com/mjkwon2021/CAT-Net/blob/main/Splicing/data/data_core.py). Several real image datasets are omitted. Please pay special attention! For more details, please check issue [#65](https://github.com/scu-zjz/IMDLBenCo/issues/65#issuecomment-2604861981).
 
 ## Overview
 ☑️**Welcome to IMDL-BenCo, the first comprehensive IMDL benchmark and modular codebase.**    
