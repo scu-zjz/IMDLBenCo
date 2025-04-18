@@ -1,4 +1,3 @@
-# TODO JZH
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -6,8 +5,9 @@ import numpy as np
 from .abstract_class import AbstractEvaluator
 import torch.distributed as dist
 import os
+from IMDLBenCo.training_scripts.utils import misc
 
-class ImageAccuracy(AbstractEvaluator):
+class ImageAccuracyNoRemain(AbstractEvaluator):
     def __init__(self, threshold=0.5) -> None:
         super().__init__()
         self.name = "image-level Accuracy"
@@ -34,6 +34,65 @@ class ImageAccuracy(AbstractEvaluator):
     def recovery(self):
         self.true_cnt = torch.tensor(0.0, dtype=torch.float64, device='cuda')
         self.cnt = torch.tensor(0.0, dtype=torch.float64, device='cuda')
+
+
+class ImageAccuracy(AbstractEvaluator):
+    def __init__(self, threshold=0.5) -> None:
+        super().__init__() 
+        self.name = "image-level Accuracy"
+        self.desc = "image-level Accuracy"
+        self.threshold = threshold
+        self.predict = []
+        self.label = []
+        self.remain_label = []
+        self.remain_predict = []
+        self.world_size = misc.get_world_size()
+        self.local_rank = misc.get_rank()
+
+    def batch_update(self, predict_label, label, *args, **kwargs):
+        self.predict.append(predict_label)
+        self.label.append(label)
+        return None
+        
+    def remain_update(self, predict_label, label, *args, **kwargs):
+        self.remain_predict.append(predict_label)
+        self.remain_label.append(label)
+        return None
+
+    def epoch_update(self):
+        predict = torch.cat(self.predict, dim=0)
+        label = torch.cat(self.label, dim=0)
+
+        gather_predict_list = [torch.zeros_like(predict) for _ in range(self.world_size)]
+        gather_label_list = [torch.zeros_like(label) for _ in range(self.world_size)]
+        dist.all_gather(gather_predict_list, predict)
+        dist.all_gather(gather_label_list, label)
+        gather_predict = torch.cat(gather_predict_list, dim=0)
+        gather_label = torch.cat(gather_label_list, dim=0)
+        # print("gather_predict", gather_predict.shape)
+        # print("gather_label", gather_label.shape)
+        if self.remain_predict != None:
+            self.remain_predict = torch.cat(self.remain_predict, dim=0)
+            self.remain_label = torch.cat(self.remain_label, dim=0)
+            gather_predict = torch.cat([gather_predict, self.remain_predict], dim=0)
+            gather_label = torch.cat([gather_label, self.remain_label], dim=0)
+            # print("combine gather_predict", gather_predict.shape)
+            # print("combine gather_label", gather_label.shape)
+        binary_predict = (gather_predict > self.threshold).float()
+        # print("binary_predict", binary_predict.shape)
+        correct = (torch.sum(binary_predict == gather_label)).sum().item()
+        # print("correct", correct)
+        total = gather_predict.shape[0]
+        # print("total", total)
+        acc = correct / total
+        # print("acc", acc)
+        return acc
+    def recovery(self):
+        self.predict = []
+        self.label = []
+        self.remain_label = []
+        self.remain_predict = []
+        return None
 
 class PixelAccuracy(AbstractEvaluator):
     def __init__(self,threshold = 0.5, mode="origin") -> None:
@@ -104,8 +163,12 @@ class PixelAccuracy(AbstractEvaluator):
             ACC = torch.max((TP + TN)/(TP + TN + FP + FN), (FP + FN)/(TP + TN + FP + FN))
         else:
             raise RuntimeError(f"Cal_ACC no mode name {self.mode}")
-        print("ACCCCCCCCCC",ACC)
+        # print("ACCCCCCCCCC",ACC)
         return ACC
+    
+    def remain_update(self, predict, mask, shape_mask=None, *args, **kwargs):
+        return self.batch_update(predict, mask, shape_mask=None, *args, **kwargs)
+    
     def epoch_update(self):
 
         return None

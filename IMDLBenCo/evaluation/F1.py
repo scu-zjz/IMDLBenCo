@@ -6,8 +6,9 @@ from .abstract_class import AbstractEvaluator
 import torch.distributed as dist
 import os
 from sklearn.metrics import f1_score
+from IMDLBenCo.training_scripts.utils import misc
 
-class ImageF1(AbstractEvaluator):
+class ImageF1NoRemain(AbstractEvaluator):
     def __init__(self, threshold = 0.5) -> None:
         super().__init__()
         self.name = "image-level F1"
@@ -48,6 +49,64 @@ class ImageF1(AbstractEvaluator):
         self.FN = 0
         self.cnt = 0
 
+class ImageF1(AbstractEvaluator):
+    def __init__(self, threshold=0.5) -> None:
+        super().__init__() 
+        self.name = "image-level F1"
+        self.desc = "image-level F1"
+        self.threshold = threshold
+        self.predict = []
+        self.label = []
+        self.remain_label = []
+        self.remain_predict = []
+        self.world_size = misc.get_world_size()
+        self.local_rank = misc.get_rank()
+
+    def batch_update(self, predict_label, label, *args, **kwargs):
+        self.predict.append(predict_label)
+        self.label.append(label)
+        return None
+        
+    def remain_update(self, predict_label, label, *args, **kwargs):
+        self.remain_predict.append(predict_label)
+        self.remain_label.append(label)
+        return None
+
+    def epoch_update(self):
+        predict = torch.cat(self.predict, dim=0)
+        label = torch.cat(self.label, dim=0)
+        gather_predict_list = [torch.zeros_like(predict) for _ in range(self.world_size)]
+        gather_label_list = [torch.zeros_like(label) for _ in range(self.world_size)]
+        dist.all_gather(gather_predict_list, predict)
+        dist.all_gather(gather_label_list, label)
+        gather_predict = torch.cat(gather_predict_list, dim=0)
+        gather_label = torch.cat(gather_label_list, dim=0)
+        # print("gather_predict", gather_predict.shape)
+        # print("gather_label", gather_label.shape)
+        if self.remain_predict != None:
+            self.remain_predict = torch.cat(self.remain_predict, dim=0)
+            self.remain_label = torch.cat(self.remain_label, dim=0)
+            gather_predict = torch.cat([gather_predict, self.remain_predict], dim=0)
+            gather_label = torch.cat([gather_label, self.remain_label], dim=0)
+        # calculate F1
+        predict = (gather_predict > self.threshold) * 1.0
+        TP = torch.sum(predict * gather_label)
+        print(TP)
+        # TN = torch.sum((1-predict) * (1-gather_label)).item()
+        FP = torch.sum(predict * (1-gather_label))
+        FN = torch.sum((1-predict) * gather_label)
+        precision = TP / (TP + FP + 1e-9)
+        recall = TP / (TP + FN + 1e-9)
+        print(precision, recall)
+        F1 = 2 * precision * recall / (precision + recall + 1e-9)
+        # F1 = torch.mean(F1) # fuse the Batch dimension
+        return F1
+    def recovery(self):
+        self.predict = []
+        self.label = []
+        self.remain_label = []
+        self.remain_predict = []
+        return None
             
 class PixelF1(AbstractEvaluator):
     def __init__(self, threshold = 0.5, mode = "origin") -> None:
@@ -141,6 +200,10 @@ class PixelF1(AbstractEvaluator):
             raise RuntimeError(f"Cal_F1 no mode name {self.mode}")
         
         return F1
+    
+    def remain_update(self, predict, mask, shape_mask=None, *args, **kwargs):
+        return self.batch_update(predict, mask, shape_mask, *args, **kwargs)
+    
     def epoch_update(self):
 
         return None

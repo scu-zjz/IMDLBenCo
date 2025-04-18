@@ -18,6 +18,12 @@ class AbstractEvaluator(object): # 想了想没必要用nn.module 反而可能�
         本函数在每个batch结尾update。
         """
         raise NotImplementedError
+    def remain_update(self, predict, pred_label, mask, shape_mask=None, *args, **kwargs):
+        """
+        本函数在每个batch结尾update。
+        主要用于处理在最后一个batch之后的剩余数据。
+        """
+        raise NotImplementedError
     def epoch_update(self):
         """
         理论上这个时候没有新的数据了，所以没有输入参数。

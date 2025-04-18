@@ -6,8 +6,9 @@ import numpy as np
 from .abstract_class import AbstractEvaluator
 import torch.distributed as dist
 import os
+from IMDLBenCo.training_scripts.utils import misc
 from sklearn.metrics import roc_auc_score
-class ImageAUC(AbstractEvaluator):
+class ImageAUCNoRemain(AbstractEvaluator):
     def __init__(self) -> None:
         self.name = "image-level AUC"
         self.desc = "image-level AUC"
@@ -84,6 +85,56 @@ class ImageAUC(AbstractEvaluator):
         self.predict_label = torch.tensor([], device='cuda')
         self.label = torch.tensor([], device='cuda')
         self.cnt = torch.tensor(0, device='cuda')
+
+class ImageAUC(AbstractEvaluator):
+    def __init__(self, threshold=0.5) -> None:
+        super().__init__() 
+        self.name = "image-level AUC"
+        self.desc = "image-level AUC"
+        self.threshold = threshold
+        self.predict = []
+        self.label = []
+        self.remain_label = []
+        self.remain_predict = []
+        self.world_size = misc.get_world_size()
+        self.local_rank = misc.get_rank()
+
+    def batch_update(self, predict_label, label, *args, **kwargs):
+        self.predict.append(predict_label)
+        self.label.append(label)
+        return None
+        
+    def remain_update(self, predict_label, label, *args, **kwargs):
+        self.remain_predict.append(predict_label)
+        self.remain_label.append(label)
+        return None
+
+    def epoch_update(self):
+        predict = torch.cat(self.predict, dim=0)
+        label = torch.cat(self.label, dim=0)
+        gather_predict_list = [torch.zeros_like(predict) for _ in range(self.world_size)]
+        gather_label_list = [torch.zeros_like(label) for _ in range(self.world_size)]
+        dist.all_gather(gather_predict_list, predict)
+        dist.all_gather(gather_label_list, label)
+        gather_predict = torch.cat(gather_predict_list, dim=0)
+        gather_label = torch.cat(gather_label_list, dim=0)
+        # print("gather_predict", gather_predict.shape)
+        # print("gather_label", gather_label.shape)
+        if self.remain_predict != None:
+            self.remain_predict = torch.cat(self.remain_predict, dim=0)
+            self.remain_label = torch.cat(self.remain_label, dim=0)
+            gather_predict = torch.cat([gather_predict, self.remain_predict], dim=0)
+            gather_label = torch.cat([gather_label, self.remain_label], dim=0)
+        # calculate AUC
+        auc = roc_auc_score(gather_label.cpu().numpy(), gather_predict.cpu().numpy())
+        print("AUC", auc)
+        return auc
+    def recovery(self):
+        self.predict = []
+        self.label = []
+        self.remain_predict = []
+        self.remain_label = []
+        return None
     
     
 
@@ -155,6 +206,9 @@ class PixelAUC(AbstractEvaluator):
             raise RuntimeError(f"Cal_AUC no mode name {self.mode}")
         
         return torch.tensor(AUC_list)
+    
+    def remain_update(self, predict, mask, shape_mask=None, *args, **kwargs):
+        return self.batch_update(predict, mask, shape_mask, *args, **kwargs)
 
     def epoch_update(self):
 

@@ -7,7 +7,7 @@ from torch.utils.data import Subset, DataLoader
 
 import IMDLBenCo.training_scripts.utils.misc as misc
 
-from IMDLBenCo.evaluation import genertate_region_mask, cal_confusion_matrix, cal_F1 # TODO remove this line
+# from IMDLBenCo.evaluation import genertate_region_mask, cal_confusion_matrix, cal_F1 # TODO remove this line
 from IMDLBenCo.evaluation import AbstractEvaluator
 from IMDLBenCo.datasets import denormalize
 
@@ -43,20 +43,29 @@ def test_one_loader(model: torch.nn.Module,
         if BATCHSIZE != args.test_batch_size:
             print("=" * 20)
             print(f"A batch that is not fully loaded was detected at the end of the dataset. The actual batch size for this batch is {BATCHSIZE}: The default batch size is {args.test_batch_size}" )
-            print("=" * 20)
-        
+            print("=" * 20)            
         for evaluator in evaluator_list:
-            results = evaluator.batch_update(
-                predict=mask_pred, 
-                predict_label=label_pred,
-                **data_dict
-            )
+            if if_remain == True:
+                results = evaluator.remain_update(
+                    predict=mask_pred, 
+                    predict_label=label_pred,
+                    **data_dict
+                )
+            else:
+                results = evaluator.batch_update(
+                    predict=mask_pred, 
+                    predict_label=label_pred,
+                    **data_dict
+                )
+
+
             if results == None: # Image-level results, do nothing
                 continue
             else:               # pixel-level results, update to logger
                 assert BATCHSIZE == len(results) , f"Length of output results in evaluator {evaluator.name} does not match with the bachsize."
                 # print(BATCHSIZE, results.shape)
                 # print(results)
+                # Only apply to SUM able metrics
                 results = torch.sum(results)
                 # print(results)
                 # print(data_dict['name'])
@@ -162,6 +171,8 @@ def test_one_epoch(model: torch.nn.Module,
         # Epoch level update of evaluators
         for evaluator in evaluator_list:
             results = evaluator.epoch_update()
+            # recover the evaluator
+            evaluator.recovery()
             if results == None:
                 continue
             else:
