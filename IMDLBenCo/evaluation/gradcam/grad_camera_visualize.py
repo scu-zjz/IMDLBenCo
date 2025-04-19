@@ -57,10 +57,24 @@ def grad_camera_visualize(model: nn.Module,
         rgb_img = np.float32(torch.squeeze(denormalize(input_tensor), 0).permute(1, 2, 0).cpu())
         targets = [SemanticSegmentationTarget(data['mask'])]
         grayscale_cam = cam(data, input_tensor=input_tensor, targets=targets)[0, :]
-        # TODO fix the reshape bug
+        
+        # reshape type
         # target_shape = tuple(data['shape'].cpu().numpy().squeeze())
         # rgb_img_resized = np.array(Image.fromarray(rgb_img.astype('uint8')).resize(target_shape, Image.BILINEAR))
         # grayscale_cam_resized = np.array(Image.fromarray(grayscale_cam).resize(target_shape, Image.BILINEAR))
-        # pdb.set_trace()
-        cam_image = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
-        Image.fromarray(cam_image).save(os.path.join(output_path, data['name'][0].split('.')[0] + '.jpg'))
+        # cam_image = show_cam_on_image(rgb_img_resized, grayscale_cam_resized, use_rgb=True)
+        # Image.fromarray(cam_image).save(os.path.join(output_path, data['name'][0].split('.')[0] + '.jpg'))
+        
+        # DePadding type
+        target_shape = tuple(data['shape'].cpu().numpy().squeeze()) # (256, 384) for example
+        import pdb
+        pdb.set_trace()
+        rgb_image_DePadding = np.array(Image.fromarray(rgb_img.astype('uint8')))[0:target_shape[0], 0:target_shape[1], :]
+        grayscale_cam_DePadding = np.array(Image.fromarray(grayscale_cam))[0:target_shape[0], 0:target_shape[1]]
+        cam_image = show_cam_on_image(rgb_image_DePadding, grayscale_cam_DePadding, use_rgb=True)
+        Image.fromarray(cam_image).save(os.path.join(output_path, data['name'][0].split('.')[0] + '.jpg'))        
+        
+        
+        # No moving type
+        # cam_image = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
+        # Image.fromarray(cam_image).save(os.path.join(output_path, data['name'][0].split('.')[0] + '.jpg'))

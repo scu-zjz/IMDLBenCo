@@ -21,6 +21,7 @@ class BaseCAM:
         tta_transforms: Optional[tta.Compose] = None,
     ) -> None:
         self.model = model.eval()
+        # self.model = model.train()
         self.target_layers = target_layers
 
         # Use the same device as the model.
