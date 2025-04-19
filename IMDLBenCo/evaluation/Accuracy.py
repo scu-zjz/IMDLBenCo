@@ -17,6 +17,7 @@ class ImageAccuracyNoRemain(AbstractEvaluator):
         self.cnt = torch.tensor(0.0, dtype=torch.float64, device='cuda')
 
     def batch_update(self, predict_label, label, *args, **kwargs):
+        self._chekc_image_level_params(predict_label, label)
         predict = (predict_label > self.threshold).float().cuda()
         self.true_cnt += torch.tensor(torch.sum(predict * label).item() + torch.sum((1 - predict) * (1 - label)).item(), dtype=torch.float64, device='cuda')
         self.cnt += torch.tensor(len(label), dtype=torch.float64, device='cuda')
@@ -50,11 +51,13 @@ class ImageAccuracy(AbstractEvaluator):
         self.local_rank = misc.get_rank()
 
     def batch_update(self, predict_label, label, *args, **kwargs):
+        self._chekc_image_level_params(predict_label, label)
         self.predict.append(predict_label)
         self.label.append(label)
         return None
         
     def remain_update(self, predict_label, label, *args, **kwargs):
+        self._chekc_image_level_params(predict_label, label)
         self.remain_predict.append(predict_label)
         self.remain_label.append(label)
         return None
@@ -151,6 +154,7 @@ class PixelAccuracy(AbstractEvaluator):
             FN = torch.sum(predict * mask, dim=(1, 2, 3))
         return TP, TN, FP, FN
     def batch_update(self, predict, mask, shape_mask=None, *args, **kwargs):
+        self._check_pixel_level_params(predict, mask)
         if self.mode == "origin":
             TP, TN, FP, FN = self.Cal_Confusion_Matrix(predict, mask, shape_mask)
             ACC = (TP + TN)/(TP + TN + FP + FN)

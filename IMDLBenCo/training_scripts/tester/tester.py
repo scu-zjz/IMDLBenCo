@@ -33,7 +33,10 @@ def test_one_loader(model: torch.nn.Module,
                 data_dict[key] = data_dict[key].to(device)
         # Forwarding on model
         output_dict = model(**data_dict)
-        # results
+
+        #---- Training evaluation ----
+        # batch update in a evaluator
+        # results, only for calculate batchsize
         predict = None
         if output_dict.get('pred_label') is not None:
             label_pred = output_dict['pred_label']
@@ -41,10 +44,8 @@ def test_one_loader(model: torch.nn.Module,
         if output_dict.get('pred_mask') is not None:
             mask_pred = output_dict['pred_mask']
             predict = mask_pred
-
-        #---- Training evaluation ----
-        # batch update in a evaluator
         BATCHSIZE = predict.shape[0]
+
         if BATCHSIZE != args.test_batch_size:
             print("=" * 20)
             print(f"A batch that is not fully loaded was detected at the end of the dataset. The actual batch size for this batch is {BATCHSIZE}: The default batch size is {args.test_batch_size}" )
@@ -52,16 +53,16 @@ def test_one_loader(model: torch.nn.Module,
         for evaluator in evaluator_list:
             if if_remain == True:
                 results = evaluator.remain_update(
-                    **({"predict": output_dict["pred_mask"]} if output_dict.get("pred_mask") is not None else {}),
+                    **({"predict": output_dict["pred_mask"]} if output_dict.get("pred_mask") is not None else {"predict": None}),
                     **({"predict_label": output_dict["pred_label"]} if output_dict.get(
-                        "pred_label") is not None else {}),
+                        "pred_label") is not None else {"predict_label": None}),
                     **data_dict
                 )
             else:
                 results = evaluator.batch_update(
-                    **({"predict": output_dict["pred_mask"]} if output_dict.get("pred_mask") is not None else {}),
+                    **({"predict": output_dict["pred_mask"]} if output_dict.get("pred_mask") is not None else {"predict": None}),
                     **({"predict_label": output_dict["pred_label"]} if output_dict.get(
-                        "pred_label") is not None else {}),
+                        "pred_label") is not None else {"predict_label": None}),
                     **data_dict
                 )
 

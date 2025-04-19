@@ -61,6 +61,7 @@ class PixelIOU(AbstractEvaluator):
         return iou
     
     def batch_update(self, predict, mask, shape_mask=None, *args, **kwargs):
+        self._check_pixel_level_params(predict, mask)
         if self.mode == "origin":
             IOU = self.Cal_IOU(predict, mask, shape_mask)
             # IOU2 = self.Cal_IOU_2(predict, mask, shape_mask)

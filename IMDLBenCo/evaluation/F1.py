@@ -20,6 +20,7 @@ class ImageF1NoRemain(AbstractEvaluator):
         self.FN = 0
         self.cnt = 0
     def batch_update(self, predict_label, label, *args, **kwargs):
+        self._chekc_image_level_params(predict_label, label)
         predict = (predict_label > self.threshold).float()
         self.TP += torch.sum(predict * label).item()
         self.TN += torch.sum((1-predict) * (1-label)).item()
@@ -63,6 +64,7 @@ class ImageF1(AbstractEvaluator):
         self.local_rank = misc.get_rank()
 
     def batch_update(self, predict_label, label, *args, **kwargs):
+        self._chekc_image_level_params(predict_label, label)
         self.predict.append(predict_label)
         self.label.append(label)
         return None
@@ -183,6 +185,7 @@ class PixelF1(AbstractEvaluator):
         return F1
 
     def batch_update(self, predict, mask, shape_mask=None, *args, **kwargs): # 注意这里只有pixel-level需要的信息
+        self._check_pixel_level_params(predict, mask)
         if self.mode == "origin":
             TP, TN, FP, FN = self.Cal_Confusion_Matrix(predict, mask, shape_mask)
             F1 = self.Cal_F1(TP, TN, FP, FN)

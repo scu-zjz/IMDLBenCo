@@ -40,7 +40,7 @@ class ImageAUCNoRemain(AbstractEvaluator):
     
     
     def batch_update(self, predict_label, label, *args, **kwargs):
-
+        self._chekc_image_level_params(predict_label, label)
         predict = predict_label.float().cuda()
         self.predict_label = torch.cat([self.predict_label, predict], dim=0)
         self.label = torch.cat([self.label, label], dim=0)
@@ -99,11 +99,13 @@ class ImageAUC(AbstractEvaluator):
         self.local_rank = misc.get_rank()
 
     def batch_update(self, predict_label, label, *args, **kwargs):
+        self._chekc_image_level_params(predict_label, label)
         self.predict.append(predict_label)
         self.label.append(label)
         return None
         
     def remain_update(self, predict_label, label, *args, **kwargs):
+        self._chekc_image_level_params
         self.remain_predict.append(predict_label)
         self.remain_label.append(label)
         return None
@@ -183,7 +185,7 @@ class PixelAUC(AbstractEvaluator):
         return auc.item()
         
     def batch_update(self, predict, mask, shape_mask=None, *args, **kwargs):
-        # TODO
+        self._check_pixel_level_params(predict, mask)
         AUC_list = []
         if self.mode == "origin":
             for idx in range(predict.shape[0]):
