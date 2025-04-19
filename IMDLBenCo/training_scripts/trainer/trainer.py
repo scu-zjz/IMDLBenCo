@@ -57,15 +57,17 @@ def train_one_epoch(model: torch.nn.Module,
                                 )
             
             loss = output_dict['backward_loss']
-            mask_pred = output_dict['pred_mask']
-            
+            if output_dict.get('pred_mask') is not None:
+                mask_pred = output_dict['pred_mask']
+
             visual_loss = output_dict['visual_loss']
             visual_loss_item = {}
             for k, v in visual_loss.items():
                 visual_loss_item[k] = v.item()
-                
-            visual_image = output_dict['visual_image']
-        
+
+            if output_dict.get('visual_image') is not None:
+                visual_image = output_dict['visual_image']
+
             predict_loss = loss / accum_iter
         loss_scaler(predict_loss,optimizer, parameters=model.parameters(),
                     update_grad=(data_iter_step + 1) % accum_iter == 0)
@@ -100,17 +102,23 @@ def train_one_epoch(model: torch.nn.Module,
             # log_writer.add_scalar('train_loss/predict_loss', loss_predict_reduce, epoch_1000x)
             # log_writer.add_scalar('train_loss/edge_loss', edge_loss_reduce, epoch_1000x)
 
-    samples = data_dict['image']
-    mask = data_dict['mask']
-    
+    if output_dict.get('image') is not None:
+        samples = data_dict['image']
+    if output_dict.get('mask') is not None:
+        mask = data_dict['mask']
+
     if log_writer is not None:
-        log_writer.add_images('train/image',  denormalize(samples), epoch)
-        log_writer.add_images('train/predict', mask_pred, epoch)
-        log_writer.add_images('train/predict_thresh_0.5', (mask_pred > 0.5) * 1.0, epoch)
-        log_writer.add_images('train/gt_mask', mask, epoch)
-     
-        for k, v in visual_image.items():
-            log_writer.add_images(f'train/{k}', v, epoch)
+        if output_dict.get('image') is not None:
+            log_writer.add_images('train/image', denormalize(samples), epoch)
+        if output_dict.get('pred_mask') is not None:
+            log_writer.add_images('train/predict', mask_pred, epoch)
+            log_writer.add_images('train/predict_thresh_0.5', (mask_pred > 0.5) * 1.0, epoch)
+        if output_dict.get('pred_mask') is not None:
+            log_writer.add_images('train/gt_mask', mask, epoch)
+
+        if output_dict.get('visual_image') is not None:
+            for k, v in visual_image.items():
+                log_writer.add_images(f'train/{k}', v, epoch)
 
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
