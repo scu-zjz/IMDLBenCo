@@ -505,14 +505,14 @@ class Mesorch(nn.Module):
         # 最后调整到512x512大小
         self.resize = nn.Upsample(size=(512, 512), mode='bilinear', align_corners=True)
         self.loss_fn = nn.BCEWithLogitsLoss()
-        self.if_predict_label = if_predict_label
-        if if_predict_label:
-            self.pooled = nn.AdaptiveAvgPool2d(1)
-            self.label_head = nn.Sequential(
-                nn.Linear(2464, 256),
-                nn.ReLU(),
-                nn.Linear(256, 1)
-            )
+        # self.if_predict_label = if_predict_label
+        # if if_predict_label:
+        #     self.pooled = nn.AdaptiveAvgPool2d(1)
+        #     self.label_head = nn.Sequential(
+        #         nn.Linear(2464, 256),
+        #         nn.ReLU(),
+        #         nn.Linear(256, 1)
+        #     )
     def forward_feature(self, image, *args, **kwargs):
         high_freq = self.high_dct(image)
         low_freq = self.low_dct(image)
@@ -523,6 +523,7 @@ class Mesorch(nn.Module):
         _,outs2 = self.segformer(input_low)
         gate_outputs = self.gate(input_all)
         features = outs1 + outs2
+        
         return features, gate_outputs
     
     def forward(self, image, mask, label, *args, **kwargs):
@@ -532,12 +533,20 @@ class Mesorch(nn.Module):
         pred_mask = torch.sum(gate_outputs * reduced, dim=1,keepdim=True)
         pred_label = None
         label_loss = torch.tensor(0.0)
-        if self.if_predict_label:
-            pooled = [self.pooled(f).squeeze(-1).squeeze(-1) for f in features_raw]  # List of [B, C]
-            pooled = torch.cat(pooled, dim=1)  # [B, total_dim]
-            pred_label = self.label_head(pooled).squeeze(-1)
-            label_loss = self.loss_fn(pred_label,label.float())
-            pred_label = torch.sigmoid(pred_label)
+        # if self.if_predict_label:
+            # weighted_features = []
+            # pooled_features = [self.pooled(f).squeeze(-1).squeeze(-1) for f in features_raw]  # List of [B, C]
+            # pooled_gate = self.pooled(gate_outputs)
+            # for i in range(8):
+            #     b = pooled_gate.shape[0]
+            #     w = pooled_gate[:, i].view(b, 1)  # reshape 成 (b, 1)
+            #     f = pooled_features[i]  # 取出第 i 个特征
+            #     weighted_f = f * w  # 自动广播乘法
+            #     weighted_features.append(weighted_f)
+            # pooled_features = torch.cat(weighted_features, dim=1)  # [B, total_dim]
+            # pred_label = self.label_head(pooled_features).squeeze(-1)
+            # label_loss = self.loss_fn(pred_label,label.float())
+            # pred_label = torch.sigmoid(pred_label)
         # 调整大小到512x512
         pred_mask = self.resize(pred_mask)
         mask_loss = self.loss_fn(pred_mask,mask)
@@ -558,9 +567,9 @@ class Mesorch(nn.Module):
             "visual_loss": {
                 "predict_loss": loss,
                 'predict_maks_loss': mask_loss,
-                'predcit_label_loss': label_loss
+                # 'predcit_label_loss': label_loss
             },
-            
+
             "visual_image": {
                 "pred_mask": pred_mask,
             }
