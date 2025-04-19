@@ -41,7 +41,7 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 
 > [!IMPORTANT]
 > **Upgrade to LATEST VERSION to Avoid Bugs!**
-> - We **Highly Recommend** everyone update IMDLBenCo to the latest version `v0.1.28` since we fixed a bug🐞 that may lead to inaccurate image-level metrics!!! For details, see [IMDLBenCo v0.1.27 Release Notes](https://github.com/scu-zjz/IMDLBenCo/releases/tag/v0.1.27).
+> - We **Highly Recommend** everyone update IMDLBenCo to the latest version `v0.1.29` since we fixed a bug🐞 that may lead to inaccurate image-level metrics!!! For details, see [IMDLBenCo v0.1.27 Release Notes](https://github.com/scu-zjz/IMDLBenCo/releases/tag/v0.1.27).
 > 
 > **Known Differences with original CAT-Net Protocol**
 > 
