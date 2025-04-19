@@ -207,7 +207,7 @@ def test_one_epoch(model: torch.nn.Module,
                                           metric_logger.meters[evaluator.name].global_avg, epoch)
             if data_dict.get('image') is not None:
                 log_writer.add_images(f'{name}_test/image', denormalize(data_dict['image']), epoch)
-            if data_dict.get('pred_mask') is not None:
+            if output_dict.get('pred_mask') is not None:
                 log_writer.add_images(f'{name}_test/predict', output_dict['pred_mask'] * 1.0, epoch)
                 log_writer.add_images(f'{name}_test/predict_threshold_0.5', (output_dict['pred_mask'] > 0.5) * 1.0,
                                       epoch)

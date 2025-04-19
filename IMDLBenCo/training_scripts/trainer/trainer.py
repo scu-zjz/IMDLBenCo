@@ -102,18 +102,18 @@ def train_one_epoch(model: torch.nn.Module,
             # log_writer.add_scalar('train_loss/predict_loss', loss_predict_reduce, epoch_1000x)
             # log_writer.add_scalar('train_loss/edge_loss', edge_loss_reduce, epoch_1000x)
 
-    if output_dict.get('image') is not None:
+    if data_dict.get('image') is not None:
         samples = data_dict['image']
-    if output_dict.get('mask') is not None:
+    if data_dict.get('mask') is not None:
         mask = data_dict['mask']
 
     if log_writer is not None:
-        if output_dict.get('image') is not None:
+        if data_dict.get('image') is not None:
             log_writer.add_images('train/image', denormalize(samples), epoch)
         if output_dict.get('pred_mask') is not None:
             log_writer.add_images('train/predict', mask_pred, epoch)
             log_writer.add_images('train/predict_thresh_0.5', (mask_pred > 0.5) * 1.0, epoch)
-        if output_dict.get('pred_mask') is not None:
+        if data_dict.get('mask') is not None:
             log_writer.add_images('train/gt_mask', mask, epoch)
 
         if output_dict.get('visual_image') is not None:
