@@ -83,7 +83,7 @@ class ImageF1(AbstractEvaluator):
         gather_label = torch.cat(gather_label_list, dim=0)
         # print("gather_predict", gather_predict.shape)
         # print("gather_label", gather_label.shape)
-        if self.remain_predict != None:
+        if len(self.remain_predict) != 0:
             self.remain_predict = torch.cat(self.remain_predict, dim=0)
             self.remain_label = torch.cat(self.remain_label, dim=0)
             gather_predict = torch.cat([gather_predict, self.remain_predict], dim=0)
@@ -91,13 +91,11 @@ class ImageF1(AbstractEvaluator):
         # calculate F1
         predict = (gather_predict > self.threshold) * 1.0
         TP = torch.sum(predict * gather_label)
-        print(TP)
         # TN = torch.sum((1-predict) * (1-gather_label)).item()
         FP = torch.sum(predict * (1-gather_label))
         FN = torch.sum((1-predict) * gather_label)
         precision = TP / (TP + FP + 1e-9)
         recall = TP / (TP + FN + 1e-9)
-        print(precision, recall)
         F1 = 2 * precision * recall / (precision + recall + 1e-9)
         # F1 = torch.mean(F1) # fuse the Batch dimension
         return F1
@@ -181,7 +179,6 @@ class PixelF1(AbstractEvaluator):
         precision = TP / (TP + FP + 1e-8)
         recall = TP / (TP + FN + 1e-8)
         F1 = 2 * precision * recall / (precision + recall + 1e-8)
-        print("F1:", F1)
         # F1 = torch.mean(F1) # fuse the Batch dimension
         return F1
 

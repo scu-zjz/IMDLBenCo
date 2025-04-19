@@ -71,7 +71,7 @@ class ImageAccuracy(AbstractEvaluator):
         gather_label = torch.cat(gather_label_list, dim=0)
         # print("gather_predict", gather_predict.shape)
         # print("gather_label", gather_label.shape)
-        if self.remain_predict != None:
+        if len(self.remain_predict) != 0:
             self.remain_predict = torch.cat(self.remain_predict, dim=0)
             self.remain_label = torch.cat(self.remain_label, dim=0)
             gather_predict = torch.cat([gather_predict, self.remain_predict], dim=0)

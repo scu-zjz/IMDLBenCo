@@ -77,7 +77,6 @@ class ImageAUCNoRemain(AbstractEvaluator):
 
         final_predict_label = final_predict_label.view(-1)
         final_label = final_label.view(-1)
-        print(len(final_label))
         AUC = self.compute_auc(final_label, final_predict_label)
         return AUC
     
@@ -120,14 +119,13 @@ class ImageAUC(AbstractEvaluator):
         gather_label = torch.cat(gather_label_list, dim=0)
         # print("gather_predict", gather_predict.shape)
         # print("gather_label", gather_label.shape)
-        if self.remain_predict != None:
+        if len(self.remain_predict) != 0:
             self.remain_predict = torch.cat(self.remain_predict, dim=0)
             self.remain_label = torch.cat(self.remain_label, dim=0)
             gather_predict = torch.cat([gather_predict, self.remain_predict], dim=0)
             gather_label = torch.cat([gather_label, self.remain_label], dim=0)
         # calculate AUC
         auc = roc_auc_score(gather_label.cpu().numpy(), gather_predict.cpu().numpy())
-        print("AUC", auc)
         return auc
     def recovery(self):
         self.predict = []
@@ -175,15 +173,12 @@ class PixelAUC(AbstractEvaluator):
         # 累积正样本和负样本的数量
         tps = torch.cumsum(y_true_sorted, dim=0)
         fps = torch.cumsum(1 - y_true_sorted, dim=0)
-        print("TPS", tps)
-        print("FPS", fps)
         # 计算 TPR 和 FPR
         tpr = tps / n_pos
         fpr = fps / n_neg
 
         # 计算 AUC
         auc = torch.trapz(tpr, fpr)
-        print("AUCCCCC", auc)
 
         return auc.item()
         
