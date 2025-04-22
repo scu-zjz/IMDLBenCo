@@ -122,14 +122,18 @@ class IML_ViT(nn.Module):
             )
             print('load pretrained weights from \'{}\'.'.format(self.vit_pretrain_path))
 
-    def forward(self, image: torch.Tensor, mask, edge_mask, shape=None, *args, **kwargs):
+    def forward_features(self, image: torch.Tensor, mask, edge_mask, shape=None, *args, **kwargs):
         x = self.encoder_net(image)
         x = self.featurePyramid_net(x)
         feature_list = []
         for k, v in x.items():
             feature_list.append(v)
         x = self.predict_head(feature_list)
+        return x
+    
+    def forward(self, image: torch.Tensor, mask, edge_mask, shape=None, *args, **kwargs):
 
+        x = self.forward_features(image)
         # up-sample to 1024x1024
         mask_pred = F.interpolate(x, size=(self.input_size, self.input_size), mode='bilinear', align_corners=False)
 

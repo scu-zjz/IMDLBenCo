@@ -73,6 +73,11 @@ class PSCC_Net(nn.Module):
 
         return mask1_balance, mask2_balance, mask3_balance, mask4_balance
 
+
+    def forward_features(self, image, mask, label, *args, **kwargs):
+        feat = self.FENet(image)
+        return feat
+    
     def forward(self, image, mask, label, *args, **kwargs):
 
         label = label.float()
@@ -88,7 +93,8 @@ class PSCC_Net(nn.Module):
         mask1_balance, mask2_balance, mask3_balance, mask4_balance = self.get_mask_weight(mask)
 
         # forward
-        feat = self.FENet(image)
+        feat = self.forward_features(image)
+        
         [pred_mask1, pred_mask2, pred_mask3, pred_mask4] = self.SegNet(feat)
         pred_mask = pred_mask1
         pred_logit = self.ClsNet(feat)

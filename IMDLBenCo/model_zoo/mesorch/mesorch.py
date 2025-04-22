@@ -513,7 +513,7 @@ class Mesorch(nn.Module):
         #         nn.ReLU(),
         #         nn.Linear(256, 1)
         #     )
-    def forward_feature(self, image, *args, **kwargs):
+    def forward_features(self, image, *args, **kwargs):
         high_freq = self.high_dct(image)
         low_freq = self.low_dct(image)
         input_high = torch.concat([image,high_freq],dim=1)
@@ -523,14 +523,13 @@ class Mesorch(nn.Module):
         _,outs2 = self.segformer(input_low)
         gate_outputs = self.gate(input_all)
         features = outs1 + outs2
-        
-        return features, gate_outputs
+        x, features = self.upsample(features)
+        reduced = torch.cat([self.inverse[i](features[i]) for i in range(8)], dim=1)
+        features = torch.sum(gate_outputs * reduced, dim=1,keepdim=True)
+        return features
     
     def forward(self, image, mask, label, *args, **kwargs):
-        features_raw, gate_outputs = self.forward_feature(image)
-        x, features = self.upsample(features_raw)
-        reduced = torch.cat([self.inverse[i](features[i]) for i in range(8)], dim=1)
-        pred_mask = torch.sum(gate_outputs * reduced, dim=1,keepdim=True)
+        features = self.forward_features(image)
         pred_label = None
         label_loss = torch.tensor(0.0)
         # if self.if_predict_label:
@@ -548,8 +547,8 @@ class Mesorch(nn.Module):
             # label_loss = self.loss_fn(pred_label,label.float())
             # pred_label = torch.sigmoid(pred_label)
         # 调整大小到512x512
-        pred_mask = self.resize(pred_mask)
-        mask_loss = self.loss_fn(pred_mask,mask)
+        pred_mask = self.resize(features)
+        mask_loss = self.loss_fn(pred_mask, mask.float())
         loss = mask_loss + label_loss
         pred_mask = pred_mask.float()
         pred_mask = torch.sigmoid(pred_mask)
