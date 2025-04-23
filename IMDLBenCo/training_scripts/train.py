@@ -71,7 +71,7 @@ def get_args_parser():
                         help='find_unused_parameters for DDP. Mainly solve issue for model with image-level prediction but not activate during training.')
     
     # 不启用AMP（自动精度）进行训练
-    parser.add_argument('--if_not_amp', action='store_false',
+    parser.add_argument('--if_not_amp', action='store_true',
                         help='Do not use automatic precision.')
     parser.add_argument('--accum_iter', default=16, type=int,
                         help='Accumulate gradient iterations (for increasing the effective batch size under memory constraints)')
