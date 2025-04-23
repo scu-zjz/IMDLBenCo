@@ -162,7 +162,7 @@ def test_one_epoch(model: torch.nn.Module,
                 indices = list(range(dataset_len))
                 remaining_indices = indices[start_idx:]
                 remaining_subset = Subset(dataset_from_loader, remaining_indices)
-                remaining_loader = DataLoader(remaining_subset, batch_size=batch_size)
+                remaining_loader = DataLoader(remaining_subset, batch_size=batch_size, collate_fn=data_loader.collate_fn)
                 # test on remaining loader
                 remaining_header = 'Test <remaining>: [{}]'.format(epoch)
                 rem_data_dict, rem_output_dict = test_one_loader(
