@@ -80,7 +80,7 @@ class Registry:
     
     def _suggest_correction(self, input_string: str) -> Optional[str]:
         """Suggest the most similar string from the registered modules."""
-        suggestions = difflib.get_close_matches(input_string, self._module_dict.keys(), n=1, cutoff=0.6)
+        suggestions = difflib.get_close_matches(input_string, self._module_dict.keys(), n=3, cutoff=0.3)
         if suggestions:
             return suggestions[0]
         return None
@@ -89,6 +89,7 @@ class Registry:
         if name in self._module_dict:
             return self._module_dict[name]
         suggestion = self._suggest_correction(name)
+        print(f"{self}")
         if suggestion:
             raise KeyError(f'"{name}" is not registered in {self.name}. Did you mean "{suggestion}"?')
         else:

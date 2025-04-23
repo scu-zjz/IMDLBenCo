@@ -202,13 +202,16 @@ def main(args, model_args):
     print("Test transform: ", test_transform)
 
     # get post function (if have)
-    post_function_name = f"{args.model}_post_func".lower()
+    post_function_name = f"{args.model}_post_func"
     print(f"Post function check: {post_function_name}")
     print(POSTFUNCS)
-    if POSTFUNCS.has(post_function_name):
+    try:
         post_function = POSTFUNCS.get(post_function_name)
-    else:
+    except Exception as e:
+        print(f"Post function {post_function_name} not found, using default post function.")
+        print(e)
         post_function = None
+        
     # ---- dataset with crop augmentation ----
     if os.path.isdir(args.data_path):
         dataset_train = ManiDataset(
