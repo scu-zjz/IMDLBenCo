@@ -63,24 +63,26 @@ class ImageAccuracy(AbstractEvaluator):
         return None
 
     def epoch_update(self):
-        predict = torch.cat(self.predict, dim=0)
-        label = torch.cat(self.label, dim=0)
-
-        gather_predict_list = [torch.zeros_like(predict) for _ in range(self.world_size)]
-        gather_label_list = [torch.zeros_like(label) for _ in range(self.world_size)]
-        dist.all_gather(gather_predict_list, predict)
-        dist.all_gather(gather_label_list, label)
-        gather_predict = torch.cat(gather_predict_list, dim=0)
-        gather_label = torch.cat(gather_label_list, dim=0)
-        # print("gather_predict", gather_predict.shape)
-        # print("gather_label", gather_label.shape)
-        if len(self.remain_predict) != 0:
-            self.remain_predict = torch.cat(self.remain_predict, dim=0)
-            self.remain_label = torch.cat(self.remain_label, dim=0)
-            gather_predict = torch.cat([gather_predict, self.remain_predict], dim=0)
-            gather_label = torch.cat([gather_label, self.remain_label], dim=0)
-            # print("combine gather_predict", gather_predict.shape)
-            # print("combine gather_label", gather_label.shape)
+        if len(self.predict) != 0:
+            predict = torch.cat(self.predict, dim=0)
+            label = torch.cat(self.label, dim=0)
+            gather_predict_list = [torch.zeros_like(predict) for _ in range(self.world_size)]
+            gather_label_list = [torch.zeros_like(label) for _ in range(self.world_size)]
+            dist.all_gather(gather_predict_list, predict)
+            dist.all_gather(gather_label_list, label)
+            gather_predict = torch.cat(gather_predict_list, dim=0)
+            gather_label = torch.cat(gather_label_list, dim=0) 
+            if len(self.remain_predict) != 0:
+                self.remain_predict = torch.cat(self.remain_predict, dim=0)
+                self.remain_label = torch.cat(self.remain_label, dim=0)
+                gather_predict = torch.cat([gather_predict, self.remain_predict], dim=0)
+                gather_label = torch.cat([gather_label, self.remain_label], dim=0)
+        else:
+            if len(self.remain_predict) == 0:
+                raise RuntimeError(f"No data to calculate {self.name}, please check the input data.")
+            gather_predict = torch.cat(self.remain_predict, dim=0)
+            gather_label = torch.cat(self.remain_label, dim=0)
+        # Calculate the accuracy
         binary_predict = (gather_predict > self.threshold).float()
         # print("binary_predict", binary_predict.shape)
         correct = (torch.sum(binary_predict == gather_label)).sum().item()

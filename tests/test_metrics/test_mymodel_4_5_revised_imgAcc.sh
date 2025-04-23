@@ -1,4 +1,4 @@
-base_dir="./eval_dir_4_3_imgacc_revised"
+base_dir="./eval_dir_4_3_imgacc_revised_new"
 mkdir -p ${base_dir}
 
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
