@@ -74,7 +74,7 @@ class PSCC_Net(nn.Module):
         return mask1_balance, mask2_balance, mask3_balance, mask4_balance
 
 
-    def forward_features(self, image, mask, label, *args, **kwargs):
+    def forward_features(self, image):
         feat = self.FENet(image)
         return feat
     
@@ -100,14 +100,12 @@ class PSCC_Net(nn.Module):
         pred_logit = self.ClsNet(feat)
         pred_logit = torch.softmax(pred_logit, dim=1)
         pred_label = pred_logit[:, -1, ...]
-
         # loss
         mask1_loss = torch.mean(BCE_loss_full(pred_mask1, mask1) * mask1_balance)
         mask2_loss = torch.mean(BCE_loss_full(pred_mask2, mask2) * mask2_balance)
         mask3_loss = torch.mean(BCE_loss_full(pred_mask3, mask3) * mask3_balance)
         mask4_loss = torch.mean(BCE_loss_full(pred_mask4, mask4) * mask4_balance)
         seg_loss = mask1_loss + mask2_loss + mask3_loss + mask4_loss
-
         cls_loss = F.binary_cross_entropy(pred_label, label)
 
         combined_loss = seg_loss + cls_loss
