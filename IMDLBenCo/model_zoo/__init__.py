@@ -8,8 +8,9 @@ from .pscc_net.pscc_net import PSCC_Net
 from .span.SPAN import SPAN
 from .trufor.trufor import Trufor
 from .mesorch.mesorch import Mesorch
+
 __all__ = [
-    # 'IML_ViT',
+    'IML_ViT',
     "Cat_Net",
     'cat_net_post_func',
     "MantraNet",
