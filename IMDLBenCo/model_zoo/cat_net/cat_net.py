@@ -28,18 +28,19 @@ class Cat_Net(nn.Module):
     self.loss = CrossEntropy(ignore_label=cfg.TRAIN.IGNORE_LABEL, weight=torch.FloatTensor([0.5, 2.5])).cuda()
 
 
-  def forward_features(self, images, mask, DCT_coef, qtables, label, name, if_predcit_label=None, edge_mask=None, shape=None, *args, **kwargs):
-    outputs = self.model(images.float(), qtables.float())
-    return outputs
-
-  def forward(self, image, mask, DCT_coef, qtables, label, name, if_predcit_label=None, edge_mask=None, shape=None, *args, **kwargs):
+  def forward_features(self, image, mask, DCT_coef, qtables, **kwargs):
     images, masks = self.__post_process_tensor(image, mask, DCT_coef)
     images, masks = images.detach(), masks.squeeze(1).detach()
     qtables = qtables.unsqueeze(1)
+    outputs = self.model(images.float(), qtables.float())
+    return outputs, masks
   
-    outputs = self.forward_features(images.float(), qtables.float())
 
+  def forward(self, image, mask, DCT_coef, qtables, if_predcit_label=None, edge_mask=None, shape=None, *args, **kwargs):
+
+    outputs, masks = self.forward_features(image, mask, DCT_coef, qtables)
     loss = self.loss(outputs, masks.long())
+    
     pred = F.softmax(outputs, dim=1)[:, 1].unsqueeze(1)
     pred = F.interpolate(pred, size=(image.shape[2], image.shape[3]), mode='bicubic')
     output_dict = {

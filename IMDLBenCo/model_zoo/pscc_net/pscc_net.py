@@ -47,34 +47,34 @@ class PSCC_Net(nn.Module):
         if (mask1 == 1).sum():
             mask1_balance[mask1 == 1] = 0.5 / ((mask1 == 1).sum().to(torch.float) / mask1.numel())
             mask1_balance[mask1 == 0] = 0.5 / ((mask1 == 0).sum().to(torch.float) / mask1.numel())
-        else:
-            print('Mask1 balance is not working!')
+        # else:
+        #     print('Mask1 balance is not working!')
 
         mask2_balance = torch.ones_like(mask2)
         if (mask2 == 1).sum():
             mask2_balance[mask2 == 1] = 0.5 / ((mask2 == 1).sum().to(torch.float) / mask2.numel())
             mask2_balance[mask2 == 0] = 0.5 / ((mask2 == 0).sum().to(torch.float) / mask2.numel())
-        else:
-            print('Mask2 balance is not working!')
+        # else:
+        #     print('Mask2 balance is not working!')
 
         mask3_balance = torch.ones_like(mask3)
         if (mask3 == 1).sum():
             mask3_balance[mask3 == 1] = 0.5 / ((mask3 == 1).sum().to(torch.float) / mask3.numel())
             mask3_balance[mask3 == 0] = 0.5 / ((mask3 == 0).sum().to(torch.float) / mask3.numel())
-        else:
-            print('Mask3 balance is not working!')
+        # else:
+        #     print('Mask3 balance is not working!')
 
         mask4_balance = torch.ones_like(mask4)
         if (mask4 == 1).sum():
             mask4_balance[mask4 == 1] = 0.5 / ((mask4 == 1).sum().to(torch.float) / mask4.numel())
             mask4_balance[mask4 == 0] = 0.5 / ((mask4 == 0).sum().to(torch.float) / mask4.numel())
-        else:
-            print('Mask4 balance is not working!')
+        # else:
+        #     print('Mask4 balance is not working!')
 
         return mask1_balance, mask2_balance, mask3_balance, mask4_balance
 
 
-    def forward_features(self, image):
+    def forward_features(self, image, *args, **kwargs):
         feat = self.FENet(image)
         return feat
     
