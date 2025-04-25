@@ -122,7 +122,7 @@ class IML_ViT(nn.Module):
             )
             print('load pretrained weights from \'{}\'.'.format(self.vit_pretrain_path))
 
-    def forward_features(self, image: torch.Tensor):
+    def forward_features(self, image: torch.Tensor, *args, **kwargs):
         x = self.encoder_net(image)
         x = self.featurePyramid_net(x)
         feature_list = []
