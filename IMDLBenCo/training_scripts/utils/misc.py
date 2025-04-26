@@ -34,7 +34,7 @@ class SmoothedValue(object):
     def __init__(self, window_size=20, fmt=None):
         if fmt is None:
             # fmt = "{median:.4f} ({global_avg:.4f})"  # original
-            fmt = "[local: {median:.4f} | reduced: {avg:.4f}]"  # detailed
+            fmt = "[local: {median:.4f} | reduced: {global_avg:.4f}]"  # detailed
             # fmt = "{global_avg:.4f}" # only report global avg
         self.deque = deque(maxlen=window_size)
         self.total = 0.0
