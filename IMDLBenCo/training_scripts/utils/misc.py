@@ -33,16 +33,21 @@ class SmoothedValue(object):
 
     def __init__(self, window_size=20, fmt=None):
         if fmt is None:
-            fmt = "{median:.4f} ({global_avg:.4f})"
+            # fmt = "{median:.4f} ({global_avg:.4f})"  # original
+            fmt = "[local: {median:.4f} | reduced: {avg:.4f}]"  # detailed
+            # fmt = "{global_avg:.4f}" # only report global avg
         self.deque = deque(maxlen=window_size)
         self.total = 0.0
         self.count = 0
         self.fmt = fmt
 
     def update(self, value, n=1):
-        self.deque.append(value)
+        """
+        Value here in IMDLBenCo is a sum of [BatchSize, 1]. n refer to the number of samples in the batch.
+        This value is considered as sum of a batch in a signle GPU. 
+        """
+        self.deque.append(value / n) # value is a sum of n samples, to avoid issue like F1 > 1.0 during report, need to divide by n.
         self.count += n
-        # self.total += value * n
         self.total += value # No n
 
     def synchronize_between_processes(self):
