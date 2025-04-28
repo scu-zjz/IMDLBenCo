@@ -7,7 +7,6 @@ import torch.distributed as dist
 import os
 from sklearn.metrics import jaccard_score
 
-
 class PixelIOU(AbstractEvaluator):
     def __init__(self, threshold=0.5, mode="origin") -> None:
         self.name = "pixel-level IOU"
@@ -78,6 +77,10 @@ class PixelIOU(AbstractEvaluator):
         else:
             raise RuntimeError(f"Cal_AUC no mode name {self.mode}")
         return IOU
+    
+    def remain_update(self, predict, mask, shape_mask=None, *args, **kwargs):
+        return self.batch_update(predict, mask, shape_mask, *args, **kwargs)
+
     def epoch_update(self):
 
         return None
