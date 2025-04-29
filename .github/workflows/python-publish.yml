@@ -31,7 +31,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install build twine
-          python setup.py sdist bdist_wheel
+          python -m build --sdist --wheel
+          
+      - name: Verify distribution
+        run: |
+          twine check dist/*
 
       - name: Upload distributions
         uses: actions/upload-artifact@v4
