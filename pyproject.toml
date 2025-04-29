@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=64.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "imdlbenco"
+authors = [
+    {name = "Xiaochen Ma", email = "xiaochen.ma.cs@gmail.com"},
+]
+description = "A comprehensive benchmark and code base for Image manipulation and localization."
+readme = {file = "README.md", content-type = "text/markdown"}
+requires-python = ">=3.7, <4"
+license = {text = "CC-BY-4.0"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Security",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: Free For Educational Use",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3 :: Only",
+]
+keywords = [
+    "AI",
+    "artificial intelligence",
+    "image forensics",
+    "image manipulation localization",
+    "image manipulation detection",
+]
+dynamic = ["version", "dependencies"]
+
+[project.urls]
+Github = "https://github.com/scu-zjz/IMDLBenCo/"
+Documentation = "https://github.com/scu-zjz/IMDLBenCo-doc"
+"Bug Reports" = "https://github.com/scu-zjz/IMDLBenCo/issues"
+
+[project.entry-points."console_scripts"]
+benco = "IMDLBenCo.cli:main"
+
+[tool.setuptools]
+include-package-data = true
+packages = ["IMDLBenCo"]  # 显式指定主包
+
+
+[tool.setuptools.dynamic]
+version = {attr = "IMDLBenCo.version.__version__"}
+dependencies = {file = "requirements.txt"}
