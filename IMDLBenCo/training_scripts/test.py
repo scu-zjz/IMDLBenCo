@@ -172,11 +172,12 @@ def main(args, model_args):
     
     start_time = time.time()
     # get post function (if have)
-    post_function_name = f"{args.model}_post_func"
+    post_function_name = f"{args.model.lower()}_post_func"
     print(f"Post function check: {post_function_name}")
     print(POSTFUNCS)
     try:
-        post_function = POSTFUNCS.get(post_function_name)
+        post_function = POSTFUNCS.get_lower(post_function_name)
+        print(f"Post function loaded: {post_function}")
     except Exception as e:
         print(f"Post function {post_function_name} not found, using default post function.")
         print(e)

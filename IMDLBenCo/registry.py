@@ -94,6 +94,19 @@ class Registry:
             raise KeyError(f'"{name}" is not registered in {self.name}. Did you mean "{suggestion}"?')
         else:
             raise KeyError(f'"{name}" is not registered in {self.name} and no similar names were found.')
+    def get_lower(self, name):
+        """Get a module by name, ignoring case."""
+        for key in self._module_dict.keys():
+            if key.lower() == name.lower():
+                return self._module_dict[key]
+        suggestion = self._suggest_correction(name)
+        lower_name = name.lower()
+        print(f"{self}")
+        if suggestion:
+            lower_suggestion = suggestion.lower()
+            raise KeyError(f'Nether "{name}" nor lower-case "{lower_name}" is registered in {self.name}. Did you mean "{suggestion}" or "{lower_suggestion}"?')
+        else:
+            raise KeyError(f'Nether "{name}" nor lower-case "{lower_name}" is registered in {self.name} and no similar names were found.')
 
     # @property
     # def children(self):
