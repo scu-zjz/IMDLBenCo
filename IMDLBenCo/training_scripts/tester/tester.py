@@ -1,16 +1,17 @@
-
-import math
-import sys
+import os
+import re
+import json
+from PIL import Image
 from typing import Iterable, List
+
 import torch
+import torch.nn.functional as F
 from torch.utils.data import Subset, DataLoader
 
 import IMDLBenCo.training_scripts.utils.misc as misc
 
-# from IMDLBenCo.evaluation import genertate_region_mask, cal_confusion_matrix, cal_F1 # TODO remove this line
-from IMDLBenCo.evaluation import AbstractEvaluator
 from IMDLBenCo.datasets import denormalize
-
+from IMDLBenCo.evaluation import AbstractEvaluator
 
 def test_one_loader(model: torch.nn.Module,
                     data_loader: Iterable, 
@@ -217,3 +218,100 @@ def test_one_epoch(model: torch.nn.Module,
             
         print("Averaged stats:", metric_logger)
         return {k: meter.global_avg for k, meter in metric_logger.meters.items()}
+    
+
+
+def inference_and_save_one_epoch(model: torch.nn.Module,
+                    data_loader: Iterable, 
+                    device: torch.device, 
+                    name='', 
+                    log_writer=None,
+                    print_freq = 20,
+                    args=None,
+                    is_test=True):
+      
+    # print(data_loader.dataset.tp_path)
+    
+    with torch.no_grad():
+        model.zero_grad()
+        if args.no_model_eval == True:
+            print("model.eval() IS NOT APPLIED")
+        else:
+            model.eval()
+        metric_logger = misc.MetricLogger(delimiter="  ")
+        # F1 evaluation for an Epoch during training
+        header = 'Test: [save images]'
+
+        label_dict = {}
+        for data_iter_step, data_dict in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
+            for key in data_dict.keys():
+                if isinstance(data_dict[key], torch.Tensor):
+                    data_dict[key] = data_dict[key].to(device)
+            output_dict = model(**data_dict)
+
+            filename = data_dict['name']
+            mask_pred = output_dict['pred_mask']
+            original_shape = data_dict['origin_shape']
+            shape = data_dict['shape']
+            # save pred_mask
+            if output_dict.get('pred_mask') is not None:
+                B, C, H, W = mask_pred.shape
+                # padding:
+                for i in range(B):
+                    mask_pred_i = mask_pred[i] # 1, H, W
+                    if args.if_padding:
+                        mask_pred_i = mask_pred_i[:, :original_shape[i][0], :original_shape[i][1]]
+                    if args.if_resizing:
+                        mask_pred_i = F.interpolate(mask_pred_i.unsqueeze(0), size=(original_shape[i][0], original_shape[i][1]), mode='bilinear', align_corners=False)
+                        mask_pred_i = mask_pred_i.squeeze(0)
+                    mask_pred_i = mask_pred_i.squeeze(0)
+                    mask_pred_i = mask_pred_i.cpu().numpy()
+                    mask_pred_i = mask_pred_i * 255
+                    mask_pred_i = mask_pred_i.astype('uint8')
+                    filename_i = filename[i]
+                    # 用正则表达式匹配拓展名，并替换为png
+                    filename_i = re.sub(r'\.[^.]*$', '.png', filename_i)
+                    # 如果需要，创建输出目录
+
+                    output_dir = os.path.join(args.output_dir, "pred")
+                    os.makedirs(output_dir, exist_ok=True)
+                    filename_i = os.path.join(output_dir, os.path.basename(filename_i))
+                    
+                    # 使用PIL保存为PNG文件
+                    img = Image.fromarray(mask_pred_i)
+                    img.save(filename_i)
+        
+                    print(f'Saved mask to {filename_i} on RANK {misc.get_rank()}')
+
+            # save pred_label
+            if output_dict.get('pred_label') is not None:
+                B = output_dict['pred_label'].shape[0]
+                for i in range(B):
+                    label_pred_i = output_dict['pred_label'][i].item()
+                    label_dict[filename[i]] = label_pred_i
+        if len(label_dict) > 0:
+            rank = misc.get_rank()
+            label_json_name = os.path.join(args.output_dir, f"pred_label_rank{rank}.json")
+            with open(label_json_name, 'w') as f:
+                json.dump(label_dict, f)
+            print(f'Saved label to {label_json_name} on RANK {misc.get_rank()}')
+            # barrier to ensure all ranks have finished saving
+            if args.distributed:
+                torch.distributed.barrier()
+        if len (label_dict) > 0 and misc.get_rank() == 0:
+            # combine all json files and drop duplicates
+            all_json_files = []
+            for i in range(misc.get_world_size()):
+                rank_json_name = os.path.join(args.output_dir, f"pred_label_rank{i}.json")
+                all_json_files.append(rank_json_name)
+            combined_dict = {}
+            for json_file in all_json_files:
+                with open(json_file, 'r') as f:
+                    data = json.load(f)
+                    combined_dict.update(data)
+            combined_json_name = os.path.join(args.output_dir, "pred_label_combined.json")
+            with open(combined_json_name, 'w') as f:
+                json.dump(combined_dict, f)
+            print(f'Saved combined label to {combined_json_name} on RANK {misc.get_rank()}')
+
+
