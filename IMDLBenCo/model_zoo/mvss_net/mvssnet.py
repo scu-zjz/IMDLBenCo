@@ -399,7 +399,8 @@ class MVSSNet(ResNet50):
 
         out_edge, out_mask = res1, x0
         criterion_BCE = torch.nn.BCEWithLogitsLoss()
-        gmp = torch.nn.MaxPool2d(size[0])
+        size_int = tuple([int(x) for x in size])
+        gmp = torch.nn.MaxPool2d(size_int[0])
         loss, loss_seg, loss_clf, loss_edg, out_mask, out_edge, out_label = predict_loss(in_imgs=image,
                                                                                                                     in_masks=mask, 
                                                                                                                     in_edges=edge_mask, 

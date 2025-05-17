@@ -35,7 +35,14 @@ def _copy_demo_runs():
     target_dir = os.path.join(current_dir, 'runs')
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
+    if not os.path.exists(os.path.join(target_dir, "test_save_images")):
+        os.makedirs(os.path.join(target_dir, "test_save_images"))
+    if not os.path.exists(os.path.join(target_dir, "test_complexity")):
+        os.makedirs(os.path.join(target_dir, "test_complexity"))
     copy_files(BencoPath.get_model_zoo_runs_dir(), target_dir)
+    copy_files(BencoPath.get_model_zoo_runs_dir() / "test_save_images" , os.path.join(target_dir, "test_save_images"))
+    copy_files(BencoPath.get_model_zoo_runs_dir() / "test_complexity" , os.path.join(target_dir, "test_complexity"))
+
     
 def _copy_demo_configs():
     # Copy demo configs
@@ -83,7 +90,7 @@ def cli_init(config, subcommand):
         _copy_train_scripts()
         _copy_init_base_files()
         _copy_dataset_json()
-        for name in ['train.py', 'test.py', 'test_robust.py']:
+        for name in ['train.py', 'test.py', 'test_robust.py', 'test_complexity.py', 'test_save_images.py']:
             injected_str = "from mymodel import MyModel  # TODO, you need to change this line when modifying the name model"
             current_dir = os.getcwd()
             target_dir = os.path.join(current_dir, name)

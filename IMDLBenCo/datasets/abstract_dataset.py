@@ -21,7 +21,33 @@ class AbstractDataset(Dataset):
         raise NotImplementedError # abstract dataset!
     
         return tp_path, gt_path # returns shuold be look like this
+    
+    def _get_image(self, index):
+        tp_path = self.tp_path[index]
+        gt_path = self.gt_path[index]
         
+        # pil_loader or jpeg_loader
+        tp_img = self.img_loader(tp_path)
+        # shape, here is PIL Image
+        tp_shape = tp_img.size
+        
+        # if "negative" then gt is a image with all 0
+        if gt_path != "Negative":
+            gt_img = self.img_loader(gt_path)
+            gt_shape = gt_img.size
+            label = 1
+        else:
+            temp = np.array(tp_img)
+            gt_img = np.zeros((temp.shape[0], temp.shape[1], 3))
+            gt_shape = (temp.shape[1], temp.shape[0])
+            label = 0
+            
+        assert tp_shape == gt_shape, "tp and gt image shape must be the same, but got shape {} and {} for image '{}' and '{}'. Please check it!".format(tp_shape, gt_shape, tp_path, gt_path)
+        
+        tp_img = np.array(tp_img) # H W C
+        gt_img = np.array(gt_img) # H W C
+        return tp_img, gt_img, label, tp_shape, gt_shape, tp_path, gt_path
+    
     def __init__(self, path, 
                 is_padding = False,
                 is_resizing = False,
@@ -58,35 +84,13 @@ class AbstractDataset(Dataset):
 
         self.img_loader = img_loader
         self.post_funcs = post_funcs
+    
 
         
     def __getitem__(self, index):
 
         data_dict = dict()
-        
-        tp_path = self.tp_path[index]
-        gt_path = self.gt_path[index]
-        
-        # pil_loader or jpeg_loader
-        tp_img = self.img_loader(tp_path)
-        # shape, here is PIL Image
-        tp_shape = tp_img.size
-        
-        # if "negative" then gt is a image with all 0
-        if gt_path != "Negative":
-            gt_img = self.img_loader(gt_path)
-            gt_shape = gt_img.size
-            label = 1
-        else:
-            temp = np.array(tp_img)
-            gt_img = np.zeros((temp.shape[0], temp.shape[1], 3))
-            gt_shape = (temp.shape[1], temp.shape[0])
-            label = 0
-            
-        assert tp_shape == gt_shape, "tp and gt image shape must be the same, but got shape {} and {} for image '{}' and '{}'. Please check it!".format(tp_shape, gt_shape, tp_path, gt_path)
-        
-        tp_img = np.array(tp_img) # H W C
-        gt_img = np.array(gt_img) # H W C
+        tp_img, gt_img, label, tp_shape, gt_shape, tp_path, gt_path = self._get_image(index)
         
         # Do augmentations
         if self.common_transforms != None:
