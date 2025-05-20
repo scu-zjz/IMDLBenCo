@@ -131,7 +131,9 @@ def main(args, model_args):
     else:
         model_init_params = inspect.signature(model.__init__).parameters
     combined_args = {k: v for k, v in vars(args).items() if k in model_init_params}
-    combined_args.update({k: v for k, v in vars(model_args).items() if k in model_init_params})
+    for k, v in vars(model_args).items():
+        if k in model_init_params and k not in combined_args:
+            combined_args[k] = v
     model = model(**combined_args)
     # ============================================
 
@@ -241,13 +243,12 @@ def main(args, model_args):
 
             print(f"Start testing on {attack_wrapper}! ")
 
-            chkpt_dir = args.checkpoint_path
-            print(chkpt_dir)
+            checkpoint_path = args.checkpoint_path
+            print(checkpoint_path)
 
-            if chkpt_dir.endswith(".pth"):
-                print("Loading checkpoint: %s" % chkpt_dir)
-                ckpt = os.path.join(args.checkpoint_path, chkpt_dir)
-                ckpt = torch.load(ckpt, map_location='cuda', weights_only=False)
+            if checkpoint_path.endswith(".pth"):
+                print("Loading checkpoint: %s" % checkpoint_path)
+                ckpt = torch.load(checkpoint_path, map_location="cuda", weights_only=False)
                 model.module.load_state_dict(ckpt['model'])            
                 test_stats = test_one_epoch(
                     model=model,
