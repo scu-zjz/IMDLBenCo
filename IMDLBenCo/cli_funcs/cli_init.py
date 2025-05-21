@@ -2,7 +2,7 @@ import os
 import re
 from colorama import init, Fore, Style
 from IMDLBenCo.utils.paths import BencoPath
-from .copy import copy_files, copy_file 
+from .copy_funcs import copy_files, copy_file 
 
 def _copy_train_scripts():
     current_dir = os.getcwd()

@@ -5,7 +5,7 @@ import requests
 from colorama import init, Fore, Style
 
 # from IMDLBenCo.utils.paths import BencoPath
-from IMDLBenCo.cli_funcs import cli_init, cli_guide, cli_data
+from IMDLBenCo.cli_funcs import cli_init, cli_env
 import importlib.metadata 
 
 PYPI_API_URL = 'https://pypi.org/pypi/IMDLBenCo/json'
@@ -42,7 +42,7 @@ def main():
     subparsers = parser.add_subparsers(dest='command', required=False)
     
     # init command
-    parser_init = subparsers.add_parser('init', help='Initialize the environment')
+    parser_init = subparsers.add_parser('init', help='Initialize the scripts and configs in a directory')
     init_subparsers = parser_init.add_subparsers(dest='subcommand', required=False)
     
     # init base
@@ -56,11 +56,8 @@ def main():
     parser_init_backbone = init_subparsers.add_parser('backbone', help='Initialize the backbone')
     
     
-    # guide command
-    parser_guide = subparsers.add_parser('guide', help='Guide for using the tool')
-    
-    # data command
-    parser_data = subparsers.add_parser('data', help='Manage data')
+    # env command
+    parser_env = subparsers.add_parser('env', help='Show environment information')
     
     parser.add_argument('--config', type=str, help='Path to the configuration file')
     
@@ -73,16 +70,14 @@ def main():
             args.subcommand = 'base'
         cli_init(args.config, subcommand=args.subcommand)
         
-    elif args.command == 'guide':
-        cli_guide(args.config)
-    elif args.command == 'data':
-        cli_data(args.config)
+    elif args.command == 'env':
+        cli_env(args.config)
 
-def train(config):
-    print(f'Training with config: {config}')
+# def train(config):
+#     print(f'Training with config: {config}')
 
-def evaluate(config):
-    print(f'Evaluating with config: {config}')
+# def evaluate(config):
+#     print(f'Evaluating with config: {config}')
 
 if __name__ == '__main__':
     main()
