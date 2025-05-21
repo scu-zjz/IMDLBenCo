@@ -1,0 +1,39 @@
+name: "🤔 ask for help"
+description: Ask for help to others here, like model performance, something won't work.
+labels: question
+
+body:
+  - type: textarea
+    id: system-info
+    attributes:
+      label: System Info
+      description: |
+        Please share your system info with us. You can run the command **benco env** and copy-paste its output below.
+        请提供您的系统信息。您可以在命令行运行 **benco env** 并将其输出复制到该文本框中。
+      placeholder: benco version, platform, python version, ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: |
+        Please provide entry shell script.
+        请提供入口的shell脚本。
+      value: |
+        ```text
+        Put your XXXXX.sh here
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: others
+    attributes:
+      label: Others 
+      description: |
+        Describe your issue detailly here.
+        详细描述你的问题。
+    validations:
+      required: false

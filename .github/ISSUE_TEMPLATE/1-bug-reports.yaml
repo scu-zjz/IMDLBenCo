@@ -1,0 +1,56 @@
+name: "🐞 Bug reports"
+description: Report Bug to help us improve IMDLBenCo
+labels: bug
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please briefly describe your issue, and try to use the search function with relevant keywords to look for solutions in existing issues first.
+        请简要描述你的困难，并优先活用搜索功能配合关键字在现有issue中寻找解决方案。
+
+  - type: checkboxes
+    id: reminder
+    attributes:
+      label: Reminder
+      description: |
+        Please ensure you have carefully searched the existing issues.
+        请确保您已经认真搜索过现有的 issues。
+      options:
+        - label: I have read the above rules and searched the existing issues.
+          required: true
+
+  - type: textarea
+    id: system-info
+    attributes:
+      label: System Info
+      description: |
+        Please share your system info with us. You can run the command **benco env** and copy-paste its output below.
+        请提供您的系统信息。您可以在命令行运行 **benco env** 并将其输出复制到该文本框中。
+      placeholder: benco version, platform, python version, ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: |
+        Please provide entry arguments, error messages and stack traces that reproduces the problem.
+        请提供入口参数，错误日志以及异常堆栈以便于我们复现问题。
+      value: |
+        ```text
+        Put your message here.
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: others
+    attributes:
+      label: Others 
+      description: |
+        Describe your issue or bug detailly here.
+        详细描述你的问题或发现的bug。
+    validations:
+      required: false
