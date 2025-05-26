@@ -33,6 +33,7 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 ---->
 
 ## News
+- [2025/05/26] A new code base for **all-domain fake image detection** have been released, for more details, please visit [ForensicHub](https://github.com/scu-zjz/ForensicHub).
 - [2025/03/11] We have released pre-trained checkpoints on Baidu NetDisk that we utilized to report all metrics in the paper. Please see [this section](https://scu-zjz.github.io/IMDLBenCo-doc/guide/quickstart/2_load_ckpt.html#quick-testing-using-model-zoo-with-checkpoint) in our documents for details.
 - [2024/12/10] [Mesorch](https://arxiv.org/pdf/2412.13753) [![Stars](https://img.shields.io/github/stars/scu-zjz/Mesorch?style=social)](https://github.com/scu-zjz/Mesorch), our new IML backbone model, which adopts a parallel CNN+Transformer structure to simultaneously deal with image semantics and non-semantics, is accepted by AAAI 25!!!🎉🎉🎉
    
@@ -95,6 +96,7 @@ We will keep updating the document with tricks and user cases. Please stay tuned
 We also welcome contributors to translate it into other languages.
 
 ## Awesome Works Using IMDLBenCo
+- [ForensicHub](https://arxiv.org/abs/2505.11003): A code base for all-domain fake image detection, including 1) Anti-AIGC, 2) Deepfake, 3) IMDL, and 4) Document image manipulation detecion. [![GitHub Repo stars](https://img.shields.io/github/stars/scu-zjz/ForensicHub)](https://github.com/scu-zjz/ForensicHub)
 - [OpenSDI](https://iamwangyabin.github.io/OpenSDI/): A large dataset for Spotting Diffusion-Generated Images in the Open World and a corresponding SoTA model. CVPR25. [![GitHub Repo stars](https://img.shields.io/github/stars/iamwangyabin/OpenSDI)](https://github.com/iamwangyabin/OpenSDI)
 - [Sparse-ViT](https://arxiv.org/abs/2412.14598): A SoTA model constructing the non-semantic feature extractor through a sparse-designed attention transformer. AAAI'25. [![Stars](https://img.shields.io/github/stars/scu-zjz/SparseViT?style=social)](https://github.com/scu-zjz/SparseViT)
 - [Mesorch](https://arxiv.org/abs/2412.13753): A SoTA model adopts a parallel CNN+Transformer structure to simultaneously deal with image semantics and non-semantics. AAAI'25. [![Stars](https://img.shields.io/github/stars/scu-zjz/Mesorch?style=social)](https://github.com/scu-zjz/Mesorch)
