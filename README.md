@@ -32,7 +32,7 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 [![Ask Me Anything!](https://img.shields.io/badge/Official%20-Yes-1abc9c.svg)](https://GitHub.com/scu-zjz/) 
 ---->
 
-## News
+## 📰News
 - [2025/05/26] A new code base for **all-domain fake image detection** have been released, for more details, please visit [ForensicHub](https://github.com/scu-zjz/ForensicHub).
 - [2025/03/11] We have released pre-trained checkpoints on Baidu NetDisk that we utilized to report all metrics in the paper. Please see [this section](https://scu-zjz.github.io/IMDLBenCo-doc/guide/quickstart/2_load_ckpt.html#quick-testing-using-model-zoo-with-checkpoint) in our documents for details.
 - [2024/12/10] [Mesorch](https://arxiv.org/pdf/2412.13753) [![Stars](https://img.shields.io/github/stars/scu-zjz/Mesorch?style=social)](https://github.com/scu-zjz/Mesorch), our new IML backbone model, which adopts a parallel CNN+Transformer structure to simultaneously deal with image semantics and non-semantics, is accepted by AAAI 25!!!🎉🎉🎉
@@ -48,7 +48,7 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 > 
 > - The CAT-Protocol (implementation of default [balanced_dataset.py](https://github.com/scu-zjz/IMDLBenCo/blob/main/IMDLBenCo/statics/dataset_json/balanced_dataset.json)) used in the IMDLBenCo paper differs from the original [CAT-Net settings](https://github.com/mjkwon2021/CAT-Net/blob/main/Splicing/data/data_core.py). Several real image datasets are omitted. Please pay special attention! For more details, please check issue [#65](https://github.com/scu-zjz/IMDLBenCo/issues/65#issuecomment-2604861981).
 
-## Overview
+## 🔍Overview
 ☑️**Welcome to IMDL-BenCo, the first comprehensive IMDL benchmark and modular codebase.**    
 - This codebase is under long-term maintenance and updating. New features, extra baseline/SOTA models, and bug fixes will be continuously involved. You can find the corresponding plan here shortly.
 - This repo decomposes the IMDL framework into **standardized, reusable components and revises the model construction pipeline**, improving coding efficiency and customization flexibility.
@@ -58,7 +58,7 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 ![](./images/IMDLBenCo_overview.png)
 
 
-## Quick Start
+## ⚡Quick Start
 IMDL-BenCo is a Python library managed on PYPI now, It's easy to install by following the command:
 ```bash
 pip install imdlbenco
@@ -95,7 +95,7 @@ We will keep updating the document with tricks and user cases. Please stay tuned
 
 We also welcome contributors to translate it into other languages.
 
-## Awesome Works Using IMDLBenCo
+## 🌟Awesome Works Using IMDLBenCo
 - [ForensicHub](https://arxiv.org/abs/2505.11003): A code base for all-domain fake image detection, including 1) Anti-AIGC, 2) Deepfake, 3) IMDL, and 4) Document image manipulation detecion. [![GitHub Repo stars](https://img.shields.io/github/stars/scu-zjz/ForensicHub)](https://github.com/scu-zjz/ForensicHub)
 - [OpenSDI](https://iamwangyabin.github.io/OpenSDI/): A large dataset for Spotting Diffusion-Generated Images in the Open World and a corresponding SoTA model. CVPR25. [![GitHub Repo stars](https://img.shields.io/github/stars/iamwangyabin/OpenSDI)](https://github.com/iamwangyabin/OpenSDI)
 - [Sparse-ViT](https://arxiv.org/abs/2412.14598): A SoTA model constructing the non-semantic feature extractor through a sparse-designed attention transformer. AAAI'25. [![Stars](https://img.shields.io/github/stars/scu-zjz/SparseViT?style=social)](https://github.com/scu-zjz/SparseViT)
@@ -103,13 +103,13 @@ We also welcome contributors to translate it into other languages.
 - [IML-ViT](https://arxiv.org/abs/2307.14863): A pure Vision Transformer based model for IML task, which easy to be extent for further research. ArXiv. [![Stars](https://img.shields.io/github/stars/sunnyhaze/iml-vit?style=social)](https://github.com/sunnyhaze/iml-vit)
 
 
-## About
+## 👨‍💻About
 ☑️**About the Developers:**  
 - IMDL-BenCo's project leader/supervisor is Associate Professor 🏀[_Jizhe Zhou_ (周吉喆)](https://knightzjz.github.io/), Sichuan University🇨🇳.  
 - IMDL-BenCo's codebase designer and coding leader is the Research Assistant [_Xiaochen Ma_ (马晓晨)](https://me.xiaochen.world/), Sichuan University🇨🇳.  
 - IMDL-BenCo is jointly sponsored and advised by Prof. _Jiancheng LV_ (吕建成), Sichuan University 🐼, and Prof. _Chi-Man PUN_ (潘治文), University of Macau 🇲🇴, through the [Research Center of Machine Learning and Industry Intelligence, China MOE](https://center.dicalab.cn/) platform.  
 
-## Citation
+## 📖Citation
 If you find our work valuable and it has contributed to your research or projects, we kindly request that you cite our paper. Your recognition is a driving force for our continuous improvement and innovation🤗.
 ```
 @article{ma2025imdl,
