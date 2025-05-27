@@ -16,6 +16,11 @@ from timm.models.layers import trunc_normal_, DropPath, to_2tuple
 
 from IMDLBenCo.registry import MODELS
 
+## -- gloal variables for layer scale
+layer_scale = True
+init_value = 1e-6
+## ----------------------------------
+
 class Multiple(nn.Module):
     def __init__(self, 
                  init_value = 1e-6,
@@ -59,8 +64,7 @@ class Multiple(nn.Module):
         x = self.conv_last(x)
         return x
 
-layer_scale = True
-init_value = 1e-6
+
 class Mlp(nn.Module):
     def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0.):
         super().__init__()
@@ -231,11 +235,9 @@ class SABlock(nn.Module):
         self.norm2 = norm_layer(dim)
         mlp_hidden_dim = int(dim * mlp_ratio)
         self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=drop)
-        global layer_scale
         self.ls = layer_scale
         self.sparse_size = sparse_size
         if self.ls:
-            global init_value
             print(f"Use layer_scale: {layer_scale}, init_values: {init_value}")
             self.gamma_1 = nn.Parameter(init_value * torch.ones((dim)),requires_grad=True)
             self.gamma_2 = nn.Parameter(init_value * torch.ones((dim)),requires_grad=True)
