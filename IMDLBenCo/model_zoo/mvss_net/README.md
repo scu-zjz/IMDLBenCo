@@ -1,0 +1,1 @@
+MVSS-Net can load pre-trained weights by it self. No need to download mannually.
