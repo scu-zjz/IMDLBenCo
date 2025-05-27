@@ -96,12 +96,14 @@ We will keep updating the document with tricks and user cases. Please stay tuned
 We also welcome contributors to translate it into other languages.
 
 ## 🌟Awesome Works Using IMDLBenCo
+- [BR-Gen & NFA-ViT](https://arxiv.org/abs/2504.11922): A Novel Dataset for Localized AI-Generated Image Detection with Forgery Amplification Approach and a corresponding noise-guided forgery amplification transformer as a solution method. ![GitHub Repo stars](https://img.shields.io/github/stars/clpbc/BR-Geb)](https://github.com/clpbc/BR-Ge)
 - [ForensicHub](https://arxiv.org/abs/2505.11003): A code base for all-domain fake image detection, including 1) Anti-AIGC, 2) Deepfake, 3) IMDL, and 4) Document image manipulation detecion. [![GitHub Repo stars](https://img.shields.io/github/stars/scu-zjz/ForensicHub)](https://github.com/scu-zjz/ForensicHub)
 - [OpenSDI](https://iamwangyabin.github.io/OpenSDI/): A large dataset for Spotting Diffusion-Generated Images in the Open World and a corresponding SoTA model. CVPR25. [![GitHub Repo stars](https://img.shields.io/github/stars/iamwangyabin/OpenSDI)](https://github.com/iamwangyabin/OpenSDI)
 - [Sparse-ViT](https://arxiv.org/abs/2412.14598): A SoTA model constructing the non-semantic feature extractor through a sparse-designed attention transformer. AAAI'25. [![Stars](https://img.shields.io/github/stars/scu-zjz/SparseViT?style=social)](https://github.com/scu-zjz/SparseViT)
 - [Mesorch](https://arxiv.org/abs/2412.13753): A SoTA model adopts a parallel CNN+Transformer structure to simultaneously deal with image semantics and non-semantics. AAAI'25. [![Stars](https://img.shields.io/github/stars/scu-zjz/Mesorch?style=social)](https://github.com/scu-zjz/Mesorch)
 - [IML-ViT](https://arxiv.org/abs/2307.14863): A pure Vision Transformer based model for IML task, which easy to be extent for further research. ArXiv. [![Stars](https://img.shields.io/github/stars/sunnyhaze/iml-vit?style=social)](https://github.com/sunnyhaze/iml-vit)
 
+> If your work uses IMDLbenco and has an open-source GitHub repository, we welcome you to notify the author team by submitting a PR or opening an issue to have it added to the list above.
 
 ## 👨‍💻About
 ☑️**About the Developers:**  
