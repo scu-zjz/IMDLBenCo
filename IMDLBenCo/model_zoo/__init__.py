@@ -8,6 +8,7 @@ from .pscc_net.pscc_net import PSCC_Net
 from .span.SPAN import SPAN
 from .trufor.trufor import Trufor
 from .mesorch.mesorch import Mesorch
+from .sparse_vit.sparse_vit import SparseViT, SparseViTBackbone
 
 __all__ = [
     'IML_ViT',
@@ -19,5 +20,7 @@ __all__ = [
     "PSCC_Net",
     "SPAN",
     "Trufor",
-    'Mesorch'
+    'Mesorch',
+    "SparseViT",
+    "SparseViTBackbone"
 ]
