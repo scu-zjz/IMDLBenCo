@@ -1,0 +1,1 @@
+ObjectFormer is reproduced by us, and it requires processing the `ViT` backbone to obtain the pretrained weights. The detailed processing code can be found in [this issue](https://github.com/scu-zjz/IMDLBenCo/issues/41).
