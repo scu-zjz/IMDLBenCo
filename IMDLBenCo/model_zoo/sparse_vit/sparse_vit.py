@@ -446,7 +446,7 @@ class SparseViT(nn.Module):
         )
         self.lmu = Multiple(embed_dim=512)
         self.BCE_loss = nn.BCEWithLogitsLoss()
-        # self.apply(self._init_weights)
+        self.apply(self._init_weights)
         
     def _init_weights(self, m):
         if isinstance(m, nn.Linear):
