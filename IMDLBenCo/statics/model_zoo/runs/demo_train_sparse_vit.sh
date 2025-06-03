@@ -12,7 +12,7 @@ train.py \
     --data_path /mnt/data0/public_datasets/IML/CASIA2.0 \
     --epochs 200 \
     --lr 2e-4 \
-    --min_lr 5e-7 \
+    --min_lr 0 \
     --weight_decay 0.05 \
     --pretrained_path "/mnt/data0/xiaochen/workspace/IMDLBenCo_pure/test_sparse_vit/uniformer_image/uniformer_base_in1k.pth" \
     --test_data_path "/mnt/data0/public_datasets/IML/CASIA1.0" \
@@ -21,8 +21,8 @@ train.py \
     --warmup_epochs 4 \
     --output_dir ${base_dir}/ \
     --log_dir ${base_dir}/ \
-    --accum_iter 16 \
+    --accum_iter 1 \
     --seed 42 \
     --test_period 4 \
-    --num_workers 8 \
+    --num_workers 12 \
     2> ${base_dir}/train_error.log 1>${base_dir}/train_log.log
