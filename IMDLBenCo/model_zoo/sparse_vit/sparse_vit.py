@@ -359,7 +359,7 @@ class SparseViTBackbone(nn.Module):
             self.pre_logits = nn.Identity()
             
         self._uniformer_init_weights()
-        # self.apply(self._init_weights)
+        self.apply(self._init_weights)
         
        
     def _init_weights(self, m):
