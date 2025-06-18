@@ -96,7 +96,7 @@ class PSCC_Net(nn.Module):
         feat = self.forward_features(image)
         
         [pred_mask1, pred_mask2, pred_mask3, pred_mask4] = self.SegNet(feat)
-        pred_mask = pred_mask1
+        pred_mask = torch.sigmoid(pred_mask1)
         pred_logit = self.ClsNet(feat)
         pred_logit = torch.softmax(pred_logit, dim=1)
         pred_label = pred_logit[:, -1, ...]
