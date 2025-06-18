@@ -215,7 +215,7 @@ def main(args, model_args):
 
     print("Loading checkpoint: %s" % chkpt_dir)
     ckpt = os.path.join(args.checkpoint_path, chkpt_dir)
-    ckpt = torch.load(ckpt, map_location='cuda', weights_only=False)
+    ckpt = torch.load(ckpt, map_location=args.device, weights_only=False)
     model.module.load_state_dict(ckpt['model'])            
     test_stats = inference_and_save_one_epoch(
                 model=model,

@@ -248,7 +248,7 @@ def main(args, model_args):
 
             if checkpoint_path.endswith(".pth"):
                 print("Loading checkpoint: %s" % checkpoint_path)
-                ckpt = torch.load(checkpoint_path, map_location="cuda", weights_only=False)
+                ckpt = torch.load(checkpoint_path, map_location=args.device, weights_only=False)
                 model.module.load_state_dict(ckpt['model'])            
                 test_stats = test_one_epoch(
                     model=model,
