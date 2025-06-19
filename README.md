@@ -33,7 +33,7 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 ---->
 
 ## 📰News
-- [2025/05/26] A new code base for **all-domain fake image detection** have been released, for more details, please visit [ForensicHub](https://github.com/scu-zjz/ForensicHub).
+- [2025/05/26] A new code base for **all-domain fake image detection** have been released, for more details, please visit [ForensicHub](https://github.com/scu-zjz/ForensicHub) ![Stars](https://img.shields.io/github/stars/scu-zjz/ForensicHub?style=social).
 - [2025/03/11] We have released pre-trained checkpoints on Baidu NetDisk that we utilized to report all metrics in the paper. Please see [this section](https://scu-zjz.github.io/IMDLBenCo-doc/guide/quickstart/2_load_ckpt.html#quick-testing-using-model-zoo-with-checkpoint) in our documents for details.
 - [2024/12/10] [Mesorch](https://arxiv.org/pdf/2412.13753) [![Stars](https://img.shields.io/github/stars/scu-zjz/Mesorch?style=social)](https://github.com/scu-zjz/Mesorch), our new IML backbone model, which adopts a parallel CNN+Transformer structure to simultaneously deal with image semantics and non-semantics, is accepted by AAAI 25!!!🎉🎉🎉
    
