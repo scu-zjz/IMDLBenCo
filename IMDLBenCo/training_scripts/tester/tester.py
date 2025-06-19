@@ -264,10 +264,12 @@ def inference_and_save_one_epoch(model: torch.nn.Module,
                     if args.if_resizing:
                         mask_pred_i = F.interpolate(mask_pred_i.unsqueeze(0), size=(original_shape[i][0], original_shape[i][1]), mode='bilinear', align_corners=False)
                         mask_pred_i = mask_pred_i.squeeze(0)
-                    mask_pred_i = mask_pred_i.squeeze(0)
-                    mask_pred_i = mask_pred_i.cpu().numpy()
-                    mask_pred_i = mask_pred_i * 255
-                    mask_pred_i = mask_pred_i.astype('uint8')
+
+                    mask_pred_i = mask_pred_i.mul(255).add_(0.5).clamp_(0, 255).to("cpu", torch.uint8)[0].numpy()
+                    print(mask_pred_i)
+                    # mask_pred_i = mask_pred_i.cpu().numpy()
+                    # mask_pred_i = mask_pred_i * 255
+                    # mask_pred_i = mask_pred_i.astype('uint8')
                     filename_i = filename[i]
                     # 用正则表达式匹配拓展名，并替换为png
                     filename_i = re.sub(r'\.[^.]*$', '.png', filename_i)
@@ -280,8 +282,11 @@ def inference_and_save_one_epoch(model: torch.nn.Module,
                     # 使用PIL保存为PNG文件
                     img = Image.fromarray(mask_pred_i)
                     img.save(filename_i)
+                    # 使用CV2保存为PNG文件
+                    # import cv2
+                    # cv2.imwrite(filename_i, mask_pred_i)
         
-                    print(f'Saved mask to {filename_i} on RANK {misc.get_rank()}')
+                    # print(f'Saved mask to {filename_i} on RANK {misc.get_rank()}')
 
             # save pred_label
             if output_dict.get('pred_label') is not None:
