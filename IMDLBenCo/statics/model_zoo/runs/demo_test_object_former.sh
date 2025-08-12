@@ -14,7 +14,7 @@ torchrun  \
     --checkpoint_path "/mnt/data0/username/workspace/IMDLBench/output_test/standard" \
     --test_batch_size 3 \
     --image_size 224 \
-    --if_padding \
+    --if_resizing \
     --output_dir ${base_dir}/ \
     --log_dir ${base_dir}/ \
 2> ${base_dir}/error.log 1>${base_dir}/logs.log
