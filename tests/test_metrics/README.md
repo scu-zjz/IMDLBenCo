@@ -1,4 +1,4 @@
-## 测试指标是否正确，交叉验证的脚本
+## 测试指标是否正确，交叉验证的脚本（仅供官方开发人员留档，IMDLBenCo的具体使用请参考https://scu-zjz.github.io/IMDLBenCo-doc/zh/guide/quickstart/2_load_ckpt.html）
 用法：
 1. 首先执行`generate_dataset.py`，然后获得一个测试用的数据集。
 2. 修改`test_mymodel.sh`中的路径指向该dataset。
