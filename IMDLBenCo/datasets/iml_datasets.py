@@ -51,11 +51,20 @@ class JsonDataset(AbstractDataset):
             raise TypeError(f"Get Error when loading from {self.entry_path}, please check the file format, it should be a json file, and the content should be like: [['./Tp/6.jpg', './Gt/6.jpg'], ['./Tp/7.jpg', './Gt/7.jpg'], ['./Tp/8.jpg', 'Negative'], ......]")
         tp_list = []
         gt_list = []
-        for record in images:
-            if os.path.isfile(record[0]):
-                tp_list.append(record[0])
-                gt_list.append(record[1])
-            else: 
-                raise TypeError(f"Get Error when loading from {self.entry_path}, the error record is: {record[0]}, which is not a file. Please check this file or try to use absolute path instead. Otherwise if you want to use ManiDataset with a path instead of JsonDataset, please pass a path into the 'train_*.sh'. For more information please see the protocol here: https://scu-zjz.github.io/IMDLBenCo-doc/guide/quickstart/0_dataprepare.html#specific-format-definitions")
-        return tp_list, gt_list
 
+        if len(images) > 0:
+            first = images[0][0]
+
+            if os.path.isfile(first) and not first.endswith(".json"):
+                for record in images:
+                    tp_list.append(record[0])
+                    gt_list.append(record[1])
+            else:
+                raise TypeError(
+                    f"Get Error when loading from {self.entry_path}, the error record is: {first}, "
+                    "which is not an image file. Please check this file or try another protocol."
+                )
+        else:
+            raise TypeError("The images list is empty.")
+
+        return tp_list, gt_list
