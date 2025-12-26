@@ -100,6 +100,9 @@ def get_args_parser():
     parser.add_argument('--seed', default=42, type=int)
     parser.add_argument('--resume', default='',
                         help='resume from checkpoint, input the path of a ckpt.')
+    parser.add_argument('--keep_best_and_last', action='store_true',
+                        help='If set, only keep the best-scoring checkpoint and the last checkpoint (others will be deleted).')
+
 
     parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
                         help='start epoch')
@@ -128,6 +131,27 @@ def get_args_parser():
     model_args = model_parser.parse_args(remaining_args)
 
     return args, model_args
+
+def prune_and_link_ckpts(output_dir, new_ckpt_path, is_best):
+    import os, glob, shutil
+
+    output_dir = str(output_dir)
+
+    # 1. 更新 last
+    last_path = os.path.join(output_dir, 'last_ckpt.pth')
+    shutil.copy2(new_ckpt_path, last_path)
+
+    # 2. 如果是 best，更新 best
+    if is_best:
+        best_path = os.path.join(output_dir, 'best_ckpt.pth')
+        shutil.copy2(new_ckpt_path, best_path)
+
+    # 3. 删除其它 ckpt
+    keep = {'best_ckpt.pth', 'last_ckpt.pth'}
+    for f in glob.glob(os.path.join(output_dir, '*.pth')):
+        if os.path.basename(f) not in keep:
+            os.remove(f)
+
 
 def main(args, model_args):
     # init parameters for distributed training
@@ -420,6 +444,13 @@ def main(args, model_args):
             misc.save_model(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
                 loss_scaler=loss_scaler, epoch=epoch)
+            if args.keep_best_and_last and misc.is_main_process():
+                ckpt_path = os.path.join(args.output_dir, f'checkpoint-{epoch}.pth')
+                prune_and_link_ckpts(
+                    args.output_dir,
+                    ckpt_path,
+                    is_best=False
+                )
             
         optimizer.zero_grad()
         # test for one epoch
@@ -461,6 +492,13 @@ def main(args, model_args):
                     misc.save_model(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
                 loss_scaler=loss_scaler, epoch=epoch)
+                if args.keep_best_and_last and misc.is_main_process():
+                    ckpt_path = os.path.join(args.output_dir, f'checkpoint-{epoch}.pth')
+                    prune_and_link_ckpts(
+                        args.output_dir,
+                        ckpt_path,
+                        is_best=True
+                    )
             else:
                 print(f"Average {' '.join([evaluator.name for evaluator in evaluator_list])} = {evaluate_metric_value}")
             # Log the metrics to Tensorboard
