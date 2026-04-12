@@ -214,6 +214,10 @@ def test_one_epoch(model: torch.nn.Module,
                                       epoch)
             if data_dict.get('mask') is not None:
                 log_writer.add_images(f'{name}_test/mask', data_dict['mask'], epoch)
+            if output_dict.get('visual_image') is not None:
+                for k, v in output_dict['visual_image'].items():
+                    log_writer.add_images(f'{name}_test/{k}', v, epoch)
+
             # log_writer.add_images('test/edge_mask', edge_mask, epoch)
             
         print("Averaged stats:", metric_logger)
