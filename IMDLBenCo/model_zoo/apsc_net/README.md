@@ -10,6 +10,10 @@ This directory provides an IMDLBenCo adapter for APSC-Net from:
 - Official checkpoint: <https://drive.google.com/file/d/1fTFUnn1mCO9w-YG3wa9Xqqkdn2PsSwmZ/view>
 - Upstream license notice: [UPSTREAM_NOTICE.md](./UPSTREAM_NOTICE.md)
 
+The APSC-Net adapter directory is distributed under CC BY-NC 4.0 and is not
+covered by IMDLBenCo's repository-level CC BY 4.0 license. See
+[LICENSE](./LICENSE) and [UPSTREAM_NOTICE.md](./UPSTREAM_NOTICE.md).
+
 ## Integration scope
 
 The official implementation depends on PyTorch 1.13, MMCV 1.6, and MMSEG.

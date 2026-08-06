@@ -12,6 +12,18 @@ The upstream repository states that the project is licensed under
 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). This adapter
 therefore retains the upstream attribution and non-commercial restriction.
 
-Before merging this directory into a repository whose top-level license is
-different, the maintainers should confirm the intended license treatment or
-obtain any additional permission that they consider necessary.
+## License scope
+
+Files in this directory derived from the MIML implementation are distributed
+under CC BY-NC 4.0. See [LICENSE](./LICENSE) for the complete license text.
+They are not covered by IMDLBenCo's repository-level CC BY 4.0 license. Other
+IMDLBenCo files remain under the repository-level license.
+
+## Modifications
+
+This IMDLBenCo adapter modifies the upstream implementation by:
+
+- replacing the MMCV/MMSEG runtime components with plain PyTorch modules;
+- adapting the forward interface to the IMDLBenCo output contract;
+- adding checkpoint-prefix normalization and checkpoint conversion; and
+- adding IMDLBenCo evaluation and experimental fine-tuning launchers.
