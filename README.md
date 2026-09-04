@@ -136,11 +136,11 @@ If you find our work valuable and it has contributed to your research or project
 ## Statistics and Star History
 <div align="center">
 
-<a href="https://star-history.com/#scu-zjz/IMDLBenCo&Date">
+<a href="https://star-history.dera.page/#scu-zjz/IMDLBenCo&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=scu-zjz/IMDLBenCo&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=scu-zjz/IMDLBenCo&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=scu-zjz/IMDLBenCo&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=scu-zjz/IMDLBenCo&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=scu-zjz/IMDLBenCo&type=Date" />
+   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=scu-zjz/IMDLBenCo&type=Date" />
  </picture>
 </a>
 
