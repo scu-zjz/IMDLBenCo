@@ -34,6 +34,8 @@ Zeyu Lei†, Xinyu Yang†, Chi-Man Pun, Jiancheng Lv, [Jizhe Zhou](https://knig
 
 ## 📰News
 
+- [2026/08/28] **Blog**: [分久必合：统一的伪造图像检测（Unified FID）](https://knightzjz.github.io/blog/unified-fid.html) / **Blog**: [Long Divided, Must Unite](https://knightzjz.github.io/blog/unified-fid-en.html) — an introduction to the Unified Fake Image Detection task and the discussion on why this task matters, and where the field is heading.
+
 - [2026/06/19] [RITA](https://github.com/scu-zjz/RITA) [![Stars](https://img.shields.io/github/stars/scu-zjz/RITA?style=social)](https://github.com/scu-zjz/RITA), our latest autoregressive image manipulation localization framework designed to address the dimension collapse problem under realistic manipulation scenarios, has been accepted by **CVPR 2026 Findings**!!! 🎉🎉🎉
 
 - [2025/05/26] A new code base for **all-domain fake image detection** have been released, for more details, please visit [ForensicHub](https://arxiv.org/abs/2505.11003) [![Stars](https://img.shields.io/github/stars/scu-zjz/ForensicHub?style=social)](https://github.com/scu-zjz/ForensicHub).
